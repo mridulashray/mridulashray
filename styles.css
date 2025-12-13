@@ -546,6 +546,46 @@ body::before {
   width: 100%;
 }
 
+@media (max-width: 720px) {
+  .fund-card {
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fund-card > div:first-child {
+    width: 100%;
+    text-align: left;
+  }
+  .fund-card h3 {
+    font-size: 1.4rem;
+  }
+  .fund-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .fund-card {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+  .fund-card p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .fund-form label {
+    font-size: 0.9rem;
+  }
+  .fund-form input,
+  .fund-form select,
+  .fund-form button {
+    font-size: 0.95rem;
+  }
+  .fund-form button {
+    padding: 0.8rem 1.2rem;
+  }
+}
+
 .payment-page {
   padding: clamp(3rem, 6vw, 5rem) 0 clamp(4rem, 7vw, 6rem);
   background: linear-gradient(135deg, rgba(255, 248, 242, 0.96), rgba(246, 212, 197, 0.4));
