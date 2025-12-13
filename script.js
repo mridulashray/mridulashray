@@ -137,3 +137,46 @@ if (copyUpiBtn && upiIdText) {
     }
   });
 }
+
+// Stat counter animation
+const counters = document.querySelectorAll(".stat-counter");
+if (counters.length > 0 && "IntersectionObserver" in window) {
+  const easeOutQuad = (t) => t * (2 - t);
+
+  const animateCounter = (el) => {
+    if (el.dataset.animated) return;
+    el.dataset.animated = "true";
+    const target = Number(el.dataset.target || "0");
+    const suffix = el.dataset.suffix || "";
+    const duration = Number(el.dataset.duration || "2000");
+    const startTime = performance.now();
+
+    const update = (now) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = easeOutQuad(progress);
+      const current = Math.floor(eased * target);
+      el.textContent = current.toLocaleString() + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target.toLocaleString() + suffix;
+      }
+    };
+
+    requestAnimationFrame(update);
+  };
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.4 }
+  );
+
+  counters.forEach((counter) => observer.observe(counter));
+}
