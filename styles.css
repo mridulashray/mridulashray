@@ -24,6 +24,7 @@ body {
   color: var(--color-ink);
   line-height: 1.6;
   position: relative;
+  overflow-x: hidden;
 }
 
 body::before {
@@ -591,11 +592,22 @@ body::before {
   background: linear-gradient(135deg, rgba(255, 248, 242, 0.96), rgba(246, 212, 197, 0.4));
 }
 
+.payment-page .container {
+  width: min(1000px, 92%);
+}
+
 .payment-wrapper {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   gap: clamp(2rem, 4vw, 3.5rem);
   align-items: start;
+  width: 100%;
+}
+
+.payment-card,
+.payment-info {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .payment-card {
@@ -712,10 +724,16 @@ body::before {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  flex-wrap: wrap;
   border-radius: 999px;
   border: 1px solid rgba(47, 99, 84, 0.4);
   padding: 0.4rem 0.9rem;
   background: #fff;
+  max-width: 100%;
+}
+
+.upi-id-chip strong {
+  word-break: break-all;
 }
 
 .upi-id-chip button {
@@ -993,6 +1011,11 @@ body::before {
   }
   .payment-wrapper {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .payment-card,
+  .payment-info {
+    padding: 1.6rem;
   }
   .nav-toggle {
     display: inline-flex;
@@ -1055,5 +1078,23 @@ body::before {
   }
   .page-status {
     padding: 3rem 1rem;
+  }
+  .payment-wrapper {
+    gap: 1rem;
+  }
+  .payment-card,
+  .payment-info {
+    padding: 1.3rem;
+  }
+  .payment-steps ol {
+    margin-left: 1rem;
+  }
+  .upi-id-chip {
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+  .upi-id-chip button {
+    width: 100%;
+    text-align: center;
   }
 }
