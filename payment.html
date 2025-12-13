@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Events | Mridulashray</title>
+    <title>Donate | Mridulashray</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -22,7 +22,7 @@
         <nav class="main-nav" aria-label="Primary">
           <a href="index.html">Home</a>
           <a href="volunteer.html">Volunteer</a>
-          <a href="events.html" class="active">Events</a>
+          <a href="events.html">Events</a>
           <a href="contact.html">Contact Us</a>
           <a href="compliance.html">Compliance &amp; Legal</a>
           <a href="terms.html">Terms and Conditions</a>
@@ -37,13 +37,65 @@
     </header>
 
     <main>
-      <section class="page-status">
-        <h1>Events &amp; Campaigns</h1>
-        <p>
-          This page is currently in the developing stage. We are lining up immersive drives, workshops, and fundraisers that empower Government schools and
-          community partners.
-        </p>
-        <a class="ghost-btn ghost-btn--solid" href="contact.html">Stay Updated</a>
+      <section class="payment-page">
+        <div class="container payment-wrapper">
+          <article class="payment-card">
+            <span class="petal-badge">Direct Support</span>
+            <h1>Complete your donation</h1>
+            <p>
+              Every rupee keeps children in safe classrooms, restores infrastructure, and boosts community teachers. Enter any amount, share an optional note, and
+              we’ll route you to your preferred UPI app instantly.
+            </p>
+
+            <form id="payment-form" class="payment-form" data-upi-id="11183798364@okbizaxis">
+              <label>
+                Donation Amount (₹)
+                <div class="input-with-prefix">
+                  <span aria-hidden="true">₹</span>
+                  <input type="number" name="amount" min="1" step="1" placeholder="5000" required />
+                </div>
+              </label>
+
+              <label>
+                Your Name (optional)
+                <input type="text" name="supporter-name" placeholder="e.g., Devinder Rustagi" />
+              </label>
+
+              <label>
+                Note to our team (optional)
+                <textarea name="note" rows="3" placeholder="Tell us how you’d like the funds to be used"></textarea>
+              </label>
+
+              <div class="payment-actions">
+                <button type="submit" class="ghost-btn ghost-btn--solid">Proceed with UPI</button>
+                <p class="form-hint">You’ll be prompted by your UPI app/browser. No fees are deducted from your gift.</p>
+              </div>
+              <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
+            </form>
+          </article>
+
+          <aside class="payment-info" aria-label="UPI payment details">
+            <div class="upi-id-block">
+              <p>Prefer sending money manually?</p>
+              <div class="upi-id-chip">
+                <span>UPI ID:</span>
+                <strong id="upi-id-text">11183798364@okbizaxis</strong>
+                <button type="button" id="copy-upi-btn">Copy</button>
+              </div>
+              <p class="upi-note">Use any UPI app, paste the ID, and mention “Mridulashray Support” in the note.</p>
+            </div>
+
+            <div class="payment-steps">
+              <h2>How it works</h2>
+              <ol>
+                <li>Enter or review your amount above.</li>
+                <li>Hit “Proceed with UPI” to trigger the payment intent.</li>
+                <li>Approve the payment in your preferred UPI app.</li>
+                <li>Share the confirmation screenshot at <a href="mailto:mridulashrayorg@gmail.com">mridulashrayorg@gmail.com</a> for instant acknowledgement.</li>
+              </ol>
+            </div>
+          </aside>
+        </div>
       </section>
     </main>
 
@@ -91,12 +143,12 @@
             <ul class="footer-links">
               <li><a href="index.html">Home</a></li>
               <li><a href="volunteer.html">Volunteer</a></li>
-              <li><a href="events.html" class="active">Events</a></li>
+              <li><a href="events.html">Events</a></li>
               <li><a href="past-campaigns.html">Past Campaigns</a></li>
               <li><a href="contact.html">Contact Us</a></li>
               <li><a href="compliance.html">Compliance &amp; Legal</a></li>
               <li><a href="terms.html">Terms and Conditions</a></li>
-              <li><a href="payment.html">Donate</a></li>
+              <li><a href="payment.html" class="active">Donate</a></li>
             </ul>
           </div>
           <div>
