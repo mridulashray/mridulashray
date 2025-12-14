@@ -37,13 +37,54 @@
     </header>
 
     <main>
-      <section class="page-status">
-        <h1>Contact Us</h1>
-        <p>
-          This page is currently in the developing stage. We’re crafting dedicated contact channels so that ideas, donations, and volunteer queries reach the
-          right teams quickly.
-        </p>
-        <a class="ghost-btn ghost-btn--solid" href="mailto:mridulashrayorg@gmail.com">Email Us Meanwhile</a>
+      <section class="contact-map" aria-label="Mridulashray location map">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3516.2715088022774!2d76.61161257576991!3d28.19906247590418!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d5a9e40ca98fb%3A0xc3a8f00f1f1c8503!2sMatadeen%20And%20Sons!5e0!3m2!1sen!2sin!4v1765703362530!5m2!1sen!2sin"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Mridulashray Google Map"
+        ></iframe>
+      </section>
+
+      <section class="contact-panel">
+        <div class="contact-panel__overlay" aria-hidden="true"></div>
+        <div class="contact-panel__inner">
+          <div class="contact-panel__grid">
+            <div class="contact-panel__logo">
+              <img src="images/logo.png" alt="Mridulashray emblem" />
+              <p class="contact-panel__logo-caption">मृदुल आश्रय</p>
+            </div>
+            <div class="contact-panel__form-wrapper">
+              <div class="contact-panel__intro">
+                <p>Contact Us:</p>
+                <h2>After reviewing, we will get back to you.</h2>
+              </div>
+              <form class="contact-panel__form" action="https://formsubmit.co/mridulashrayorg@gmail.com" method="POST">
+                <input type="hidden" name="_subject" value="New Contact Request - Mridulashray" />
+                <input type="hidden" name="_template" value="table" />
+                <input type="hidden" name="form_source" value="Contact Page" />
+                <div class="contact-panel__form-row">
+                  <label for="contact-name">Name:</label>
+                  <input id="contact-name" type="text" name="name" placeholder="Enter your full name" required />
+                </div>
+                <div class="contact-panel__form-row">
+                  <label for="contact-email">Email:</label>
+                  <input id="contact-email" type="email" name="email" placeholder="Enter your email address" required />
+                </div>
+                <div class="contact-panel__form-row">
+                  <label for="contact-phone">Mobile Number:</label>
+                  <input id="contact-phone" type="tel" name="phone" placeholder="Enter your mobile number" required />
+                </div>
+                <div class="contact-panel__form-row contact-panel__form-row--textarea">
+                  <label for="contact-message">Description:</label>
+                  <textarea id="contact-message" name="message" rows="4" placeholder="Tell us how we can help you" required></textarea>
+                </div>
+                <button type="submit" class="contact-panel__submit">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
