@@ -37,13 +37,87 @@
     </header>
 
     <main>
-      <section class="page-status">
-        <h1>Volunteer Programs</h1>
-        <p>
-          This page is currently in the developing stage. We are curating immersive volunteering journeys that align with education,
-          environment, and empowerment goals across Haryana.
-        </p>
-        <a class="ghost-btn ghost-btn--solid" href="contact.html">Notify Me When Ready</a>
+      <section class="volunteer-hero">
+        <div class="volunteer-hero__image">
+          <img src="images/homepage12.png" alt="Smiling group of Mridulashray volunteers" loading="lazy" />
+        </div>
+        <div class="volunteer-hero__content">
+          <p class="kicker">Join our circle of impact</p>
+          <h1>Volunteer with Mridulashray</h1>
+          <p>
+            We believe community change is powered by everyday citizens who care. Whether you can lead a plantation drive, mentor students, run wellness circles,
+            or simply bring enthusiasm, we have a mission ready for you.
+          </p>
+          <ul>
+            <li>Weekend &amp; weekday opportunities across education, environment, and care</li>
+            <li>Orientation and WhatsApp coordination to keep you informed</li>
+            <li>Certificates &amp; leadership pathways for long-term champions</li>
+          </ul>
+          <a class="ghost-btn ghost-btn--solid" href="#volunteer-form">See active drives</a>
+        </div>
+      </section>
+
+      <section class="volunteer-form-section" id="volunteer-form">
+        <div class="container volunteer-form-grid">
+          <div>
+            <span class="petal-badge">Become a proud volunteer</span>
+            <h2>Tell us about you</h2>
+            <p>Fill in your details and we’ll add you to our volunteer coordination group and upcoming project roster.</p>
+            <div class="volunteer-pillars">
+              <article>
+                <h3>Education</h3>
+                <p>Mentor competitive exam aspirants, lead reading clubs, or teach Silai batches.</p>
+              </article>
+              <article>
+                <h3>Environment</h3>
+                <p>Plant trees, manage sapling care diaries, and host zero-waste workshops.</p>
+              </article>
+              <article>
+                <h3>Community Care</h3>
+                <p>Support Gau Shaala logistics, wellness camps, and old age home visits.</p>
+              </article>
+            </div>
+          </div>
+
+          <form class="volunteer-form-card">
+            <label>
+              Full Name
+              <input type="text" name="name" placeholder="e.g., Aditi Sharma" required />
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" placeholder="aditi@example.com" required />
+            </label>
+            <label>
+              Mobile Number
+              <input type="tel" name="phone" placeholder="+91 98765 43210" required />
+            </label>
+            <label>
+              City / Village
+              <input type="text" name="location" placeholder="Rewari, Haryana" required />
+            </label>
+            <label>
+              Preferred Volunteering Focus
+              <select name="interest" required>
+                <option value="">Select an option</option>
+                <option value="education">Education &amp; mentoring</option>
+                <option value="environment">Environment drives</option>
+                <option value="community">Community care</option>
+                <option value="fundraising">Fund-raising &amp; outreach</option>
+              </select>
+            </label>
+            <label>
+              How can you help?
+              <textarea name="message" rows="3" placeholder="Share any specific skills or availability"></textarea>
+            </label>
+            <label class="volunteer-form-card__agreement">
+              <input type="checkbox" required />
+              <span>I agree to the <a href="terms.html">Terms &amp; Conditions</a> and volunteer guidelines.</span>
+            </label>
+            <button type="submit" class="ghost-btn ghost-btn--solid">Submit &amp; Join</button>
+            <p class="volunteer-form-card__hint">We respond within 48 hours with your onboarding link.</p>
+          </form>
+        </div>
       </section>
     </main>
 
