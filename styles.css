@@ -907,6 +907,7 @@ body::before {
   align-items: center;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.15);
+  color: inherit;
 }
 
 .social-icon--fb {
@@ -918,6 +919,18 @@ body::before {
 
 .social-icon--x {
   font-size: 0.95rem;
+}
+
+.social-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.social-icon--ig {
+  border: 1px solid rgba(193, 53, 132, 0.4);
+  color: #f77737;
+  background: radial-gradient(circle at 30% 30%, #f9ed32, #ee2a7b 55%, #6228d7);
 }
 
 .footer-copy {
