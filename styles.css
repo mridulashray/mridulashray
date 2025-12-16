@@ -110,6 +110,7 @@ body::before {
   cursor: pointer;
   font-weight: 600;
   box-shadow: 0 6px 12px rgba(255, 98, 0, 0.3);
+  text-decoration: none;
 }
 
 .govt-alert__stats {
@@ -209,6 +210,12 @@ body::before {
   font-weight: 600;
   box-shadow: 0 8px 18px rgba(240, 138, 142, 0.2);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  text-decoration: none;
+}
+
+.ghost-btn:visited {
+  color: var(--color-deep-leaf);
+  text-decoration: none;
 }
 
 .ghost-btn:hover {
@@ -429,7 +436,7 @@ body::before {
   background: transparent;
   color: var(--color-deep-leaf);
   font-weight: 600;
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -865,7 +872,8 @@ body::before {
   line-height: 1.6;
 }
 
-.footer-links a {
+.footer-links a,
+.footer-service-links a {
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   border-bottom: 1px solid transparent;
@@ -873,7 +881,8 @@ body::before {
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 
-.footer-links a:hover {
+.footer-links a:hover,
+.footer-service-links a:hover {
   color: #fff;
   border-color: #fff;
 }
@@ -1787,7 +1796,7 @@ body::before {
   gap: 1rem;
 }
 
-.volunteer-form-card label {
+.volunteer-form-card label:not(.volunteer-form-card__agreement) {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -1810,15 +1819,22 @@ body::before {
   resize: vertical;
 }
 
-.volunteer-form-card__agreement {
+.volunteer-form-card label.volunteer-form-card__agreement {
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   font-weight: 500;
+  white-space: nowrap;
+  flex-wrap: nowrap;
 }
 
 .volunteer-form-card__agreement input {
   width: auto;
+}
+
+.volunteer-form-card__agreement span {
+  line-height: 1.4;
 }
 
 .volunteer-form-card__hint {
