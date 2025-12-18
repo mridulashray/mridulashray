@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Mridulashray</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../styles.css" />
+  </head>
+  <body class="admin-panel-body">
+    <header class="site-header">
+      <div class="container nav-wrapper">
+        <div class="brand">
+          <img src="../../../images/logo.png" alt="Mridulashray logo" class="brand__logo" />
+          <span class="brand__name">Mridulashray Admin</span>
+        </div>
+        <div class="admin-panel__actions">
+          <span class="admin-badge" id="admin-session-name">Logged in</span>
+          <button class="ghost-btn" id="logout-btn" type="button">Log out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-panel">
+      <div class="container">
+        <section class="admin-panel__header">
+          <div>
+            <p class="petal-badge">Former Head Console</p>
+            <h1>Manage Event Albums</h1>
+            <p>Upload visuals, write context, and publish albums that instantly sync with the public Events page.</p>
+          </div>
+          <div class="admin-panel__actions">
+            <button class="ghost-btn ghost-btn--solid" id="refresh-events-btn" type="button">Refresh Albums</button>
+          </div>
+        </section>
+
+        <section class="admin-section" aria-labelledby="create-event-title">
+          <h2 id="create-event-title">Step 1 · Create or update an event album</h2>
+          <form id="event-metadata-form" class="admin-form-grid">
+            <label>
+              <span>Event Name *</span>
+              <input type="text" name="name" placeholder="E.g. Reading Room Launch, Rewari" required />
+            </label>
+            <label>
+              <span>Event Slug / ID *</span>
+              <input type="text" name="slug" placeholder="reading-room-rewari-2025" required />
+            </label>
+            <label>
+              <span>Date</span>
+              <input type="date" name="date" />
+            </label>
+            <label>
+              <span>Community / Beneficiaries Count</span>
+              <input type="number" name="impactCount" min="0" placeholder="250" />
+            </label>
+            <label>
+              <span>Event Title *</span>
+              <input type="text" name="title" placeholder="Reading Rooms open doors to UPSC dreams" required />
+            </label>
+            <label>
+              <span>Highlight Description *</span>
+              <textarea name="description" placeholder="Summarise the drive, who joined, outcome, gratitude notes." required></textarea>
+            </label>
+            <label>
+              <span>Featured Quote / Caption</span>
+              <textarea name="caption" placeholder="Optional: one-line quote to display across cards."></textarea>
+            </label>
+            <label>
+              <span>Cover Image File ID (auto-filled after upload)</span>
+              <input type="text" name="coverFileId" placeholder="Leave blank to auto-pick first uploaded photo" />
+            </label>
+            <label class="full-row">
+              <span>Publish Status</span>
+              <select name="status">
+                <option value="draft">Draft (hidden)</option>
+                <option value="published" selected>Published</option>
+              </select>
+            </label>
+          </form>
+          <div class="admin-panel__actions">
+            <button class="ghost-btn ghost-btn--solid" id="save-event-btn" type="button">Save / Update Event</button>
+            <button class="ghost-btn ghost-btn--small" id="event-metadata-cancel" type="button" hidden>Cancel edit</button>
+            <span class="admin-form__feedback" id="event-metadata-feedback"></span>
+          </div>
+        </section>
+
+        <section class="admin-section" aria-labelledby="events-table-title">
+          <h2 id="events-table-title">Published albums</h2>
+          <table class="admin-table" id="events-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Status</th>
+                <th>Impact</th>
+                <th>Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="admin-upload-hint">Tip: click “Refresh Albums” whenever you make new changes to sync the table.</p>
+        </section>
+
+        <section class="admin-section admin-album-workspace" id="album-workspace" hidden aria-live="polite">
+          <div class="album-workspace__header">
+            <div>
+              <p class="petal-badge">Album workspace</p>
+              <h2 id="album-workspace-title">Select an album to manage</h2>
+              <p id="album-workspace-subtitle">Choose “Manage” from the table above to start uploading photos inside an album.</p>
+            </div>
+            <div class="album-workspace__meta">
+              <span id="album-workspace-status"></span>
+              <span id="album-workspace-updated"></span>
+            </div>
+          </div>
+
+          <div class="album-workspace__grid">
+            <div>
+              <div class="album-workspace__body">
+                <ul class="album-media-list" id="album-media-list">
+                  <li class="empty-state">Choose an album to view uploaded photos.</li>
+                </ul>
+                <div class="album-media-reorder-actions" id="album-media-reorder-actions" hidden>
+                  <button type="button" class="ghost-btn ghost-btn--small" id="album-media-save-order">Save order</button>
+                  <button type="button" class="ghost-btn ghost-btn--small" id="album-media-cancel-order">Cancel</button>
+                  <span class="admin-form__feedback" id="album-media-order-feedback"></span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3>Upload a new photo</h3>
+              <form id="album-media-form" class="admin-form-grid">
+                <label class="full-row">
+                  <span>Image file *</span>
+                  <input type="file" name="mediaFile" accept="image/*" />
+                </label>
+                <label class="full-row">
+                  <span>Image title <small>(optional)</small></span>
+                  <input type="text" name="mediaTitle" placeholder="Smiles at the reading room launch" />
+                </label>
+                <label class="full-row">
+                  <span>Description <small>(optional)</small></span>
+                  <textarea name="mediaDescription" placeholder="Describe the moment or people featured."></textarea>
+                </label>
+                <label class="album-form-toggle">
+                  <input type="checkbox" name="makeCover" />
+                  <span>Set as album cover</span>
+                </label>
+                <div class="album-media-form__actions">
+                  <button type="submit" class="ghost-btn ghost-btn--solid" id="album-media-submit">Upload photo</button>
+                  <button type="button" class="ghost-btn ghost-btn--small" id="album-media-cancel" hidden>Cancel edit</button>
+                </div>
+                <span class="admin-form__feedback" id="album-media-feedback"></span>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="../../../appwrite-config.js"></script>
+    <script src="admin-dashboard.js"></script>
+  </body>
+</html>

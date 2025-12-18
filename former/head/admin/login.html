@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login | Mridulashray</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../styles.css" />
+  </head>
+  <body class="admin-body">
+    <main class="admin-auth">
+      <div class="admin-auth__intro">
+        <div class="admin-auth__brand">
+          <img src="../../../images/logo.png" alt="Mridulashray logo" />
+          <div>
+            <p>Mridulashray</p>
+            <small>Former Head | Admin Console</small>
+          </div>
+        </div>
+        <h1>Secure Access for Leadership</h1>
+        <p>
+          Coordinate event storytelling, manage campaign albums, and keep Mridulashray’s narrative cohesive across every channel. This console is
+          dedicated to the leadership team—please keep credentials confidential.
+        </p>
+        <ul>
+          <li>Curate event-specific photo albums</li>
+          <li>Publish contextual descriptions for each drive</li>
+          <li>Instantly reflect updates on the public Events page</li>
+        </ul>
+      </div>
+
+      <section class="admin-auth__card" aria-labelledby="admin-login-title">
+        <div class="admin-auth__card-header">
+          <h2 id="admin-login-title">Admin Login</h2>
+          <p>Enter the credentials shared with the founding team.</p>
+        </div>
+        <form id="admin-login-form" class="admin-form" autocomplete="off" novalidate>
+          <label class="admin-form__field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="admin@mridulashray.org" required />
+          </label>
+          <label class="admin-form__field">
+            <span>Password</span>
+            <input type="password" name="password" placeholder="*************" required minlength="8" />
+          </label>
+          <button type="submit" class="ghost-btn ghost-btn--solid">Authenticate &amp; Continue</button>
+          <p id="admin-login-feedback" class="admin-form__feedback" role="status" aria-live="polite"></p>
+        </form>
+        <p class="admin-auth__note">
+          Need access? Reach out to the Founder’s Office with a written request so we can issue fresh credentials and rotate audit logs.
+        </p>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="../../../appwrite-config.js"></script>
+    <script src="admin-login.js"></script>
+  </body>
+</html>
