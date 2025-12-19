@@ -33,6 +33,7 @@
   const storagePreviewUrl = (fileId) => `${STORAGE_BASE}/${fileId}/view?project=${APPWRITE_CONFIG.projectId}`;
 
   let appwriteInitPromise = null;
+  let anonymousSessionPromise = null;
   const ensureAppwriteClient = async () => {
     if (window.appwrite && window.appwrite.databases) {
       return window.appwrite;
@@ -80,6 +81,28 @@
       appwriteInitPromise = null;
       throw error;
     }
+  };
+
+  const ensureAnonymousSession = async (appwriteClient) => {
+    if (!appwriteClient || !appwriteClient.account) return null;
+    try {
+      await appwriteClient.account.get();
+      return null;
+    } catch (error) {
+      const isAuthError = Number(error?.code) === 401 || (error?.type || "").includes("unauthorized");
+      if (!isAuthError) {
+        throw error;
+      }
+    }
+
+    if (!anonymousSessionPromise) {
+      anonymousSessionPromise = appwriteClient.account.createAnonymousSession().catch((error) => {
+        anonymousSessionPromise = null;
+        throw error;
+      });
+    }
+
+    return anonymousSessionPromise;
   };
 
   const renderEvents = (documents = []) => {
@@ -315,6 +338,7 @@
     let appwriteClient = null;
     try {
       appwriteClient = await ensureAppwriteClient();
+      await ensureAnonymousSession(appwriteClient);
     } catch (error) {
       console.warn("Appwrite SDK not ready yet.", error);
     }
