@@ -109,7 +109,10 @@ const paymentForm = document.getElementById("payment-form");
 const paymentStatus = document.getElementById("payment-status");
 const copyUpiBtn = document.getElementById("copy-upi-btn");
 const upiIdText = document.getElementById("upi-id-text");
-const amountInput = paymentForm?.querySelector('input[name="amount"]');
+const amountInput =
+  paymentForm && typeof paymentForm.querySelector === "function"
+    ? paymentForm.querySelector('input[name="amount"]')
+    : null;
 
 const setStatus = (message, isError = false) => {
   if (!paymentStatus) return;
@@ -127,8 +130,16 @@ if (paymentForm && amountInput) {
   paymentForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const upiId = paymentForm.dataset.upiId || "mridulashray@upi";
-    const donorName = paymentForm.querySelector('input[name="supporter-name"]')?.value.trim() || "Friend of Mridulashray";
-    const note = paymentForm.querySelector('textarea[name="note"]')?.value.trim() || "Support for Mridulashray schools";
+    const donorInput =
+      typeof paymentForm.querySelector === "function"
+        ? paymentForm.querySelector('input[name="supporter-name"]')
+        : null;
+    const noteInput =
+      typeof paymentForm.querySelector === "function"
+        ? paymentForm.querySelector('textarea[name="note"]')
+        : null;
+    const donorName = donorInput && donorInput.value ? donorInput.value.trim() : "Friend of Mridulashray";
+    const note = noteInput && noteInput.value ? noteInput.value.trim() : "Support for Mridulashray schools";
     const amountValue = formatAmount(amountInput.value);
 
     if (!amountValue) {
@@ -209,7 +220,11 @@ if (counters.length > 0 && "IntersectionObserver" in window) {
 const advanceGallery = (rootId) => {
   const mediaEl = document.querySelector(rootId);
   if (!mediaEl) return;
-  const images = mediaEl.dataset.galleryImages?.split("|").map((src) => src.trim()).filter(Boolean) || [];
+  const rawImages = mediaEl.dataset.galleryImages || "";
+  const images = rawImages
+    .split("|")
+    .map((src) => src.trim())
+    .filter(Boolean);
   if (images.length === 0) return;
 
   const currentIndex = Number(mediaEl.dataset.galleryIndex || "0");
@@ -237,7 +252,11 @@ if (galleryButtons.length > 0) {
   });
 
   document.querySelectorAll("[data-gallery-images]").forEach((el) => {
-    const list = el.dataset.galleryImages?.split("|").map((src) => src.trim()).filter(Boolean) || [];
+    const raw = el.dataset.galleryImages || "";
+    const list = raw
+      .split("|")
+      .map((src) => src.trim())
+      .filter(Boolean);
     if (list.length > 0) {
       el.dataset.galleryIndexCurrent = `1/${list.length}`;
     }
