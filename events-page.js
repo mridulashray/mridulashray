@@ -62,7 +62,8 @@
       eventsEmptyEl.classList.add("hidden");
     }
     documents.forEach((doc) => {
-      const coverId = doc.coverFileId || doc.mediaFileIds?.[0];
+      const mediaFiles = Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds : [];
+      const coverId = doc.coverFileId || mediaFiles[0];
       const card = document.createElement("article");
       card.className = "event-card";
       card.dataset.albumSlug = doc.slug || doc.$id;
@@ -101,13 +102,17 @@
 
   const renderPhotoWall = (documents = []) => {
     if (!photoWallGridEl) return;
-    const allEntries = documents.flatMap((doc) =>
-      toMediaEntries(doc).map((entry) => ({
-        ...entry,
-        eventTitle: doc.title || doc.name,
-        eventSlug: doc.slug
-      }))
-    );
+    const allEntries = [];
+    documents.forEach((doc) => {
+      const mediaEntries = toMediaEntries(doc);
+      mediaEntries.forEach((entry) => {
+        allEntries.push({
+          ...entry,
+          eventTitle: doc.title || doc.name,
+          eventSlug: doc.slug
+        });
+      });
+    });
 
     photoWallGridEl.innerHTML = "";
 
@@ -165,7 +170,8 @@
     }
 
     documents.slice(0, 3).forEach((doc) => {
-      const coverId = doc.coverFileId || doc.mediaFileIds?.[0];
+      const mediaFiles = Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds : [];
+      const coverId = doc.coverFileId || mediaFiles[0];
       const article = document.createElement("article");
       article.className = "events-highlight__story";
       article.innerHTML = `
