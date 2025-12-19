@@ -32,8 +32,13 @@
 
   const storagePreviewUrl = (fileId) => `${STORAGE_BASE}/${fileId}/view?project=${APPWRITE_CONFIG.projectId}`;
 
-  const ensureAppwriteClient = () => {
-    if (!window.appwrite && typeof Appwrite !== "undefined") {
+  let appwriteInitPromise = null;
+  const ensureAppwriteClient = async () => {
+    if (window.appwrite && window.appwrite.databases) {
+      return window.appwrite;
+    }
+
+    const instantiate = () => {
       const client = new Appwrite.Client().setEndpoint(APPWRITE_CONFIG.endpoint).setProject(APPWRITE_CONFIG.projectId);
       window.appwrite = {
         client,
@@ -41,8 +46,40 @@
         databases: new Appwrite.Databases(client),
         storage: new Appwrite.Storage(client)
       };
+      return window.appwrite;
+    };
+
+    if (typeof Appwrite !== "undefined") {
+      return instantiate();
     }
-    return window.appwrite;
+
+    if (!appwriteInitPromise) {
+      appwriteInitPromise = new Promise((resolve, reject) => {
+        const maxAttempts = 50;
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts += 1;
+          if (typeof Appwrite !== "undefined") {
+            clearInterval(interval);
+            try {
+              resolve(instantiate());
+            } catch (error) {
+              reject(error);
+            }
+          } else if (attempts >= maxAttempts) {
+            clearInterval(interval);
+            reject(new Error("Appwrite SDK failed to load."));
+          }
+        }, 80);
+      });
+    }
+
+    try {
+      return await appwriteInitPromise;
+    } catch (error) {
+      appwriteInitPromise = null;
+      throw error;
+    }
   };
 
   const renderEvents = (documents = []) => {
@@ -275,9 +312,18 @@
   };
 
   const loadPublishedEvents = async () => {
-    const appwriteClient = ensureAppwriteClient();
+    let appwriteClient = null;
+    try {
+      appwriteClient = await ensureAppwriteClient();
+    } catch (error) {
+      console.warn("Appwrite SDK not ready yet.", error);
+    }
+
     if (!appwriteClient || !appwriteClient.databases) {
-      console.warn("Appwrite client unavailable. Ensure CDN script and appwrite-config.js are loaded.");
+      if (eventsEmptyEl && eventsEmptyEl.classList) {
+        eventsEmptyEl.classList.remove("hidden");
+        eventsEmptyEl.textContent = "Loading events… please check your connection.";
+      }
       return;
     }
 
