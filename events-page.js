@@ -5,6 +5,7 @@
   const eventsGridEl = document.getElementById("events-gallery-grid");
   const eventsEmptyEl = document.getElementById("events-gallery-empty");
   const photoWallGridEl = document.getElementById("events-photo-wall-grid");
+  const photoWallViewportEl = document.querySelector(".events-photo-wall__viewport");
   const photoWallEmptyEl = document.getElementById("events-photo-wall-empty");
   const highlightGridEl = document.getElementById("events-highlight-grid");
   const highlightEmptyEl = document.getElementById("events-highlight-empty");
@@ -47,11 +48,19 @@
   const renderEvents = (documents = []) => {
     if (!eventsGridEl) return;
     eventsGridEl.innerHTML = "";
+    const isCompact = documents.length > 0 && documents.length < 3;
+    if (eventsGridEl.classList) {
+      eventsGridEl.classList.toggle("events-gallery__grid--compact", isCompact);
+    }
     if (documents.length === 0) {
-      eventsEmptyEl?.classList.remove("hidden");
+      if (eventsEmptyEl && eventsEmptyEl.classList) {
+        eventsEmptyEl.classList.remove("hidden");
+      }
       return;
     }
-    eventsEmptyEl?.classList.add("hidden");
+    if (eventsEmptyEl && eventsEmptyEl.classList) {
+      eventsEmptyEl.classList.add("hidden");
+    }
     documents.forEach((doc) => {
       const coverId = doc.coverFileId || doc.mediaFileIds?.[0];
       const card = document.createElement("article");
@@ -103,14 +112,29 @@
     photoWallGridEl.innerHTML = "";
 
     if (allEntries.length === 0) {
-      photoWallEmptyEl?.classList.remove("hidden");
+      if (photoWallEmptyEl && photoWallEmptyEl.classList) {
+        photoWallEmptyEl.classList.remove("hidden");
+      }
+      if (photoWallViewportEl && photoWallViewportEl.classList) {
+        photoWallViewportEl.classList.add("is-empty");
+      }
       return;
     }
-    photoWallEmptyEl?.classList.add("hidden");
+    if (photoWallEmptyEl && photoWallEmptyEl.classList) {
+      photoWallEmptyEl.classList.add("hidden");
+    }
+    if (photoWallViewportEl && photoWallViewportEl.classList) {
+      photoWallViewportEl.classList.remove("is-empty");
+    }
 
-    const loopEntries = [...allEntries, ...allEntries];
+    const shouldLoop = allEntries.length >= 6;
+    const entriesToRender = shouldLoop ? [...allEntries, ...allEntries] : allEntries;
+    if (photoWallGridEl.classList) {
+      photoWallGridEl.classList.toggle("is-looping", shouldLoop);
+      photoWallGridEl.classList.toggle("is-compact", !shouldLoop);
+    }
 
-    loopEntries.forEach((entry) => {
+    entriesToRender.forEach((entry) => {
       const card = document.createElement("figure");
       card.className = "events-photo-wall__item";
       card.innerHTML = `
@@ -125,11 +149,20 @@
     if (!highlightGridEl) return;
     highlightGridEl.innerHTML = "";
 
+    const isCompact = documents.length > 0 && documents.length < 3;
+    if (highlightGridEl.classList) {
+      highlightGridEl.classList.toggle("events-highlight__grid--compact", isCompact);
+    }
+
     if (documents.length === 0) {
-      highlightEmptyEl?.classList.remove("hidden");
+      if (highlightEmptyEl && highlightEmptyEl.classList) {
+        highlightEmptyEl.classList.remove("hidden");
+      }
       return;
     }
-    highlightEmptyEl?.classList.add("hidden");
+    if (highlightEmptyEl && highlightEmptyEl.classList) {
+      highlightEmptyEl.classList.add("hidden");
+    }
 
     documents.slice(0, 3).forEach((doc) => {
       const coverId = doc.coverFileId || doc.mediaFileIds?.[0];
@@ -154,7 +187,10 @@
   const setCounters = (documents = []) => {
     if (!counters.events || !counters.photos || !counters.impact) return;
     const totalEvents = documents.length;
-    const totalPhotos = documents.reduce((sum, doc) => sum + (doc.mediaFileIds?.length || 0), 0);
+    const totalPhotos = documents.reduce(
+      (sum, doc) => sum + ((doc.mediaFileIds && doc.mediaFileIds.length) || 0),
+      0
+    );
     const totalImpact = documents.reduce((sum, doc) => sum + (doc.impactCount || 0), 0);
     counters.events.textContent = totalEvents.toString();
     counters.photos.textContent = totalPhotos.toString();
@@ -210,7 +246,7 @@
     if (doc.caption) {
       metaItems.push(`<span>"${doc.caption}"</span>`);
     }
-    if (doc.mediaFileIds?.length) {
+    if (doc.mediaFileIds && doc.mediaFileIds.length) {
       metaItems.push(`<span>${doc.mediaFileIds.length} photos</span>`);
     }
     modalMetaEl.innerHTML = metaItems.length ? metaItems.join("") : "";
@@ -234,13 +270,13 @@
 
   const loadPublishedEvents = async () => {
     const appwriteClient = ensureAppwriteClient();
-    if (!appwriteClient?.databases) {
+    if (!appwriteClient || !appwriteClient.databases) {
       console.warn("Appwrite client unavailable. Ensure CDN script and appwrite-config.js are loaded.");
       return;
     }
 
     const queries = [];
-    if (typeof Appwrite !== "undefined" && Appwrite.Query?.orderDesc) {
+    if (typeof Appwrite !== "undefined" && Appwrite.Query && typeof Appwrite.Query.orderDesc === "function") {
       queries.push(Appwrite.Query.orderDesc("$updatedAt"));
     }
 
@@ -271,8 +307,8 @@
       setCounters(docsToRender);
     } catch (error) {
       console.error("Unable to fetch events", error);
-      eventsEmptyEl?.classList.remove("hidden");
-      if (eventsEmptyEl) {
+      if (eventsEmptyEl && eventsEmptyEl.classList) {
+        eventsEmptyEl.classList.remove("hidden");
         eventsEmptyEl.textContent = "Unable to fetch events right now. Please try again later.";
       }
     }
@@ -280,13 +316,19 @@
 
   loadPublishedEvents();
 
-  eventsGridEl?.addEventListener("click", (event) => {
-    const card = event.target.closest(".event-card");
-    if (!card?.dataset.albumSlug) return;
-    openAlbumModal(card.dataset.albumSlug);
-  });
+  if (eventsGridEl) {
+    eventsGridEl.addEventListener("click", (event) => {
+      const card = event.target.closest(".event-card");
+      if (!card || !card.dataset || !card.dataset.albumSlug) return;
+      openAlbumModal(card.dataset.albumSlug);
+    });
+  }
 
-  modalCloseBtn?.addEventListener("click", closeAlbumModal);
-  modalBackdropEl?.addEventListener("click", closeAlbumModal);
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener("click", closeAlbumModal);
+  }
+  if (modalBackdropEl) {
+    modalBackdropEl.addEventListener("click", closeAlbumModal);
+  }
   document.addEventListener("keydown", handleEscClose);
 })();

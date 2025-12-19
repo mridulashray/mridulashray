@@ -2448,6 +2448,19 @@ body::before {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.25rem;
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+.events-gallery__grid--compact {
+  max-width: 780px;
+  margin-inline: auto;
+  justify-items: center;
+}
+
+.events-gallery__grid--compact .event-card {
+  width: 100%;
+  max-width: 360px;
 }
 
 .event-card {
@@ -2458,25 +2471,24 @@ body::before {
   border: 1px solid rgba(69, 44, 44, 0.08);
   display: flex;
   flex-direction: column;
-}
-
-.event-card figure {
-  position: relative;
-  margin: 0;
+  height: 100%;
 }
 
 .event-card figure {
   margin: 0;
-  background: #fff;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), rgba(240, 138, 142, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
+  aspect-ratio: 4 / 3;
+  border-bottom: 1px solid rgba(69, 44, 44, 0.08);
+  border-radius: 28px 28px 0 0;
+  overflow: hidden;
 }
 
 .event-card img {
   width: 100%;
-  height: auto;
-  max-height: 320px;
+  height: 100%;
   object-fit: contain;
   display: block;
 }
@@ -2486,6 +2498,16 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.event-card__body > p:first-of-type {
+  color: var(--color-ink);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  min-height: 3.4em;
 }
 
 .event-card__body h3 {
@@ -2508,11 +2530,20 @@ body::before {
   display: flex;
   gap: 1rem;
   align-items: flex-end;
+}
+
+.events-photo-wall__grid.is-looping {
   animation: photoWallScroll 30s linear infinite;
 }
 
-.events-photo-wall__grid:hover {
+.events-photo-wall__grid.is-looping:hover {
   animation-play-state: paused;
+}
+
+.events-photo-wall__grid.is-compact {
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 1.25rem;
 }
 
 .events-photo-wall__item {
@@ -2553,6 +2584,10 @@ body::before {
   mask-image: linear-gradient(90deg, transparent, #fff 10%, #fff 90%, transparent);
 }
 
+.events-photo-wall__viewport.is-empty {
+  display: none;
+}
+
 .events-photo-wall__grid::after {
   content: "";
   flex: 0 0 0;
@@ -2577,6 +2612,11 @@ body::before {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: clamp(1.5rem, 4vw, 3rem);
   align-items: stretch;
+}
+
+.events-highlight__grid--compact {
+  max-width: 900px;
+  margin-inline: auto;
 }
 
 .events-highlight__story {
