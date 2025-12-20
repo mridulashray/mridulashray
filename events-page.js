@@ -210,8 +210,65 @@
     });
   };
 
+  const highlightSliderControllers = new Set();
+
+  const resetHighlightSlides = () => {
+    highlightSliderControllers.forEach((controller) => {
+      if (controller.intervalId) {
+        window.clearInterval(controller.intervalId);
+      }
+    });
+    highlightSliderControllers.clear();
+  };
+
+  const initHighlightSlides = () => {
+    if (!highlightGridEl) return;
+    const sliderEls = highlightGridEl.querySelectorAll(".events-highlight__slider");
+    sliderEls.forEach((slider) => {
+      const slides = slider.querySelectorAll(".events-highlight__slide");
+      if (slides.length <= 1) return;
+      const dots = slider.querySelectorAll(".events-highlight__dot");
+      let currentIndex = 0;
+
+      const setActiveSlide = (index) => {
+        slides.forEach((slide, idx) => {
+          slide.classList.toggle("is-active", idx === index);
+        });
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle("is-active", idx === index);
+        });
+      };
+
+      const controller = { intervalId: null };
+      const intervalDuration = Number(slider.dataset.slideInterval) || 2600;
+
+      const startLoop = () => {
+        controller.intervalId = window.setInterval(() => {
+          currentIndex = (currentIndex + 1) % slides.length;
+          setActiveSlide(currentIndex);
+        }, intervalDuration);
+      };
+
+      dots.forEach((dot, idx) => {
+        dot.addEventListener("click", () => {
+          currentIndex = idx;
+          setActiveSlide(currentIndex);
+          if (controller.intervalId) {
+            window.clearInterval(controller.intervalId);
+          }
+          startLoop();
+        });
+      });
+
+      setActiveSlide(0);
+      startLoop();
+      highlightSliderControllers.add(controller);
+    });
+  };
+
   const renderHighlights = (documents = []) => {
     if (!highlightGridEl) return;
+    resetHighlightSlides();
     highlightGridEl.innerHTML = "";
 
     const isCompact = documents.length > 0 && documents.length < 3;
@@ -230,24 +287,63 @@
     }
 
     documents.slice(0, 3).forEach((doc) => {
-      const mediaFiles = Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds : [];
+      const mediaFiles = Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds.filter(Boolean) : [];
       const coverId = doc.coverFileId || mediaFiles[0];
+      const imageIds = mediaFiles.length ? mediaFiles : coverId ? [coverId] : [];
       const article = document.createElement("article");
       article.className = "events-highlight__story";
-      article.innerHTML = `
-        ${
-          coverId
-            ? `<img src="${storagePreviewUrl(coverId)}" alt="${doc.title || doc.name}" loading="lazy" />`
-            : `<div class="event-card__placeholder">Upload cover to visualise highlight</div>`
-        }
-        <div>
-          <h3>${doc.title || doc.name}</h3>
-          <p>${doc.description || ""}</p>
-          ${doc.caption ? `<p class="event-card__meta">“${doc.caption}”</p>` : ""}
+      const sliderMarkup = imageIds.length
+        ? `
+        <div class="events-highlight__slider" data-slide-interval="2600">
+          <div class="events-highlight__slides">
+            ${imageIds
+              .map(
+                (fileId, index) => `
+              <figure class="events-highlight__slide ${index === 0 ? "is-active" : ""}" data-slide-index="${index}">
+                <img src="${storagePreviewUrl(fileId)}" alt="${doc.title || doc.name} slide ${index + 1}" loading="lazy" />
+              </figure>
+            `
+              )
+              .join("")}
+          </div>
+          ${
+            imageIds.length > 1
+              ? `<div class="events-highlight__dots">
+                ${imageIds
+                  .map(
+                    (_, index) => `<button class="events-highlight__dot ${index === 0 ? "is-active" : ""}" type="button" aria-label="Show slide ${index + 1}"></button>`
+                  )
+                  .join("")}
+              </div>`
+              : ""
+          }
         </div>
+      `
+        : `
+        <div class="events-highlight__slider events-highlight__slider--empty">
+          <div class="event-card__placeholder">Upload images to animate highlight</div>
+        </div>
+      `;
+      article.innerHTML = `
+        <div class="events-highlight__content">
+          <p class="events-highlight__eyebrow">Stories in Focus</p>
+          <h3>${doc.title || doc.name}</h3>
+          ${
+            doc.description
+              ? `<p class="events-highlight__description">${doc.description}</p>`
+              : ""
+          }
+          ${
+            doc.caption
+              ? `<p class="events-highlight__quote">“${doc.caption}”</p>`
+              : ""
+          }
+        </div>
+        ${sliderMarkup}
       `;
       highlightGridEl.appendChild(article);
     });
+    initHighlightSlides();
   };
 
   const setCounters = (documents = []) => {
