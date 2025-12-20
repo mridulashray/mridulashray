@@ -257,8 +257,7 @@
       const card = document.createElement("figure");
       card.className = "events-photo-wall__item";
       card.innerHTML = `
-        <img src="${storagePreviewUrl(entry.fileId)}" alt="${entry.filename}" loading="lazy" />
-        <figcaption>${entry.eventTitle}</figcaption>
+        <img src="${storagePreviewUrl(entry.fileId)}" alt="${entry.eventTitle || entry.filename}" loading="lazy" />
       `;
       photoWallGridEl.appendChild(card);
     });
