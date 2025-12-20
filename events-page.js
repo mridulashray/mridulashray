@@ -294,7 +294,7 @@
       };
 
       const controller = { intervalId: null };
-      const intervalDuration = Number(slider.dataset.slideInterval) || 2000;
+      const intervalDuration = Number(slider.dataset.slideInterval) || 2600;
 
       const startLoop = () => {
         controller.intervalId = window.setInterval(() => {
@@ -393,7 +393,6 @@
               : ""
           }
         </div>
-        ${sliderMarkup}
       `;
       highlightGridEl.appendChild(article);
     });

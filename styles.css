@@ -2550,7 +2550,7 @@ body::before {
 }
 
 .events-photo-wall__grid.is-looping {
-  animation: photoWallScroll 30s linear infinite;
+  animation: photoWallScroll 15s linear infinite;
 }
 
 .events-photo-wall__grid.is-looping:hover {
