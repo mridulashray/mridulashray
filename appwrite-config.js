@@ -6,10 +6,16 @@ const APPWRITE_CONFIG = {
   databaseId: "69418ea700282a7f1bac",
   collections: {
     admins: "admins",
-    events: "events"
+    events: "events",
+    volunteers: "volunteers",
+    contactDetails: "contactDetails"
   },
   bucketId: "69419d0a000e78807ded"
 };
+
+if (typeof window !== "undefined") {
+  window.APPWRITE_CONFIG = APPWRITE_CONFIG;
+}
 
 if (typeof Appwrite !== "undefined") {
   const client = new Appwrite.Client().setEndpoint(APPWRITE_CONFIG.endpoint).setProject(APPWRITE_CONFIG.projectId);

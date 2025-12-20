@@ -92,26 +92,20 @@
               <input type="email" name="email" placeholder="Enter you email" required />
             </label>
             <label>
-              Mobile Number
-              <input type="tel" name="phone" placeholder="Enter you phone number" required />
-            </label>
-            <label>
               City / Village
               <input type="text" name="location" placeholder="Enter your City/Village. eg: Rewari, Haryana" required />
             </label>
             <label>
-              Preferred Volunteering Focus
-              <select name="interest" required>
-                <option value="">Select an option</option>
-                <option value="education">Education &amp; mentoring</option>
-                <option value="environment">Environment drives</option>
-                <option value="community">Community care</option>
-                <option value="fundraising">Fund-raising &amp; outreach</option>
-              </select>
+              Volunteering Interest
+              <textarea name="interest" rows="2" placeholder="Tell us the cause or activity you’re interested in" required></textarea>
             </label>
             <label>
               How can you help?
-              <textarea name="message" rows="3" placeholder="Share any specific skills or availability"></textarea>
+              <textarea name="message" rows="3" placeholder="Share any specific skills or availability" required></textarea>
+            </label>
+            <label>
+              Phone Number
+              <input type="tel" name="phone" placeholder="Enter your phone number" required />
             </label>
             <label class="volunteer-form-card__agreement">
               <input type="checkbox" required />
@@ -209,6 +203,8 @@
       </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="appwrite-config.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

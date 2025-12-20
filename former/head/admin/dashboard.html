@@ -13,17 +13,38 @@
     <link rel="stylesheet" href="../../../styles.css" />
   </head>
   <body class="admin-panel-body">
-    <header class="site-header">
-      <div class="container nav-wrapper">
-        <div class="brand">
+    <header class="site-header admin-shell">
+      <div class="admin-shell__inner">
+        <div class="brand admin-shell__brand">
           <img src="../../../images/logo.png" alt="Mridulashray logo" class="brand__logo" />
-          <span class="brand__name">Mridulashray Admin</span>
+          <div>
+            <span class="brand__name">Mridulashray Admin</span>
+            <small>Operations Console</small>
+          </div>
         </div>
-        <div class="admin-panel__actions">
+        <div class="admin-shell__meta">
           <span class="admin-badge" id="admin-session-name">Logged in</span>
-          <button class="ghost-btn" id="logout-btn" type="button">Log out</button>
+          <button class="ghost-btn ghost-btn--solid" id="logout-btn" type="button">Log out</button>
         </div>
       </div>
+      <nav class="admin-nav admin-nav--inline" aria-label="Dashboard navigation">
+        <button type="button" class="admin-nav__link is-active" data-panel-target="manage-section">
+          <span class="admin-nav__icon" aria-hidden="true">📁</span>
+          <span>Add Album</span>
+        </button>
+        <button type="button" class="admin-nav__link" data-panel-target="published-section">
+          <span class="admin-nav__icon" aria-hidden="true">🖼️</span>
+          <span>Upload Images</span>
+        </button>
+        <button type="button" class="admin-nav__link" data-panel-target="volunteer-section">
+          <span class="admin-nav__icon" aria-hidden="true">🤝</span>
+          <span>Volunteer Details</span>
+        </button>
+        <button type="button" class="admin-nav__link" data-panel-target="contacts-section">
+          <span class="admin-nav__icon" aria-hidden="true">✉️</span>
+          <span>User Contacts</span>
+        </button>
+      </nav>
     </header>
 
     <main class="admin-panel">
@@ -31,15 +52,15 @@
         <section class="admin-panel__header">
           <div>
             <p class="petal-badge">Former Head Console</p>
-            <h1>Manage Event Albums</h1>
-            <p>Upload visuals, write context, and publish albums that instantly sync with the public Events page.</p>
+            <h1>Event &amp; Community Dashboard</h1>
+            <p>Upload visuals, write context, and review incoming volunteer and contact requests.</p>
           </div>
           <div class="admin-panel__actions">
             <button class="ghost-btn ghost-btn--solid" id="refresh-events-btn" type="button">Refresh Albums</button>
           </div>
         </section>
 
-        <section class="admin-section" aria-labelledby="create-event-title">
+        <section class="admin-section" id="manage-section" aria-labelledby="create-event-title">
           <h2 id="create-event-title">Step 1 · Create or update an event album</h2>
           <form id="event-metadata-form" class="admin-form-grid">
             <label>
@@ -89,20 +110,22 @@
           </div>
         </section>
 
-        <section class="admin-section" aria-labelledby="events-table-title">
+        <section class="admin-section" id="published-section" aria-labelledby="events-table-title" hidden>
           <h2 id="events-table-title">Published albums</h2>
-          <table class="admin-table" id="events-table">
-            <thead>
-              <tr>
-                <th>Event</th>
-                <th>Status</th>
-                <th>Impact</th>
-                <th>Updated</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="events-table">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Status</th>
+                  <th>Impact</th>
+                  <th>Updated</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
           <p class="admin-upload-hint">Tip: click “Refresh Albums” whenever you make new changes to sync the table.</p>
         </section>
 
@@ -158,6 +181,64 @@
                 <span class="admin-form__feedback" id="album-media-feedback"></span>
               </form>
             </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="volunteer-section" aria-labelledby="volunteer-table-title" hidden>
+          <div class="admin-section__header">
+            <div>
+              <p class="petal-badge">Volunteer details</p>
+              <h2 id="volunteer-table-title">Latest volunteer submissions</h2>
+              <p>Review community members who want to help. Entries are captured directly from the Volunteer page.</p>
+            </div>
+            <button type="button" class="ghost-btn ghost-btn--small" id="refresh-volunteers-btn">Refresh</button>
+          </div>
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="volunteers-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th>City</th>
+                  <th>Focus</th>
+                  <th>Submitted</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5" class="empty-state">No volunteer entries yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="admin-section" id="contacts-section" aria-labelledby="contacts-table-title" hidden>
+          <div class="admin-section__header">
+            <div>
+              <p class="petal-badge">User contacts</p>
+              <h2 id="contacts-table-title">Inbound contact messages</h2>
+              <p>Track enquiries from the Contact Us page without digging through the mailbox.</p>
+            </div>
+            <button type="button" class="ghost-btn ghost-btn--small" id="refresh-contacts-btn">Refresh</button>
+          </div>
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="contacts-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Message</th>
+                  <th>Submitted</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5" class="empty-state">No contact submissions yet.</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
       </div>

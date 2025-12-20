@@ -8,6 +8,8 @@ const refreshEventsBtn = document.getElementById("refresh-events-btn");
 const eventMetadataForm = document.getElementById("event-metadata-form");
 const eventMetadataFeedback = document.getElementById("event-metadata-feedback");
 const eventMetadataCancelBtn = document.getElementById("event-metadata-cancel");
+const sectionPanels = document.querySelectorAll(".admin-section");
+const navLinks = document.querySelectorAll(".admin-nav__link");
 const eventsTableBody = document.querySelector("#events-table tbody");
 const albumWorkspace = document.getElementById("album-workspace");
 const albumWorkspaceTitle = document.getElementById("album-workspace-title");
@@ -30,9 +32,12 @@ let currentAccount = null;
 let activeAlbum = null;
 let editingMediaId = null;
 let eventsCache = [];
+let volunteersCache = [];
+let contactsCache = [];
 let currentMediaEntries = [];
 let mediaOrderDirty = false;
 let dragStartIndex = null;
+let activePanel = "manage-section";
 
 const parseMediaEntries = (value) => {
   if (!value) return [];
@@ -331,7 +336,123 @@ const loadEvents = async () => {
   }
 };
 
+const volunteerTableBody = document.querySelector("#volunteers-table tbody");
+const contactsTableBody = document.querySelector("#contacts-table tbody");
+const refreshVolunteersBtn = document.getElementById("refresh-volunteers-btn");
+const refreshContactsBtn = document.getElementById("refresh-contacts-btn");
+
+const renderVolunteersTable = (documents = []) => {
+  if (!volunteerTableBody) return;
+  volunteerTableBody.innerHTML = "";
+  if (!documents.length) {
+    volunteerTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">No volunteer submissions yet.</td></tr>`;
+    return;
+  }
+  documents.forEach((doc) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${doc.name || "—"}</td>
+      <td>
+        <div class="table-contact">
+          ${doc.email ? `<a href="mailto:${doc.email}">${doc.email}</a>` : "—"}
+          ${doc.phone ? `<small>${doc.phone}</small>` : ""}
+        </div>
+      </td>
+      <td>${doc.location || "—"}</td>
+      <td>${doc.interest || "—"}</td>
+      <td>${doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
+    `;
+    volunteerTableBody.appendChild(tr);
+  });
+};
+
+const renderContactsTable = (documents = []) => {
+  if (!contactsTableBody) return;
+  contactsTableBody.innerHTML = "";
+  if (!documents.length) {
+    contactsTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">No contact submissions yet.</td></tr>`;
+    return;
+  }
+  documents.forEach((doc) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${doc.name || "—"}</td>
+      <td>${doc.email ? `<a href="mailto:${doc.email}">${doc.email}</a>` : "—"}</td>
+      <td>${doc.phone || "—"}</td>
+      <td>${doc.message || "—"}</td>
+      <td>${doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
+    `;
+    contactsTableBody.appendChild(tr);
+  });
+};
+
+const loadVolunteers = async () => {
+  const { databases } = getClient();
+  if (!volunteerTableBody) return;
+  volunteerTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Loading volunteers…</td></tr>`;
+  try {
+    const response = await databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.volunteers, [
+      Appwrite.Query.orderDesc("$createdAt")
+    ]);
+    volunteersCache = response.documents;
+    renderVolunteersTable(volunteersCache);
+  } catch (error) {
+    console.error(error);
+    volunteerTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Unable to load volunteer data.</td></tr>`;
+  }
+};
+
+const loadContacts = async () => {
+  const { databases } = getClient();
+  if (!contactsTableBody) return;
+  contactsTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Loading contacts…</td></tr>`;
+  try {
+    const response = await databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.contactDetails, [
+      Appwrite.Query.orderDesc("$createdAt")
+    ]);
+    contactsCache = response.documents;
+    renderContactsTable(contactsCache);
+  } catch (error) {
+    console.error(error);
+    contactsTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Unable to load contact data.</td></tr>`;
+  }
+};
+
 refreshEventsBtn?.addEventListener("click", loadEvents);
+refreshVolunteersBtn?.addEventListener("click", loadVolunteers);
+refreshContactsBtn?.addEventListener("click", loadContacts);
+
+const showPanel = (panelId) => {
+  if (!panelId) return;
+  activePanel = panelId;
+  sectionPanels.forEach((section) => {
+    if (section.id === panelId || section.id === "album-workspace") {
+      section.hidden = false;
+    } else if (section.id !== "album-workspace") {
+      section.hidden = true;
+    }
+  });
+  navLinks.forEach((link) => {
+    link.classList.toggle("is-active", link.dataset.panelTarget === panelId);
+  });
+  if (panelId === "published-section") {
+    loadEvents();
+  } else if (panelId === "volunteer-section" && !volunteersCache.length) {
+    loadVolunteers();
+  } else if (panelId === "contacts-section" && !contactsCache.length) {
+    loadContacts();
+  }
+  if (panelId !== "published-section") {
+    toggleWorkspace(false);
+  }
+};
+
+navLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    const target = link.dataset.panelTarget;
+    showPanel(target);
+  });
+});
 
 const toggleWorkspace = (visible) => {
   if (!albumWorkspace) return;

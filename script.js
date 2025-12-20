@@ -4,6 +4,7 @@ let current = 0;
 let autoPlayId;
 
 const hasSlides = slides.length > 0;
+const getPublicAppwriteConfig = () => (typeof window !== "undefined" ? window.APPWRITE_CONFIG || null : null);
 
 const showSlide = (index) => {
   if (!hasSlides) return;
@@ -31,6 +32,127 @@ const stopAutoPlay = () => {
     clearInterval(autoPlayId);
   }
 };
+
+// --- Public form submissions -> Appwrite storage ---
+const createStatusElement = (form) => {
+  let el = form.querySelector(".form-status");
+  if (!el) {
+    el = document.createElement("p");
+    el.className = "form-status";
+    form.appendChild(el);
+  }
+  return el;
+};
+
+let publicAppwriteInitPromise = null;
+const ensurePublicAppwrite = async () => {
+  const config = getPublicAppwriteConfig();
+  if (window.__publicAppwriteReady && window.appwrite?.databases) {
+    return window.appwrite;
+  }
+  if (typeof Appwrite === "undefined" || !config) {
+    throw new Error("Appwrite SDK not loaded on this page.");
+  }
+  if (!publicAppwriteInitPromise) {
+    publicAppwriteInitPromise = (async () => {
+      if (!window.appwrite?.client) {
+        const client = new Appwrite.Client()
+          .setEndpoint(config.endpoint)
+          .setProject(config.projectId);
+        window.appwrite = {
+          client,
+          account: new Appwrite.Account(client),
+          databases: new Appwrite.Databases(client)
+        };
+      }
+      try {
+        await window.appwrite.account.get();
+      } catch {
+        await window.appwrite.account.createAnonymousSession();
+      }
+      window.__publicAppwriteReady = true;
+      return window.appwrite;
+    })();
+  }
+  return publicAppwriteInitPromise;
+};
+
+const submitToCollection = async (collectionId, payload) => {
+  const config = getPublicAppwriteConfig();
+  if (!config) throw new Error("Missing Appwrite config");
+  if (!collectionId) throw new Error("Missing collection id");
+  const { databases } = await ensurePublicAppwrite();
+  await databases.createDocument(
+    config.databaseId,
+    collectionId,
+    Appwrite.ID ? Appwrite.ID.unique() : undefined,
+    {
+      ...payload,
+      submittedAt: new Date().toISOString()
+    }
+  );
+};
+
+const resolveCollectionId = (value) => (typeof value === "function" ? value() : value);
+
+const wireFormSubmission = (form, collectionIdOrResolver, transform) => {
+  if (!form) return;
+  const statusEl = createStatusElement(form);
+  const submitHandler = async (event) => {
+    if (form.dataset.nativeSubmit === "true") {
+      form.dataset.nativeSubmit = "";
+      return;
+    }
+    event.preventDefault();
+    statusEl.textContent = "Saving your details…";
+    statusEl.classList.remove("is-error");
+    try {
+      const collectionId = resolveCollectionId(collectionIdOrResolver);
+      if (!collectionId) {
+        throw new Error("Collection not configured on this page.");
+      }
+      const payload = typeof transform === "function" ? transform(form) : {};
+      await submitToCollection(collectionId, payload);
+      statusEl.textContent = "Saved securely. Redirecting…";
+    } catch (error) {
+      console.error("Form save error", error);
+      statusEl.textContent = "Saved via email only. We will still reach out.";
+      statusEl.classList.add("is-error");
+    } finally {
+      form.dataset.nativeSubmit = "true";
+      form.submit();
+    }
+  };
+  form.addEventListener("submit", submitHandler);
+};
+
+const volunteerForm = document.querySelector(".volunteer-form-card");
+wireFormSubmission(
+  volunteerForm,
+  () => getPublicAppwriteConfig()?.collections?.volunteers,
+  (form) => ({
+    name: form.name?.value?.trim() || "",
+    email: form.email?.value?.trim() || "",
+    phone: form.phone?.value?.trim() || "",
+    location: form.location?.value?.trim() || "",
+    interest: form.interest?.value || "",
+    message: form.message?.value?.trim() || "",
+    source: "volunteer-page"
+  })
+);
+
+const contactForm = document.querySelector(".contact-panel__form");
+wireFormSubmission(
+  contactForm,
+  () => getPublicAppwriteConfig()?.collections?.contactDetails,
+  (form) => ({
+    name: form.name?.value?.trim() || "",
+    email: form.email?.value?.trim() || "",
+    phone: form.phone?.value?.trim() || "",
+    message: form.message?.value?.trim() || "",
+    source: "contact-page"
+  })
+);
 
 if (hasSlides) {
   indicators.forEach((dot) => {
