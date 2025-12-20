@@ -2370,6 +2370,22 @@ body::before {
   vertical-align: top;
 }
 
+.table-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.table-contact a {
+  color: var(--color-deep-leaf);
+  font-weight: 600;
+}
+
+.table-contact small {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
 .admin-badge {
   display: inline-flex;
   align-items: center;
@@ -2543,6 +2559,45 @@ body::before {
   .admin-table th,
   .admin-table td {
     font-size: 0.9rem;
+  }
+
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table tr {
+    display: block;
+    padding: 0.75rem 0.5rem;
+    border: 1px solid rgba(69, 44, 44, 0.12);
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 6px 18px rgba(69, 44, 44, 0.12);
+  }
+
+  .admin-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border: none;
+    padding: 0.35rem 0;
+  }
+
+  .admin-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    margin-right: 1rem;
+    flex: 0 0 45%;
+  }
+
+  .admin-table td[data-label=""]::before {
+    content: "";
+  }
+
+  .admin-actions-cell {
+    flex-direction: column;
+    gap: 0.4rem;
   }
 }
 

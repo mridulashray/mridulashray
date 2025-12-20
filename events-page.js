@@ -3,12 +3,9 @@
   window.__mridEventsInit = true;
 
   const eventsGridEl = document.getElementById("events-gallery-grid");
-  const eventsEmptyEl = document.getElementById("events-gallery-empty");
   const photoWallGridEl = document.getElementById("events-photo-wall-grid");
   const photoWallViewportEl = document.querySelector(".events-photo-wall__viewport");
-  const photoWallEmptyEl = document.getElementById("events-photo-wall-empty");
   const highlightGridEl = document.getElementById("events-highlight-grid");
-  const highlightEmptyEl = document.getElementById("events-highlight-empty");
   const counters = {
     events: document.getElementById("events-count"),
     photos: document.getElementById("events-photos-count"),
@@ -24,7 +21,6 @@
   const modalDescriptionEl = document.getElementById("album-modal-description");
   const modalMetaEl = document.getElementById("album-modal-meta");
   const modalGalleryEl = document.getElementById("album-modal-gallery");
-  const modalEmptyEl = document.getElementById("album-modal-empty");
 
   const STORAGE_BASE = `${APPWRITE_CONFIG.endpoint}/storage/buckets/${APPWRITE_CONFIG.bucketId}/files`;
   const albumsCache = new Map();
@@ -113,13 +109,7 @@
       eventsGridEl.classList.toggle("events-gallery__grid--compact", isCompact);
     }
     if (documents.length === 0) {
-      if (eventsEmptyEl && eventsEmptyEl.classList) {
-        eventsEmptyEl.classList.remove("hidden");
-      }
       return;
-    }
-    if (eventsEmptyEl && eventsEmptyEl.classList) {
-      eventsEmptyEl.classList.add("hidden");
     }
     documents.forEach((doc) => {
       const mediaFiles = Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds : [];
@@ -132,7 +122,7 @@
           ${
             coverId
               ? `<img src="${storagePreviewUrl(coverId)}" alt="${doc.title || doc.name}" loading="lazy" />`
-              : `<div class="event-card__placeholder">Album upload pending</div>`
+              : `<div class="event-card__placeholder" aria-hidden="true"></div>`
           }
         </figure>
         <div class="event-card__body">
@@ -229,9 +219,6 @@
 
     const dedupedEntries = dedupeEntriesByFileId(allEntries);
     if (!dedupedEntries.length) {
-      if (photoWallEmptyEl && photoWallEmptyEl.classList) {
-        photoWallEmptyEl.classList.remove("hidden");
-      }
       if (photoWallViewportEl && photoWallViewportEl.classList) {
         photoWallViewportEl.classList.add("is-empty");
       }
@@ -239,9 +226,6 @@
     }
     const curatedEntries = curatePhotoWallEntries(dedupedEntries);
 
-    if (photoWallEmptyEl && photoWallEmptyEl.classList) {
-      photoWallEmptyEl.classList.add("hidden");
-    }
     if (photoWallViewportEl && photoWallViewportEl.classList) {
       photoWallViewportEl.classList.remove("is-empty");
     }
@@ -330,13 +314,7 @@
     }
 
     if (documents.length === 0) {
-      if (highlightEmptyEl && highlightEmptyEl.classList) {
-        highlightEmptyEl.classList.remove("hidden");
-      }
       return;
-    }
-    if (highlightEmptyEl && highlightEmptyEl.classList) {
-      highlightEmptyEl.classList.add("hidden");
     }
 
     documents.slice(0, 3).forEach((doc) => {
@@ -372,11 +350,7 @@
           }
         </div>
       `
-        : `
-        <div class="events-highlight__slider events-highlight__slider--empty">
-          <div class="event-card__placeholder">Upload images to animate highlight</div>
-        </div>
-      `;
+        : "";
       article.innerHTML = `
         <div class="events-highlight__content">
           <p class="events-highlight__eyebrow">Stories in Focus</p>
@@ -427,13 +401,11 @@
   };
 
   const renderAlbumGallery = (entries = []) => {
-    if (!modalGalleryEl || !modalEmptyEl) return;
+    if (!modalGalleryEl) return;
     modalGalleryEl.innerHTML = "";
     if (!entries.length) {
-      modalEmptyEl.hidden = false;
       return;
     }
-    modalEmptyEl.hidden = true;
     entries.forEach((entry) => {
       const figure = document.createElement("figure");
       figure.className = "album-modal__figure";

@@ -241,19 +241,18 @@ const upsertEventForm = async () => {
 const renderEventsTable = (events = []) => {
   eventsTableBody.innerHTML = "";
   if (!events.length) {
-    eventsTableBody.innerHTML = `<tr><td colspan="6" class="empty-state">No albums created yet. Use the form above to start.</td></tr>`;
     return;
   }
 
   events.forEach((doc) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${doc.title || doc.name || "Untitled"}</td>
-      <td>${doc.slug}</td>
-      <td><span class="badge badge--${doc.status === "published" ? "success" : "muted"}">${doc.status}</span></td>
-      <td>${doc.startDate ? new Date(doc.startDate).toLocaleDateString() : "-"}</td>
-      <td>${doc.mediaFileIds?.length || 0}</td>
-      <td class="admin-actions-cell">
+      <td data-label="Event">${doc.title || doc.name || "Untitled"}</td>
+      <td data-label="Slug">${doc.slug}</td>
+      <td data-label="Status"><span class="badge badge--${doc.status === "published" ? "success" : "muted"}">${doc.status}</span></td>
+      <td data-label="Updated">${doc.startDate ? new Date(doc.startDate).toLocaleDateString() : "-"}</td>
+      <td data-label="Photos">${doc.mediaFileIds?.length || 0}</td>
+      <td class="admin-actions-cell" data-label="Actions">
         <button class="ghost-btn ghost-btn--small" data-edit-album="${doc.$id}">Edit</button>
         <button class="ghost-btn ghost-btn--small" data-manage-album="${doc.$id}">Manage</button>
         <button class="ghost-btn ghost-btn--small ghost-btn--danger" data-delete-album="${doc.$id}">Delete</button>
@@ -345,22 +344,21 @@ const renderVolunteersTable = (documents = []) => {
   if (!volunteerTableBody) return;
   volunteerTableBody.innerHTML = "";
   if (!documents.length) {
-    volunteerTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">No volunteer submissions yet.</td></tr>`;
     return;
   }
   documents.forEach((doc) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${doc.name || "—"}</td>
-      <td>
+      <td data-label="Name">${doc.name || "—"}</td>
+      <td data-label="Contact">
         <div class="table-contact">
           ${doc.email ? `<a href="mailto:${doc.email}">${doc.email}</a>` : "—"}
           ${doc.phone ? `<small>${doc.phone}</small>` : ""}
         </div>
       </td>
-      <td>${doc.location || "—"}</td>
-      <td>${doc.interest || "—"}</td>
-      <td>${doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
+      <td data-label="City">${doc.location || "—"}</td>
+      <td data-label="Interest">${doc.interest || "—"}</td>
+      <td data-label="Submitted">${doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
     `;
     volunteerTableBody.appendChild(tr);
   });
@@ -370,17 +368,16 @@ const renderContactsTable = (documents = []) => {
   if (!contactsTableBody) return;
   contactsTableBody.innerHTML = "";
   if (!documents.length) {
-    contactsTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">No contact submissions yet.</td></tr>`;
     return;
   }
   documents.forEach((doc) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${doc.name || "—"}</td>
-      <td>${doc.email ? `<a href="mailto:${doc.email}">${doc.email}</a>` : "—"}</td>
-      <td>${doc.phone || "—"}</td>
-      <td>${doc.message || "—"}</td>
-      <td>${doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
+      <td data-label="Name">${doc.name || "—"}</td>
+      <td data-label="Email">${doc.email ? `<a href="mailto:${doc.email}">${doc.email}</a>` : "—"}</td>
+      <td data-label="Phone">${doc.phone || "—"}</td>
+      <td data-label="Message">${doc.message || "—"}</td>
+      <td data-label="Submitted">${doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
     `;
     contactsTableBody.appendChild(tr);
   });
@@ -389,7 +386,7 @@ const renderContactsTable = (documents = []) => {
 const loadVolunteers = async () => {
   const { databases } = getClient();
   if (!volunteerTableBody) return;
-  volunteerTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Loading volunteers…</td></tr>`;
+  volunteerTableBody.innerHTML = "";
   try {
     const response = await databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.volunteers, [
       Appwrite.Query.orderDesc("$createdAt")
@@ -398,14 +395,14 @@ const loadVolunteers = async () => {
     renderVolunteersTable(volunteersCache);
   } catch (error) {
     console.error(error);
-    volunteerTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Unable to load volunteer data.</td></tr>`;
+    volunteerTableBody.innerHTML = "";
   }
 };
 
 const loadContacts = async () => {
   const { databases } = getClient();
   if (!contactsTableBody) return;
-  contactsTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Loading contacts…</td></tr>`;
+  contactsTableBody.innerHTML = "";
   try {
     const response = await databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.contactDetails, [
       Appwrite.Query.orderDesc("$createdAt")
@@ -414,7 +411,7 @@ const loadContacts = async () => {
     renderContactsTable(contactsCache);
   } catch (error) {
     console.error(error);
-    contactsTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Unable to load contact data.</td></tr>`;
+    contactsTableBody.innerHTML = "";
   }
 };
 
@@ -459,10 +456,10 @@ const toggleWorkspace = (visible) => {
   albumWorkspace.hidden = !visible;
   if (!visible) {
     albumWorkspaceTitle.textContent = "Select an album to manage";
-    albumWorkspaceSubtitle.textContent = "Choose “Manage” from the table above to start uploading photos inside an album.";
+    albumWorkspaceSubtitle.textContent = "";
     albumWorkspaceStatus.textContent = "";
     albumWorkspaceUpdated.textContent = "";
-    albumMediaList.innerHTML = `<li class="empty-state">No uploads yet. Add your first image using the form on the right.</li>`;
+    albumMediaList.innerHTML = "";
     albumMediaForm?.reset();
     setFormMode("create");
     activeAlbum = null;
@@ -475,7 +472,6 @@ const renderAlbumMediaList = (entries = [], options = {}) => {
   currentMediaEntries = entries;
   albumMediaList.innerHTML = "";
   if (entries.length === 0) {
-    albumMediaList.innerHTML = `<li class="empty-state">No uploads yet. Add your first image using the form on the right.</li>`;
     setMediaOrderDirty(false);
     updateReorderUI();
     return;
