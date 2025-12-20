@@ -392,6 +392,7 @@
               : ""
           }
         </div>
+        ${sliderMarkup}
       `;
       highlightGridEl.appendChild(article);
     });
