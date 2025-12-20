@@ -160,12 +160,63 @@
     }
   };
 
+  const dedupeEntriesByFileId = (entries = []) => {
+    const map = new Map();
+    entries.forEach((entry) => {
+      if (!entry || !entry.fileId || map.has(entry.fileId)) return;
+      map.set(entry.fileId, entry);
+    });
+    return Array.from(map.values());
+  };
+
+  const curatePhotoWallEntries = (entries = []) => {
+    if (!entries.length) return [];
+    const buckets = new Map();
+    entries.forEach((entry) => {
+      const key = entry.eventSlug || entry.eventTitle || entry.fileId;
+      if (!buckets.has(key)) {
+        buckets.set(key, []);
+      }
+      const bucket = buckets.get(key);
+      if (bucket.length < 2) {
+        bucket.push(entry);
+      }
+    });
+    const bucketList = Array.from(buckets.values()).sort(() => Math.random() - 0.5);
+    const result = [];
+    let index = 0;
+    let added = true;
+    while (added) {
+      added = false;
+      bucketList.forEach((bucket) => {
+        if (bucket[index]) {
+          result.push(bucket[index]);
+          added = true;
+        }
+      });
+      index += 1;
+    }
+    return result.length ? result : entries;
+  };
+
   const renderPhotoWall = (documents = []) => {
     if (!photoWallGridEl) return;
     const allEntries = [];
     documents.forEach((doc) => {
       const mediaEntries = toMediaEntries(doc);
-      mediaEntries.forEach((entry) => {
+      const fallbackId = doc.coverFileId || (Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds[0] : null);
+      const normalizedEntries = mediaEntries.length
+        ? mediaEntries
+        : fallbackId
+          ? [
+              {
+                fileId: fallbackId,
+                filename: doc.title || doc.name || "Event photo"
+              }
+            ]
+          : [];
+      normalizedEntries.forEach((entry) => {
+        if (!entry?.fileId) return;
         allEntries.push({
           ...entry,
           eventTitle: doc.title || doc.name,
@@ -176,7 +227,8 @@
 
     photoWallGridEl.innerHTML = "";
 
-    if (allEntries.length === 0) {
+    const dedupedEntries = dedupeEntriesByFileId(allEntries);
+    if (!dedupedEntries.length) {
       if (photoWallEmptyEl && photoWallEmptyEl.classList) {
         photoWallEmptyEl.classList.remove("hidden");
       }
@@ -185,6 +237,8 @@
       }
       return;
     }
+    const curatedEntries = curatePhotoWallEntries(dedupedEntries);
+
     if (photoWallEmptyEl && photoWallEmptyEl.classList) {
       photoWallEmptyEl.classList.add("hidden");
     }
@@ -192,8 +246,8 @@
       photoWallViewportEl.classList.remove("is-empty");
     }
 
-    const shouldLoop = allEntries.length >= 6;
-    const entriesToRender = shouldLoop ? [...allEntries, ...allEntries] : allEntries;
+    const shouldLoop = curatedEntries.length >= 6;
+    const entriesToRender = shouldLoop ? [...curatedEntries, ...curatedEntries] : curatedEntries;
     if (photoWallGridEl.classList) {
       photoWallGridEl.classList.toggle("is-looping", shouldLoop);
       photoWallGridEl.classList.toggle("is-compact", !shouldLoop);
@@ -240,7 +294,7 @@
       };
 
       const controller = { intervalId: null };
-      const intervalDuration = Number(slider.dataset.slideInterval) || 2600;
+      const intervalDuration = Number(slider.dataset.slideInterval) || 2000;
 
       const startLoop = () => {
         controller.intervalId = window.setInterval(() => {
