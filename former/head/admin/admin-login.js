@@ -1,6 +1,7 @@
 const loginForm = document.getElementById("admin-login-form");
 const feedbackEl = document.getElementById("admin-login-feedback");
 const SESSION_KEY = "mridulashrayAdminSession";
+const TAB_SESSION_FLAG = "mridulashrayAdminTabFlag";
 
 const account = window.appwrite?.account;
 
@@ -10,26 +11,13 @@ const setFeedback = (message, isError = false) => {
   feedbackEl.classList.toggle("is-error", isError);
 };
 
-const redirectIfSession = async () => {
-  if (!account) return;
+const startTabSession = () => {
   try {
-    const current = await account.get();
-    if (current) {
-      localStorage.setItem(
-        SESSION_KEY,
-        JSON.stringify({
-          username: current.email,
-          ts: Date.now()
-        })
-      );
-      window.location.href = "./dashboard.html";
-    }
+    sessionStorage.setItem(TAB_SESSION_FLAG, "1");
   } catch {
-    // no active session – stay on login
+    // ignore sessionStorage errors
   }
 };
-
-redirectIfSession();
 
 loginForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -50,6 +38,11 @@ loginForm?.addEventListener("submit", async (event) => {
   }
 
   try {
+    try {
+      await account.deleteSessions();
+    } catch {
+      // ignore – safe to proceed
+    }
     await account.createEmailSession(email, password);
     const current = await account.get();
     localStorage.setItem(
@@ -60,6 +53,7 @@ loginForm?.addEventListener("submit", async (event) => {
       })
     );
     setFeedback("Login successful. Redirecting…");
+    startTabSession();
     window.location.href = "./dashboard.html";
   } catch (error) {
     console.error(error);
@@ -67,4 +61,3 @@ loginForm?.addEventListener("submit", async (event) => {
   }
 });
 
-window.addEventListener("pageshow", redirectIfSession);

@@ -1,7 +1,7 @@
 const SESSION_KEY = "mridulashrayAdminSession";
+const TAB_SESSION_FLAG = "mridulashrayAdminTabFlag";
 const loginRedirect = () => (window.location.href = "./login.html");
 const sessionBadge = document.getElementById("admin-session-name");
-const VOLUNTEER_PAGE_URL = "volunteer.html";
 const logoutBtn = document.getElementById("logout-btn");
 const saveEventBtn = document.getElementById("save-event-btn");
 const eventMetadataSubmitBtn = saveEventBtn;
@@ -122,6 +122,22 @@ const setFeedback = (el, message, isError = false) => {
   el.classList.toggle("is-error", isError);
 };
 
+const setTabSession = () => {
+  try {
+    sessionStorage.setItem(TAB_SESSION_FLAG, "1");
+  } catch {
+    // ignore
+  }
+};
+
+const clearTabSession = () => {
+  try {
+    sessionStorage.removeItem(TAB_SESSION_FLAG);
+  } catch {
+    // ignore
+  }
+};
+
 const requireSession = async () => {
   if (!account) {
     setFeedback(eventMetadataFeedback, "Appwrite SDK not ready.", true);
@@ -134,6 +150,7 @@ const requireSession = async () => {
     if (sessionBadge) {
       sessionBadge.textContent = `Logged in as ${current.email}`;
     }
+    setTabSession();
     localStorage.setItem(
       SESSION_KEY,
       JSON.stringify({
@@ -149,15 +166,31 @@ const requireSession = async () => {
 
 requireSession();
 
+window.addEventListener(
+  "pagehide",
+  () => {
+    clearTabSession();
+    localStorage.removeItem(SESSION_KEY);
+    account
+      ?.deleteSession("current")
+      .catch(() => {
+        /* ignore */
+      });
+  },
+  { once: true }
+);
+
 logoutBtn?.addEventListener("click", async () => {
   try {
     await account?.deleteSessions();
     localStorage.removeItem(SESSION_KEY);
+    clearTabSession();
     loginRedirect();
   } catch (error) {
     console.error("Logout error", error);
   }
   localStorage.removeItem(SESSION_KEY);
+  clearTabSession();
   loginRedirect();
 });
 
@@ -355,10 +388,8 @@ const parseUpcomingPayload = () => {
     location,
     startDate,
     endDate,
-    status: "scheduled",
-    posterFileId: upcomingPosterField()?.value || "",
-    volunteerCtaEnabled: volunteerEnabled,
-    volunteerCtaUrl: volunteerEnabled ? VOLUNTEER_PAGE_URL : ""
+    status: volunteerEnabled ? "needs-volunteers" : "scheduled",
+    posterFileId: upcomingPosterField()?.value || ""
   };
 };
 
@@ -410,7 +441,9 @@ const populateUpcomingForm = (doc) => {
   upcomingForm.elements.upEndDate.value = doc.endDate ? doc.endDate.slice(0, 10) : "";
   upcomingForm.elements.upDescription.value = doc.description || "";
   if (upcomingForm.elements.upVolunteerEnabled) {
-    upcomingForm.elements.upVolunteerEnabled.checked = Boolean(doc.volunteerCtaEnabled);
+    const statusValue = (doc.status || "").toLowerCase();
+    const volunteerFlag = doc.volunteerCtaEnabled || statusValue === "needs-volunteers";
+    upcomingForm.elements.upVolunteerEnabled.checked = Boolean(volunteerFlag);
   }
   const storedPoster = upcomingPosterField();
   if (storedPoster) storedPoster.value = doc.posterFileId || "";

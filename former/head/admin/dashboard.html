@@ -25,12 +25,29 @@
     <script>
       (function () {
         const LOGIN_PATH = "./login.html";
+        const TAB_SESSION_FLAG = "mridulashrayAdminTabFlag";
         const root = document.documentElement;
+        const hasTabSession = () => {
+          try {
+            return sessionStorage.getItem(TAB_SESSION_FLAG);
+          } catch {
+            return false;
+          }
+        };
         const redirectToLogin = () => {
+          try {
+            sessionStorage.removeItem(TAB_SESSION_FLAG);
+          } catch {
+            // ignore
+          }
           window.location.replace(LOGIN_PATH);
         };
 
         const verifySession = async () => {
+          if (!hasTabSession()) {
+            redirectToLogin();
+            return null;
+          }
           if (!window.appwrite?.account) {
             redirectToLogin();
             return null;

@@ -13,6 +13,7 @@
     photos: document.getElementById("events-photos-count"),
     impact: document.getElementById("events-impact-count")
   };
+  const VOLUNTEER_PAGE_URL = "volunteer.html";
 
   const renderUpcomingInvites = (documents = []) => {
     if (!upcomingGridEl) return;
@@ -38,15 +39,15 @@
       const posterMarkup = doc.posterFileId
         ? `<img class="upcoming-card__poster" src="${storagePreviewUrl(doc.posterFileId)}" alt="${doc.title}" loading="lazy" />`
         : "";
-      const volunteerCta =
-        doc.volunteerCtaEnabled && doc.volunteerCtaUrl
-          ? `<div class="upcoming-card__cta">
-              <a href="${doc.volunteerCtaUrl}" target="_blank" rel="noopener">
+      const volunteerNeeded = String(doc.status || "").toLowerCase() === "needs-volunteers";
+      const volunteerCta = volunteerNeeded
+        ? `<div class="upcoming-card__cta">
+              <a href="${VOLUNTEER_PAGE_URL}" target="_blank" rel="noopener">
                 Be a volunteer for this event
                 <span aria-hidden="true">→</span>
               </a>
             </div>`
-          : "";
+        : "";
       card.innerHTML = `
         ${posterMarkup}
         <div class="upcoming-card__date">
