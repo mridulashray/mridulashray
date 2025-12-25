@@ -6,10 +6,170 @@
   const photoWallGridEl = document.getElementById("events-photo-wall-grid");
   const photoWallViewportEl = document.querySelector(".events-photo-wall__viewport");
   const highlightGridEl = document.getElementById("events-highlight-grid");
+  const upcomingGridEl = document.getElementById("upcoming-events-grid");
+  const upcomingEmptyEl = document.getElementById("upcoming-events-empty");
   const counters = {
     events: document.getElementById("events-count"),
     photos: document.getElementById("events-photos-count"),
     impact: document.getElementById("events-impact-count")
+  };
+
+  const renderUpcomingInvites = (documents = []) => {
+    if (!upcomingGridEl) return;
+    upcomingGridEl.innerHTML = "";
+    if (!documents.length) {
+      if (upcomingEmptyEl) {
+        upcomingEmptyEl.style.display = "block";
+        upcomingEmptyEl.textContent = "Upcoming events will appear here once announced.";
+      }
+      return;
+    }
+    if (upcomingEmptyEl) {
+      upcomingEmptyEl.style.display = "none";
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    documents.forEach((doc) => {
+      const card = document.createElement("article");
+      card.className = "upcoming-card";
+      const startParts = formatDateParts(doc.startDate);
+      const startComparable = toComparableDate(doc.startDate);
+      const isToday = startComparable ? startComparable.toDateString() === today.toDateString() : false;
+      const posterMarkup = doc.posterFileId
+        ? `<img class="upcoming-card__poster" src="${storagePreviewUrl(doc.posterFileId)}" alt="${doc.title}" loading="lazy" />`
+        : "";
+      const volunteerCta =
+        doc.volunteerCtaEnabled && doc.volunteerCtaUrl
+          ? `<div class="upcoming-card__cta">
+              <a href="${doc.volunteerCtaUrl}" target="_blank" rel="noopener">
+                Be a volunteer for this event
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>`
+          : "";
+      card.innerHTML = `
+        ${posterMarkup}
+        <div class="upcoming-card__date">
+          <div class="upcoming-card__date-badge">
+            <strong>${startParts.day}</strong>
+            <span>${startParts.month}</span>
+          </div>
+          <div>
+            <p class="upcoming-card__date-tag ${isToday ? "is-today" : ""}">${isToday ? "Today" : "Save the date"}</p>
+            <p>${formatDurationLabel(doc.startDate, doc.endDate)}</p>
+          </div>
+        </div>
+        <div>
+          <h3>${doc.title}</h3>
+          <p>${doc.description || ""}</p>
+          <p class="upcoming-card__location">${doc.location || "Location to be announced"}</p>
+        </div>
+        ${volunteerCta}
+      `;
+      upcomingGridEl.appendChild(card);
+    });
+  };
+
+  const pad2 = (value) => value.toString().padStart(2, "0");
+  const MONTH_LOOKUP = {
+    jan: 1,
+    feb: 2,
+    mar: 3,
+    apr: 4,
+    may: 5,
+    jun: 6,
+    jul: 7,
+    aug: 8,
+    sep: 9,
+    sept: 9,
+    oct: 10,
+    nov: 11,
+    dec: 12
+  };
+
+  const normalizeDateInput = (rawValue) => {
+    if (!rawValue) return "";
+    const value = rawValue.toString().trim();
+    if (!value) return "";
+
+    const isoMatch = value.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+    if (isoMatch) {
+      return `${isoMatch[1]}-${pad2(isoMatch[2])}-${pad2(isoMatch[3])}`;
+    }
+
+    const dayFirstMatch = value.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+    if (dayFirstMatch) {
+      return `${dayFirstMatch[3]}-${pad2(dayFirstMatch[2])}-${pad2(dayFirstMatch[1])}`;
+    }
+
+    const textualMatch = value.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+    if (textualMatch) {
+      const monthKey = textualMatch[2].slice(0, 3).toLowerCase();
+      const monthValue = MONTH_LOOKUP[monthKey];
+      if (monthValue) {
+        return `${textualMatch[3]}-${pad2(monthValue)}-${pad2(textualMatch[1])}`;
+      }
+    }
+
+    return "";
+  };
+
+  const toComparableDate = (rawValue) => {
+    const normalized = normalizeDateInput(rawValue);
+    if (normalized) {
+      const normalizedDate = new Date(normalized);
+      if (!Number.isNaN(normalizedDate.getTime())) {
+        return normalizedDate;
+      }
+    }
+    if (!rawValue) return null;
+    const fallback = new Date(rawValue);
+    return Number.isNaN(fallback.getTime()) ? null : fallback;
+  };
+
+  const formatDateParts = (dateString) => {
+    const parsed = toComparableDate(dateString);
+    if (!parsed) return { day: "--", month: "TBD" };
+    return {
+      day: parsed.getDate().toString().padStart(2, "0"),
+      month: parsed.toLocaleString("en-US", { month: "short" }).toUpperCase()
+    };
+  };
+
+  const formatDurationLabel = (startDate, endDate) => {
+    const start = toComparableDate(startDate);
+    const end = toComparableDate(endDate);
+    if (start && end) {
+      if (start.toDateString() === end.toDateString()) {
+        return `${start.toLocaleDateString()} · Single day`;
+      }
+      return `${start.toLocaleDateString()} → ${end.toLocaleDateString()}`;
+    }
+    if (start) return `${start.toLocaleDateString()} onwards`;
+    if (end) return `Until ${end.toLocaleDateString()}`;
+    if (startDate && endDate) return `${startDate} → ${endDate}`;
+    return startDate || endDate || "Date to be announced";
+  };
+
+  const filterUpcomingDocuments = (documents = []) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return documents
+      .filter((doc) => {
+        const endComparable = toComparableDate(doc.endDate);
+        if (!doc.endDate || !endComparable) return true;
+        const endOfDay = new Date(endComparable);
+        endOfDay.setHours(23, 59, 59, 999);
+        return endOfDay >= today;
+      })
+      .sort((a, b) => {
+        const aDate = toComparableDate(a.startDate) || toComparableDate(a.endDate);
+        const bDate = toComparableDate(b.startDate) || toComparableDate(b.endDate);
+        if (!aDate && !bDate) return 0;
+        if (!aDate) return 1;
+        if (!bDate) return -1;
+        return aDate.getTime() - bDate.getTime();
+      });
   };
 
   const modalEl = document.getElementById("album-modal");
@@ -469,6 +629,7 @@
         eventsEmptyEl.classList.remove("hidden");
         eventsEmptyEl.textContent = "Loading events… please check your connection.";
       }
+      await loadUpcomingEventsPublic();
       return;
     }
 
@@ -502,11 +663,45 @@
       renderPhotoWall(docsToRender);
       renderHighlights(docsToRender);
       setCounters(docsToRender);
+      await loadUpcomingEventsPublic(appwriteClient);
     } catch (error) {
       console.error("Unable to fetch events", error);
       if (eventsEmptyEl && eventsEmptyEl.classList) {
         eventsEmptyEl.classList.remove("hidden");
         eventsEmptyEl.textContent = "Unable to fetch events right now. Please try again later.";
+      }
+      await loadUpcomingEventsPublic(appwriteClient);
+    }
+  };
+
+  const loadUpcomingEventsPublic = async (existingClient = null) => {
+    if (!upcomingGridEl) return;
+    const appwriteClient = existingClient || (await ensureAppwriteClient().catch(() => null));
+    if (!appwriteClient || !appwriteClient.databases) {
+      if (upcomingEmptyEl) {
+        upcomingEmptyEl.style.display = "block";
+        upcomingEmptyEl.textContent = "Upcoming events will appear once scheduled.";
+      }
+      return;
+    }
+    try {
+      const queries = [];
+      if (Appwrite.Query?.orderAsc) {
+        queries.push(Appwrite.Query.orderAsc("startDate"));
+      }
+      const response = await appwriteClient.databases.listDocuments(
+        APPWRITE_CONFIG.databaseId,
+        APPWRITE_CONFIG.collections.upcomingEvents,
+        queries
+      );
+      const documents = response.documents || [];
+      const filtered = filterUpcomingDocuments(documents);
+      renderUpcomingInvites(filtered);
+    } catch (error) {
+      console.error("Unable to fetch upcoming events", error);
+      if (upcomingEmptyEl) {
+        upcomingEmptyEl.style.display = "block";
+        upcomingEmptyEl.textContent = "Unable to load upcoming events right now.";
       }
     }
   };

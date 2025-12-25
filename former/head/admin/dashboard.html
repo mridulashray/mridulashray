@@ -11,6 +11,46 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../../../styles.css" />
+    <style>
+      html.admin-auth-pending body {
+        opacity: 0;
+        pointer-events: none;
+      }
+      html.admin-auth-ready body {
+        opacity: 1;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="../../../appwrite-config.js"></script>
+    <script>
+      (function () {
+        const LOGIN_PATH = "./login.html";
+        const root = document.documentElement;
+        const redirectToLogin = () => {
+          window.location.replace(LOGIN_PATH);
+        };
+
+        const verifySession = async () => {
+          if (!window.appwrite?.account) {
+            redirectToLogin();
+            return null;
+          }
+          try {
+            const current = await window.appwrite.account.get();
+            root.classList.add("admin-auth-ready");
+            root.classList.remove("admin-auth-pending");
+            return current;
+          } catch (error) {
+            console.error("Admin guard: session verification failed", error);
+            redirectToLogin();
+            return null;
+          }
+        };
+
+        root.classList.add("admin-auth-pending");
+        window.__adminAuthPromise = verifySession();
+      })();
+    </script>
   </head>
   <body class="admin-panel-body">
     <header class="site-header admin-shell">
@@ -35,6 +75,10 @@
         <button type="button" class="admin-nav__link" data-panel-target="published-section">
           <span class="admin-nav__icon" aria-hidden="true">🖼️</span>
           <span>Upload Images</span>
+        </button>
+        <button type="button" class="admin-nav__link" data-panel-target="upcoming-section">
+          <span class="admin-nav__icon" aria-hidden="true">🎉</span>
+          <span>Upcoming Events</span>
         </button>
         <button type="button" class="admin-nav__link" data-panel-target="volunteer-section">
           <span class="admin-nav__icon" aria-hidden="true">🤝</span>
@@ -127,6 +171,78 @@
             </table>
           </div>
           <p class="admin-upload-hint">Tip: click “Refresh Albums” whenever you make new changes to sync the table.</p>
+        </section>
+
+        <section class="admin-section" id="upcoming-section" hidden aria-labelledby="upcoming-events-title">
+          <div class="admin-section__header">
+            <div>
+              <p class="petal-badge">Plan Ahead</p>
+              <h2 id="upcoming-events-title">Upcoming events & invitations</h2>
+              <p>Publish dates, venues, and posters. Once an event ends we will automatically create an album so you can upload photos.</p>
+            </div>
+            <button type="button" class="ghost-btn ghost-btn--solid" id="refresh-upcoming-btn">Refresh upcoming</button>
+          </div>
+
+          <form id="upcoming-event-form" class="admin-form-grid">
+            <input type="hidden" name="storedPosterId" />
+            <label>
+              <span>Event Title *</span>
+              <input type="text" name="upTitle" placeholder="Eg. Heritage School Drive" required />
+            </label>
+            <label>
+              <span>Event Slug / ID *</span>
+              <input type="text" name="upSlug" placeholder="heritage-drive-jan-2026" required />
+            </label>
+            <label>
+              <span>Location *</span>
+              <input type="text" name="upLocation" placeholder="Rewari Government School, Haryana" required />
+            </label>
+            <label>
+              <span>Start Date *</span>
+              <input type="text" name="upStartDate" placeholder="E.g. 25-12-2025 or 25 Dec 2025" required />
+            </label>
+            <label>
+              <span>End Date *</span>
+              <input type="text" name="upEndDate" placeholder="E.g. 27-12-2025" required />
+            </label>
+            <label class="full-row">
+              <span>Description *</span>
+              <textarea name="upDescription" placeholder="Explain the agenda, who should join, key highlights…" required></textarea>
+            </label>
+            <label class="full-row">
+              <span>Poster / Invite Image </span>
+              <input type="file" name="posterFile" accept="image/*" />
+            </label>
+            <label class="full-row upcoming-form__volunteer">
+              <span>Volunteer button</span>
+              <label class="upcoming-form__toggle">
+                <input type="checkbox" name="upVolunteerEnabled" />
+                <span>Show “Be a volunteer for this event” button on the public page (links to Volunteer page).</span>
+              </label>
+            </label>
+          </form>
+          <div class="admin-panel__actions">
+            <button class="ghost-btn ghost-btn--solid" id="save-upcoming-btn" type="button">Save Upcoming Event</button>
+            <button class="ghost-btn ghost-btn--small" id="upcoming-cancel-btn" type="button" hidden>Cancel edit</button>
+            <span class="admin-form__feedback" id="upcoming-event-feedback"></span>
+          </div>
+
+          <div class="admin-table-wrapper">
+            <table class="admin-table admin-table--upcoming" id="upcoming-events-table">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Duration</th>
+                  <th>Location</th>
+                  <th>Poster</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <p class="admin-upload-hint">Past events are auto-converted into albums so that you can add photos later.</p>
+          </div>
         </section>
 
         <section class="admin-section admin-album-workspace" id="album-workspace" hidden aria-live="polite">
@@ -234,8 +350,6 @@
       </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-    <script src="../../../appwrite-config.js"></script>
     <script src="admin-dashboard.js"></script>
   </body>
 </html>

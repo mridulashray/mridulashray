@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contact Us | Mridulashray</title>
+    <title>About Us | Mridulashray</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,77 +14,42 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="container nav-wrapper">
-        <div class="brand">
-          <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
-          <span class="brand__name">Mridulashray</span>
-        </div>
-        <nav class="main-nav" aria-label="Primary">
-          <a href="index.html">Home</a>
-          <a href="about.html">About Us</a>
-          <a href="volunteer.html">Volunteer</a>
-          <a href="events.html">Events</a>
-          <a href="contact.html" class="active">Contact Us</a>
-          <a href="compliance.html">Compliance & Legal</a>
-          <a href="terms.html">Terms and Conditions</a>
-          <a href="payment.html" class="main-nav__donate">Donate</a>
-        </nav>
-        <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-        <a class="donate-btn" href="payment.html">Donate</a>
+    <div class="container nav-wrapper">
+      <div class="brand">
+        <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
+        <span class="brand__name">Mridulashray</span>
       </div>
-    </header>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html" class="active">About Us</a>
+        <a href="volunteer.html">Volunteer</a>
+        <a href="events.html">Events</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="compliance.html">Compliance &amp; Legal</a>
+        <a href="terms.html">Terms and Conditions</a>
+        <a href="payment.html" class="main-nav__donate">Donate</a>
+      </nav>
+      <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a class="donate-btn" href="payment.html">Donate</a>
+    </div>
+  </header>
 
     <main>
-      <section class="contact-map" aria-label="Mridulashray location map">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3516.2715088022774!2d76.61161257576991!3d28.19906247590418!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d5a9e40ca98fb%3A0xc3a8f00f1f1c8503!2sMatadeen%20And%20Sons!5e0!3m2!1sen!2sin!4v1765703362530!5m2!1sen!2sin"
-          allowfullscreen=""
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="Mridulashray Google Map"
-        ></iframe>
-      </section>
-
-      <section class="contact-panel">
-        <div class="contact-panel__overlay" aria-hidden="true"></div>
-        <div class="contact-panel__inner">
-          <div class="contact-panel__grid">
-            <div class="contact-panel__logo">
-              <img src="images/logo.png" alt="Mridulashray emblem" />
-              <p class="contact-panel__logo-caption">मृदुल आश्रय</p>
-            </div>
-            <div class="contact-panel__form-wrapper">
-              <div class="contact-panel__intro">
-                <p>Contact Us:</p>
-                <h2>After reviewing, we will get back to you.</h2>
-              </div>
-              <form class="contact-panel__form" action="https://formsubmit.co/mridulashrayorg@gmail.com" method="POST">
-                <input type="hidden" name="_subject" value="New Contact Request - Mridulashray" />
-                <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="form_source" value="Contact Page" />
-                <div class="contact-panel__form-row">
-                  <label for="contact-name">Name:</label>
-                  <input id="contact-name" type="text" name="name" placeholder="Enter your full name" required />
-                </div>
-                <div class="contact-panel__form-row">
-                  <label for="contact-email">Email:</label>
-                  <input id="contact-email" type="email" name="email" placeholder="Enter your email address" required />
-                </div>
-                <div class="contact-panel__form-row">
-                  <label for="contact-phone">Mobile Number:</label>
-                  <input id="contact-phone" type="tel" name="phone" placeholder="Enter your mobile number" required />
-                </div>
-                <div class="contact-panel__form-row contact-panel__form-row--textarea">
-                  <label for="contact-message">Description:</label>
-                  <textarea id="contact-message" name="message" rows="4" placeholder="Tell us how we can help you" required></textarea>
-                </div>
-                <button type="submit" class="contact-panel__submit">Submit</button>
-              </form>
-            </div>
+      <section class="page-status">
+        <div class="page-status__card">
+          <p class="petal-badge">Coming soon</p>
+          <h1>About Us page is under development</h1>
+          <p>
+            We’re compiling stories, impact data, and trust history for this section. Please check back shortly for a full overview of Mridulashray’s founding,
+            vision, and community programmes.
+          </p>
+          <div class="about-hero__cta">
+            <a class="ghost-btn ghost-btn--solid" href="index.html">Return to Home</a>
+            <a class="outline-link" href="contact.html">Contact our team</a>
           </div>
         </div>
       </section>
@@ -133,9 +98,10 @@
             <h4>Pages</h4>
             <ul class="footer-links">
               <li><a href="index.html">Home</a></li>
+              <li><a href="about.html" class="active">About Us</a></li>
               <li><a href="volunteer.html">Volunteer</a></li>
               <li><a href="events.html">Events</a></li>
-              <li><a href="contact.html" class="active">Contact Us</a></li>
+              <li><a href="contact.html">Contact Us</a></li>
               <li><a href="compliance.html">Compliance &amp; Legal</a></li>
               <li><a href="terms.html">Terms and Conditions</a></li>
               <li><a href="payment.html">Donate</a></li>

@@ -1,6 +1,7 @@
 const SESSION_KEY = "mridulashrayAdminSession";
 const loginRedirect = () => (window.location.href = "./login.html");
 const sessionBadge = document.getElementById("admin-session-name");
+const VOLUNTEER_PAGE_URL = "volunteer.html";
 const logoutBtn = document.getElementById("logout-btn");
 const saveEventBtn = document.getElementById("save-event-btn");
 const eventMetadataSubmitBtn = saveEventBtn;
@@ -8,6 +9,13 @@ const refreshEventsBtn = document.getElementById("refresh-events-btn");
 const eventMetadataForm = document.getElementById("event-metadata-form");
 const eventMetadataFeedback = document.getElementById("event-metadata-feedback");
 const eventMetadataCancelBtn = document.getElementById("event-metadata-cancel");
+const upcomingSection = document.getElementById("upcoming-section");
+const upcomingForm = document.getElementById("upcoming-event-form");
+const saveUpcomingBtn = document.getElementById("save-upcoming-btn");
+const upcomingCancelBtn = document.getElementById("upcoming-cancel-btn");
+const upcomingFeedback = document.getElementById("upcoming-event-feedback");
+const refreshUpcomingBtn = document.getElementById("refresh-upcoming-btn");
+const upcomingTableBody = document.querySelector("#upcoming-events-table tbody");
 const sectionPanels = document.querySelectorAll(".admin-section");
 const navLinks = document.querySelectorAll(".admin-nav__link");
 const eventsTableBody = document.querySelector("#events-table tbody");
@@ -32,12 +40,71 @@ let currentAccount = null;
 let activeAlbum = null;
 let editingMediaId = null;
 let eventsCache = [];
+let upcomingCache = [];
 let volunteersCache = [];
 let contactsCache = [];
 let currentMediaEntries = [];
 let mediaOrderDirty = false;
 let dragStartIndex = null;
 let activePanel = "manage-section";
+let upcomingEditingId = null;
+
+const pad2 = (value) => value.toString().padStart(2, "0");
+const monthLookup = {
+  jan: 1,
+  feb: 2,
+  mar: 3,
+  apr: 4,
+  may: 5,
+  jun: 6,
+  jul: 7,
+  aug: 8,
+  sep: 9,
+  sept: 9,
+  oct: 10,
+  nov: 11,
+  dec: 12
+};
+
+const normalizeDateInput = (rawValue) => {
+  if (!rawValue) return "";
+  const value = rawValue.toString().trim();
+  if (!value) return "";
+
+  const isoMatch = value.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+  if (isoMatch) {
+    return `${isoMatch[1]}-${pad2(isoMatch[2])}-${pad2(isoMatch[3])}`;
+  }
+
+  const dayFirstMatch = value.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  if (dayFirstMatch) {
+    return `${dayFirstMatch[3]}-${pad2(dayFirstMatch[2])}-${pad2(dayFirstMatch[1])}`;
+  }
+
+  const textualMatch = value.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+  if (textualMatch) {
+    const monthKey = textualMatch[2].slice(0, 3).toLowerCase();
+    const monthValue = monthLookup[monthKey];
+    if (monthValue) {
+      return `${textualMatch[3]}-${pad2(monthValue)}-${pad2(textualMatch[1])}`;
+    }
+  }
+
+  return "";
+};
+
+const toComparableDate = (rawValue) => {
+  const normalized = normalizeDateInput(rawValue);
+  if (normalized) {
+    const normalizedDate = new Date(normalized);
+    if (!Number.isNaN(normalizedDate.getTime())) {
+      return normalizedDate;
+    }
+  }
+  if (!rawValue) return null;
+  const fallback = new Date(rawValue);
+  return Number.isNaN(fallback.getTime()) ? null : fallback;
+};
 
 const parseMediaEntries = (value) => {
   if (!value) return [];
@@ -264,6 +331,365 @@ const renderEventsTable = (events = []) => {
   attachAlbumActionHandlers();
 };
 
+const upcomingPosterField = () => upcomingForm?.querySelector('input[name="storedPosterId"]');
+const posterFileInput = () => upcomingForm?.querySelector('input[name="posterFile"]');
+
+const parseUpcomingPayload = () => {
+  if (!upcomingForm) throw new Error("Upcoming event form missing");
+  const formData = new FormData(upcomingForm);
+  const slug = formData.get("upSlug")?.toString().trim();
+  const title = formData.get("upTitle")?.toString().trim();
+  const description = formData.get("upDescription")?.toString().trim();
+  const location = formData.get("upLocation")?.toString().trim();
+  const startDate = formData.get("upStartDate")?.toString().trim();
+  const endDate = formData.get("upEndDate")?.toString().trim();
+  const volunteerEnabled = formData.get("upVolunteerEnabled") === "on";
+
+  if (!slug || !title || !description || !location || !startDate || !endDate) {
+    throw new Error("Please fill in all required upcoming event fields.");
+  }
+  return {
+    slug,
+    title,
+    description,
+    location,
+    startDate,
+    endDate,
+    status: "scheduled",
+    posterFileId: upcomingPosterField()?.value || "",
+    volunteerCtaEnabled: volunteerEnabled,
+    volunteerCtaUrl: volunteerEnabled ? VOLUNTEER_PAGE_URL : ""
+  };
+};
+
+const uploadPosterFile = async (file) => {
+  if (!(file instanceof File) || !file.size) return "";
+  const { storage } = getClient();
+  const fileId = Appwrite.ID.unique();
+  const permissions = [Appwrite.Permission.read(Appwrite.Role.any())];
+  if (currentAccount?.$id) {
+    permissions.push(
+      Appwrite.Permission.update(Appwrite.Role.user(currentAccount.$id)),
+      Appwrite.Permission.delete(Appwrite.Role.user(currentAccount.$id)),
+      Appwrite.Permission.read(Appwrite.Role.user(currentAccount.$id))
+    );
+  }
+  const uploaded = await storage.createFile(APPWRITE_CONFIG.bucketId, fileId, file, permissions);
+  return uploaded.$id;
+};
+
+const deletePosterFile = async (fileId) => {
+  if (!fileId) return;
+  const { storage } = getClient();
+  try {
+    await storage.deleteFile(APPWRITE_CONFIG.bucketId, fileId);
+  } catch (error) {
+    console.warn("Unable to delete poster file", fileId, error);
+  }
+};
+
+const resetUpcomingForm = () => {
+  if (!upcomingForm) return;
+  upcomingForm.reset();
+  upcomingForm.dataset.mode = "create";
+  upcomingEditingId = null;
+  const storedPoster = upcomingPosterField();
+  if (storedPoster) storedPoster.value = "";
+  if (upcomingForm.elements.upVolunteerEnabled) {
+    upcomingForm.elements.upVolunteerEnabled.checked = false;
+  }
+  if (upcomingCancelBtn) upcomingCancelBtn.hidden = true;
+};
+
+const populateUpcomingForm = (doc) => {
+  if (!upcomingForm || !doc) return;
+  upcomingForm.elements.upTitle.value = doc.title || "";
+  upcomingForm.elements.upSlug.value = doc.slug || doc.$id;
+  upcomingForm.elements.upLocation.value = doc.location || "";
+  upcomingForm.elements.upStartDate.value = doc.startDate ? doc.startDate.slice(0, 10) : "";
+  upcomingForm.elements.upEndDate.value = doc.endDate ? doc.endDate.slice(0, 10) : "";
+  upcomingForm.elements.upDescription.value = doc.description || "";
+  if (upcomingForm.elements.upVolunteerEnabled) {
+    upcomingForm.elements.upVolunteerEnabled.checked = Boolean(doc.volunteerCtaEnabled);
+  }
+  const storedPoster = upcomingPosterField();
+  if (storedPoster) storedPoster.value = doc.posterFileId || "";
+};
+
+const upsertUpcomingEvent = async () => {
+  if (!upcomingForm) return;
+  const { databases } = getClient();
+  try {
+    setFeedback(upcomingFeedback, "Saving upcoming event…");
+    const payload = parseUpcomingPayload();
+    const formData = new FormData(upcomingForm);
+    const posterFile = formData.get("posterFile");
+    if (posterFile instanceof File && posterFile.size) {
+      if (payload.posterFileId) {
+        await deletePosterFile(payload.posterFileId);
+      }
+      payload.posterFileId = await uploadPosterFile(posterFile);
+      const storedPoster = upcomingPosterField();
+      if (storedPoster) storedPoster.value = payload.posterFileId;
+    }
+
+    const isEdit = upcomingForm.dataset.mode === "edit" && upcomingEditingId;
+    const docId = isEdit ? upcomingEditingId : payload.slug;
+
+    if (isEdit) {
+      await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.upcomingEvents, docId, payload);
+    } else {
+      const permissions = [Appwrite.Permission.read(Appwrite.Role.any())];
+      await databases.createDocument(
+        APPWRITE_CONFIG.databaseId,
+        APPWRITE_CONFIG.collections.upcomingEvents,
+        docId,
+        payload,
+        permissions
+      );
+    }
+
+    setFeedback(upcomingFeedback, "Upcoming event saved.");
+    resetUpcomingForm();
+    await loadUpcomingEvents();
+  } catch (error) {
+    console.error(error);
+    setFeedback(upcomingFeedback, error?.message || "Failed to save upcoming event.", true);
+  }
+};
+
+const renderUpcomingTable = (documents = []) => {
+  if (!upcomingTableBody) return;
+  upcomingTableBody.innerHTML = "";
+  if (!documents.length) {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td colspan="6">No upcoming events scheduled. Use the form above to add one.</td>`;
+    upcomingTableBody.appendChild(row);
+    return;
+  }
+
+  const buildDurationLabel = (startRaw, endRaw) => {
+    const startComparable = toComparableDate(startRaw);
+    const endComparable = toComparableDate(endRaw);
+    if (startComparable && endComparable) {
+      if (startComparable.toDateString() === endComparable.toDateString()) {
+        return `${startComparable.toLocaleDateString()} · Single day`;
+      }
+      return `${startComparable.toLocaleDateString()} → ${endComparable.toLocaleDateString()}`;
+    }
+    if (startComparable) {
+      return `${startComparable.toLocaleDateString()} onwards`;
+    }
+    if (endComparable) {
+      return `Until ${endComparable.toLocaleDateString()}`;
+    }
+    if (startRaw && endRaw) return `${startRaw} → ${endRaw}`;
+    return startRaw || endRaw || "Date to be announced";
+  };
+
+  const evaluateDateStatus = (startRaw, endRaw) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startComparable = toComparableDate(startRaw);
+    const endComparable = toComparableDate(endRaw);
+    const startIsToday = startComparable ? startComparable.toDateString() === today.toDateString() : false;
+    let hasEnded = false;
+    if (endComparable) {
+      const endOfDay = new Date(endComparable);
+      endOfDay.setHours(23, 59, 59, 999);
+      hasEnded = endOfDay < today;
+    }
+    return { isToday: startIsToday, hasEnded };
+  };
+
+  documents.forEach((doc) => {
+    const { isToday, hasEnded } = evaluateDateStatus(doc.startDate, doc.endDate);
+    const durationLabel = buildDurationLabel(doc.startDate, doc.endDate);
+    const posterThumb = doc.posterFileId
+      ? `<img src="${storagePreviewUrl(doc.posterFileId)}" alt="${doc.title}" />`
+      : "—";
+    const statusLabel = hasEnded ? "Ended" : isToday ? "Today" : "Upcoming";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td data-label="Event">
+        <strong>${doc.title}</strong>
+        <small>${doc.slug}</small>
+      </td>
+      <td data-label="Duration">${durationLabel}</td>
+      <td data-label="Location">${doc.location || "—"}</td>
+      <td data-label="Poster" class="upcoming-table__poster">${posterThumb}</td>
+      <td data-label="Status"><span class="badge badge--${isToday ? "success" : hasEnded ? "muted" : "info"}">${statusLabel}</span></td>
+      <td class="admin-actions-cell">
+        <button class="ghost-btn ghost-btn--small" data-edit-upcoming="${doc.$id}">Edit</button>
+        <button class="ghost-btn ghost-btn--small ghost-btn--danger" data-delete-upcoming="${doc.$id}">Delete</button>
+        ${
+          hasEnded
+            ? `<button class="ghost-btn ghost-btn--small" data-convert-upcoming="${doc.$id}">Convert to album</button>`
+            : ""
+        }
+      </td>
+    `;
+    upcomingTableBody.appendChild(tr);
+  });
+  attachUpcomingActionHandlers();
+};
+
+const startUpcomingEdit = async (docId) => {
+  if (!upcomingForm) return;
+  try {
+    const doc =
+      upcomingCache.find((item) => item.$id === docId) || (await getClient().databases.getDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.upcomingEvents, docId));
+    populateUpcomingForm(doc);
+    upcomingForm.dataset.mode = "edit";
+    upcomingEditingId = doc.$id;
+    if (upcomingCancelBtn) upcomingCancelBtn.hidden = false;
+    setFeedback(upcomingFeedback, "");
+    upcomingSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    console.error(error);
+    setFeedback(upcomingFeedback, error?.message || "Unable to load upcoming event.", true);
+  }
+};
+
+const handleDeleteUpcoming = async (docId) => {
+  if (!window.confirm("Delete this upcoming event invitation?")) return;
+  const { databases } = getClient();
+  try {
+    setFeedback(upcomingFeedback, "Deleting upcoming event…");
+    const doc = await databases.getDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.upcomingEvents, docId);
+    if (doc.posterFileId) {
+      await deletePosterFile(doc.posterFileId);
+    }
+    await databases.deleteDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.upcomingEvents, docId);
+    setFeedback(upcomingFeedback, "Upcoming event deleted.");
+    if (upcomingEditingId === docId) {
+      resetUpcomingForm();
+    }
+    await loadUpcomingEvents();
+  } catch (error) {
+    console.error(error);
+    setFeedback(upcomingFeedback, error?.message || "Unable to delete upcoming event.", true);
+  }
+};
+
+const ensureAlbumForUpcoming = async (doc) => {
+  const { databases } = getClient();
+  let existing;
+  try {
+    existing = await databases.getDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.events, doc.slug);
+  } catch {
+    existing = null;
+  }
+
+  const payload = {
+    name: doc.title,
+    slug: doc.slug,
+    title: doc.title,
+    description: doc.description,
+    caption: doc.location || "",
+    date: doc.startDate || doc.endDate || null,
+    status: "draft",
+    coverFileId: doc.posterFileId || ""
+  };
+
+  if (!existing) {
+    await databases.createDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.events, doc.slug, payload);
+  } else {
+    await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.events, existing.$id, {
+      ...payload,
+      mediaEntries: existing.mediaEntries || existing.mediaentries || existing.mediaEntriesJson || existing.media_entries || null
+    });
+  }
+};
+
+const convertUpcomingDocToAlbum = async (docId) => {
+  const { databases } = getClient();
+  try {
+    const doc =
+      upcomingCache.find((item) => item.$id === docId) ||
+      (await databases.getDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.upcomingEvents, docId));
+    await ensureAlbumForUpcoming(doc);
+    await databases.deleteDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.upcomingEvents, doc.$id);
+    setFeedback(upcomingFeedback, `Converted "${doc.title}" into an album.`);
+    await loadEvents();
+    await loadUpcomingEvents();
+  } catch (error) {
+    console.error(error);
+    setFeedback(upcomingFeedback, error?.message || "Unable to convert event into album.", true);
+  }
+};
+
+const attachUpcomingActionHandlers = () => {
+  if (!upcomingTableBody) return;
+  upcomingTableBody.querySelectorAll("[data-edit-upcoming]").forEach((btn) =>
+    btn.addEventListener("click", () => startUpcomingEdit(btn.dataset.editUpcoming))
+  );
+  upcomingTableBody.querySelectorAll("[data-delete-upcoming]").forEach((btn) =>
+    btn.addEventListener("click", () => handleDeleteUpcoming(btn.dataset.deleteUpcoming))
+  );
+  upcomingTableBody.querySelectorAll("[data-convert-upcoming]").forEach((btn) =>
+    btn.addEventListener("click", () => handleConvertUpcoming(btn.dataset.convertUpcoming))
+  );
+};
+
+const handleConvertUpcoming = async (docId) => {
+  if (!window.confirm("Convert this event into an album now?")) return;
+  await convertUpcomingDocToAlbum(docId);
+};
+
+const convertExpiredUpcomingEvents = async (documents = []) => {
+  if (!documents.length) return false;
+  const now = new Date();
+  let convertedAny = false;
+  for (const doc of documents) {
+    const endDate = toComparableDate(doc.endDate);
+    if (!endDate) continue;
+    const endOfDay = new Date(endDate);
+    endOfDay.setHours(23, 59, 59, 999);
+    if (endOfDay < now) {
+      await ensureAlbumForUpcoming(doc);
+      await getClient().databases.deleteDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.upcomingEvents, doc.$id);
+      convertedAny = true;
+    }
+  }
+  if (convertedAny) {
+    setFeedback(upcomingFeedback, "Past events converted into albums. Refreshing list…");
+    await loadEvents();
+  }
+  return convertedAny;
+};
+
+const loadUpcomingEvents = async () => {
+  if (!upcomingTableBody) return;
+  const { databases } = getClient();
+  upcomingTableBody.innerHTML = "";
+  try {
+    const queries = [];
+    if (Appwrite.Query?.orderAsc) {
+      queries.push(Appwrite.Query.orderAsc("startDate"));
+    }
+    const response = await databases.listDocuments(
+      APPWRITE_CONFIG.databaseId,
+      APPWRITE_CONFIG.collections.upcomingEvents,
+      queries
+    );
+    const documents = response.documents || [];
+    const converted = await convertExpiredUpcomingEvents(documents);
+    if (converted) {
+      await loadUpcomingEvents();
+      return;
+    }
+    upcomingCache = documents;
+    renderUpcomingTable(upcomingCache);
+    setFeedback(upcomingFeedback, "");
+  } catch (error) {
+    console.error(error);
+    setFeedback(upcomingFeedback, "Unable to load upcoming events. Check Appwrite permissions.", true);
+    upcomingTableBody.innerHTML = `<tr><td colspan="6">Unable to load upcoming events.</td></tr>`;
+  }
+};
+
 const populateEventMetadataForm = (doc) => {
   if (!eventMetadataForm) return;
   eventMetadataForm.elements.name.value = doc.name || "";
@@ -434,6 +860,8 @@ const showPanel = (panelId) => {
   });
   if (panelId === "published-section") {
     loadEvents();
+  } else if (panelId === "upcoming-section" && !upcomingCache.length) {
+    loadUpcomingEvents();
   } else if (panelId === "volunteer-section" && !volunteersCache.length) {
     loadVolunteers();
   } else if (panelId === "contacts-section" && !contactsCache.length) {
@@ -874,7 +1302,22 @@ albumMediaForm?.addEventListener("submit", async (event) => {
 const initDashboard = async () => {
   await requireSession();
   await loadEvents();
+  await loadUpcomingEvents();
   toggleWorkspace(false);
 };
+
+saveUpcomingBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
+  upsertUpcomingEvent();
+});
+
+upcomingCancelBtn?.addEventListener("click", () => {
+  resetUpcomingForm();
+  setFeedback(upcomingFeedback, "");
+});
+
+refreshUpcomingBtn?.addEventListener("click", () => {
+  loadUpcomingEvents();
+});
 
 initDashboard();

@@ -8,7 +8,8 @@ const APPWRITE_CONFIG = {
     admins: "admins",
     events: "events",
     volunteers: "volunteers",
-    contactDetails: "contactDetails"
+    contactDetails: "contactDetails",
+    upcomingEvents: "upcomingEvents"
   },
   bucketId: "69419d0a000e78807ded"
 };

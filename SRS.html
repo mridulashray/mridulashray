@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mridulashray Software Requirements Specification</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 20px;
+        line-height: 1.5;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin-bottom: 0.4em;
+      }
+
+      hr {
+        margin: 1.5em 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1em 0;
+      }
+
+      th,
+      td {
+        border: 1px solid #cccccc;
+        padding: 8px;
+        text-align: left;
+      }
+
+      ul,
+      ol {
+        margin: 0.4em 0 0.8em 1.4em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Software Requirements Specification (SRS)</h1>
+    <p><strong>Project:</strong> Mridulashray Web Platform</p>
+    <p><strong>Date:</strong> 22 Dec 2025</p>
+    <hr />
+
+    <h2>1. Introduction</h2>
+    <h3>1.1 Purpose</h3>
+    <p>
+      This document captures the functional and non-functional requirements for the Mridulashray web platform. It is intended for stakeholders, designers, and
+      developers who maintain the marketing site, public engagement flows, and the Appwrite-backed admin console.
+    </p>
+
+    <h3>1.2 Scope</h3>
+    <p>
+      The system is a responsive, multi-page website highlighting Mridulashray’s programs, collecting volunteer/contact submissions, showcasing events, and providing
+      an Appwrite-administered CMS for events, volunteers, and contacts. Public pages are built with vanilla HTML/CSS/JS, while authenticated operations rely on
+      Appwrite services for authentication, database, and storage.
+    </p>
+
+    <h3>1.3 Definitions, Acronyms, Abbreviations</h3>
+    <ul>
+      <li><strong>Appwrite</strong> – Backend-as-a-service providing authentication, database, and storage services.</li>
+      <li><strong>Album</strong> – Event entry with metadata, media assets, and publication status.</li>
+      <li><strong>Volunteer Form</strong> – Public form that posts to Appwrite collections with an email fallback.</li>
+    </ul>
+
+    <h3>1.4 References</h3>
+    <ul>
+      <li>Marketing pages (Home, Volunteer, Events, Contact, Compliance, Terms, Payment)</li>
+      <li>Volunteer onboarding flow</li>
+      <li>Events gallery implementation</li>
+      <li>Admin portal scripts (login and dashboard)</li>
+      <li>Global styling definitions</li>
+    </ul>
+
+    <h3>1.5 Overview</h3>
+    <p>
+      Section 2 summarizes the product context, Section 3 enumerates system features, Section 4 covers external interfaces, and Sections 5–7 describe non-functional
+      needs, data, and future considerations.
+    </p>
+    <hr />
+
+    <h2>2. Overall Description</h2>
+
+    <h3>2.1 Product Perspective</h3>
+    <ol>
+      <li><strong>Public marketing site</strong> delivered statically for core story and service information.</li>
+      <li><strong>Client-side integrations</strong> for carousels, counters, and form submissions.</li>
+      <li>
+        <strong>Admin portal</strong> under <code>/former/head/admin/</code> for managing event metadata, media, volunteers, and contact submissions through Appwrite
+        APIs.
+      </li>
+    </ol>
+
+    <h3>2.2 Product Functions</h3>
+    <ul>
+      <li>Present organizational story, services, and impact metrics.</li>
+      <li>Collect volunteer and contact enquiries with Appwrite persistence and an email fallback.</li>
+      <li>Display events gallery, photo wall, and highlight modal sourced from Appwrite collections.</li>
+      <li>Allow admins to authenticate, manage events, reorder/upload media, and review volunteer/contact tables.</li>
+    </ul>
+
+    <h3>2.3 User Classes and Characteristics</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>User Class</th>
+          <th>Description</th>
+          <th>Capabilities</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Public Visitors</strong></td>
+          <td>Prospective donors, volunteers, or community partners.</td>
+          <td>Browse pages, submit forms, view published events.</td>
+        </tr>
+        <tr>
+          <td><strong>Appwrite Admins</strong></td>
+          <td>Internal staff managing content.</td>
+          <td>Authenticate, manage event albums, volunteers, contacts, and media assets.</td>
+        </tr>
+        <tr>
+          <td><strong>System Integrators</strong></td>
+          <td>Developers maintaining the site/Appwrite config.</td>
+          <td>Update code, Appwrite configuration, and deployment artifacts.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>2.4 Operating Environment</h3>
+    <ul>
+      <li>Frontend: Modern desktop/mobile browsers with ES6 support.</li>
+      <li>Backend: Appwrite cloud endpoint (`https://sgp.cloud.appwrite.io/v1`) with defined project, database, and bucket IDs.</li>
+      <li>Hosting: Static file hosting/CDN capable of serving HTML/CSS/JS assets.</li>
+    </ul>
+
+    <h3>2.5 Design and Implementation Constraints</h3>
+    <ul>
+      <li>No server-side rendering; all operations are client-driven.</li>
+      <li>Appwrite SDK must load before dependent scripts such as login, dashboard, and events pages.</li>
+      <li>Anonymous public sessions required for read/write operations from public forms.</li>
+      <li>Media uploads limited by Appwrite storage quotas and permissions.</li>
+    </ul>
+
+    <h3>2.6 Assumptions and Dependencies</h3>
+    <ul>
+      <li>Appwrite credentials remain valid and are configured at deploy time.</li>
+      <li>FormSubmit endpoint remains available as fallback for volunteer/contact submissions.</li>
+      <li>Users possess stable internet connections for image-heavy galleries.</li>
+    </ul>
+    <hr />
+
+    <h2>3. System Features</h2>
+
+    <h3>3.1 Public Marketing Pages</h3>
+    <p><strong>Description:</strong> Multi-section layouts communicating mission, services, and impact, including hero slider, service cards, stories, and calls-to-action.</p>
+    <p><strong>Actors:</strong> Public visitors.</p>
+    <ol>
+      <li>FR-PUB-1: Display responsive navigation linking to key pages.</li>
+      <li>FR-PUB-2: Auto-rotate hero slides every 6 seconds with indicator controls.</li>
+      <li>FR-PUB-3: Provide CTA buttons to donation, volunteer, and contact pages.</li>
+      <li>FR-PUB-4: Expose service section anchors for footer quick links.</li>
+    </ol>
+
+    <h3>3.2 Volunteer Intake</h3>
+    <p><strong>Description:</strong> Form collecting name, email, location, interests, contribution notes, and phone number with consent checkbox.</p>
+    <ol>
+      <li>FR-VOL-1: Validate required fields client-side before submission.</li>
+      <li>FR-VOL-2: Persist submissions to Appwrite `volunteers` collection via the shared form helper.</li>
+      <li>FR-VOL-3: Provide fallback email submission (FormSubmit) if Appwrite save fails.</li>
+      <li>FR-VOL-4: Display confirmation or error status to users through `.form-status`.</li>
+    </ol>
+
+    <h3>3.3 Events Gallery</h3>
+    <p><strong>Description:</strong> Dynamic gallery, photo wall, and highlight cards for event albums with modal viewer.</p>
+    <ol>
+      <li>FR-EVT-1: Fetch event documents from Appwrite `events` collection ordered by `$updatedAt`.</li>
+      <li>FR-EVT-2: Filter to published events; fallback to all documents if none published.</li>
+      <li>FR-EVT-3: Aggregate counters for albums, photos, and impact statistics.</li>
+      <li>FR-EVT-4: Render media URLs via Appwrite storage preview endpoints.</li>
+      <li>FR-EVT-5: Support modal view with metadata, gallery grid, and accessibility attributes.</li>
+    </ol>
+
+    <h3>3.4 Admin Authentication</h3>
+    <p><strong>Description:</strong> Appwrite email/password login for authorized staff.</p>
+    <ol>
+      <li>FR-ADM-1: Validate both email and password fields before submission.</li>
+      <li>FR-ADM-2: Create email session via `account.createEmailSession`.</li>
+      <li>FR-ADM-3: Store session metadata in `localStorage` (key `mridulashrayAdminSession`) for dashboard greeting.</li>
+      <li>FR-ADM-4: Redirect authenticated users directly to dashboard and unauthenticated ones to login.</li>
+    </ol>
+
+    <h3>3.5 Admin Dashboard – Events Management</h3>
+    <p><strong>Description:</strong> Single-page dashboard allowing CRUD on event metadata, media, and publish status.</p>
+    <ol>
+      <li>FR-DBE-1: Require Appwrite session before revealing dashboard sections (`requireSession`).</li>
+      <li>FR-DBE-2: List events with title, slug, status, last updated date, media count, and action buttons.</li>
+      <li>FR-DBE-3: Support create/update of event metadata with validation on name, title, and description.</li>
+      <li>FR-DBE-4: Allow editing and deletion of events, including confirmation prompts for destructive actions.</li>
+      <li>FR-DBE-5: Provide album workspace for managing media uploads, edits, cover selection, and reordering with persistence to Appwrite storage/database.</li>
+    </ol>
+
+    <h3>3.6 Admin Dashboard – Volunteer & Contact Tables</h3>
+    <p><strong>Description:</strong> Data tables for Appwrite collections `volunteers` and `contactDetails`.</p>
+    <ol>
+      <li>FR-DBV-1: Fetch documents ordered by `$createdAt` and render structured table rows.</li>
+      <li>FR-DBV-2: Provide refresh controls for volunteers and contacts.</li>
+      <li>FR-DBV-3: Link email fields using `mailto:` anchors.</li>
+    </ol>
+    <hr />
+
+    <h2>4. External Interface Requirements</h2>
+    <h3>4.1 User Interface</h3>
+    <ul>
+      <li>Consistent header/nav/footer across pages with responsive layout.</li>
+      <li>Forms use labelled inputs, placeholders, and helper text to support accessibility.</li>
+      <li>Admin dashboard uses tabbed sections, tables, and modals for media management; styling centralised in `styles.css`.</li>
+    </ul>
+
+    <h3>4.2 Hardware Interface</h3>
+    <p>No dedicated hardware dependencies beyond standard user devices (desktop, tablet, mobile).</p>
+
+    <h3>4.3 Software Interface</h3>
+    <ul>
+      <li><strong>Appwrite SDK:</strong> Loaded from CDN and used for authentication, database, and storage APIs.</li>
+      <li><strong>FormSubmit:</strong> HTTP POST endpoint for email notifications when Appwrite persistence fails.</li>
+    </ul>
+
+    <h3>4.4 Communications Interface</h3>
+    <ul>
+      <li>HTTPS requests to Appwrite endpoint for CRUD operations.</li>
+      <li>Browser-native navigation and anchor scrolls for intra-page linking.</li>
+    </ul>
+    <hr />
+
+    <h2>5. Non-Functional Requirements</h2>
+    <ol>
+      <li><strong>Performance:</strong> Public pages must remain interactive under typical broadband/mobile connections; sliders and counters should initialize within 2 seconds after DOM ready. Events gallery should degrade gracefully when Appwrite is unavailable.</li>
+      <li><strong>Scalability:</strong> Appwrite collections should accommodate hundreds of events and thousands of volunteer/contact entries without code changes.</li>
+      <li>
+        <strong>Security:</strong>
+        <ul>
+          <li>Enforce authenticated Appwrite sessions for admin dashboard actions.</li>
+          <li>Use least-privilege permissions on uploaded files, granting read to public and edit/delete to uploader.</li>
+          <li>Do not expose Appwrite API keys client-side; rely on project-level configuration.</li>
+        </ul>
+      </li>
+      <li><strong>Reliability:</strong> Volunteer/contact submissions must either store in Appwrite or email fallback to avoid data loss.</li>
+      <li><strong>Maintainability:</strong> Configuration centralized in `appwrite-config.js`; new collections/buckets must be added there and referenced in scripts.</li>
+      <li><strong>Usability:</strong> Layouts must be responsive with accessible labels, alt text, and keyboard-supportive components (e.g., modal close buttons).</li>
+    </ol>
+    <hr />
+
+    <h2>6. Data Requirements</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Entity</th>
+          <th>Source Collection</th>
+          <th>Key Fields</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Events</strong></td>
+          <td><code>events</code></td>
+          <td>`slug`, `name`, `title`, `description`, `date`, `status`, `mediaEntries`, `mediaFileIds`, `coverFileId`, `impactCount`, timestamps</td>
+          <td>`mediaEntries` stored as JSON array string.</td>
+        </tr>
+        <tr>
+          <td><strong>Volunteer Submissions</strong></td>
+          <td><code>volunteers</code></td>
+          <td>`name`, `email`, `phone`, `location`, `interest`, `message`, `submittedAt`, `$createdAt`</td>
+          <td>Captured from volunteer form with `source` metadata.</td>
+        </tr>
+        <tr>
+          <td><strong>Contact Requests</strong></td>
+          <td><code>contactDetails</code></td>
+          <td>`name`, `email`, `phone`, `message`, `<$createdAt`</td>
+          <td>Rendered in admin contacts table.</td>
+        </tr>
+        <tr>
+          <td><strong>Media Files</strong></td>
+          <td>Storage bucket `69419d0a000e78807ded`</td>
+          <td>`fileId`, `filename`, `type`, `uploadedAt`, `title`, `description`</td>
+          <td>Permissions include public read and owner edit/delete.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>All date/time fields use ISO 8601 strings.</p>
+    <hr />
+
+    <h2>7. Other Requirements</h2>
+    <h3>7.1 Risk Assessment</h3>
+    <ol>
+      <li><strong>Appwrite Connectivity Failure:</strong> Mitigated via polling for SDK load and anonymous session retries.</li>
+      <li><strong>Media Storage Limits:</strong> Need monitoring; deletion workflows remove associated storage files to conserve quotas.</li>
+      <li><strong>Unauthorized Access:</strong> `requireSession` and logout flows ensure only authenticated users operate the dashboard.</li>
+    </ol>
+
+    <h3>7.2 Future Enhancements</h3>
+    <ol>
+      <li>Implement server-side email notifications for new volunteer/contact submissions.</li>
+      <li>Add pagination or search for large volunteer/contact datasets.</li>
+      <li>Introduce role-based permissions for multi-admin setups.</li>
+      <li>Provide analytics dashboards showing event engagement metrics.</li>
+    </ol>
+    <hr />
+
+    <h2>8. Appendices</h2>
+    <ul>
+      <li><strong>Appendix A:</strong> Sitemap – Home, Volunteer, Events, Contact, Compliance, Terms, Payment, Admin Login, Admin Dashboard.</li>
+      <li><strong>Appendix B:</strong> Third-party dependencies – Appwrite SDK, FormSubmit, Google Fonts (Playfair Display, Poppins).</li>
+    </ul>
+    <p><em>End of Document</em></p>
+  </body>
+</html>
