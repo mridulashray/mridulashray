@@ -166,20 +166,6 @@ const requireSession = async () => {
 
 requireSession();
 
-window.addEventListener(
-  "pagehide",
-  () => {
-    clearTabSession();
-    localStorage.removeItem(SESSION_KEY);
-    account
-      ?.deleteSession("current")
-      .catch(() => {
-        /* ignore */
-      });
-  },
-  { once: true }
-);
-
 logoutBtn?.addEventListener("click", async () => {
   try {
     await account?.deleteSessions();
