@@ -16,6 +16,13 @@ const upcomingCancelBtn = document.getElementById("upcoming-cancel-btn");
 const upcomingFeedback = document.getElementById("upcoming-event-feedback");
 const refreshUpcomingBtn = document.getElementById("refresh-upcoming-btn");
 const upcomingTableBody = document.querySelector("#upcoming-events-table tbody");
+const ongoingSection = document.getElementById("ongoing-section");
+const ongoingForm = document.getElementById("ongoing-project-form");
+const saveOngoingBtn = document.getElementById("save-ongoing-btn");
+const ongoingCancelBtn = document.getElementById("ongoing-cancel-btn");
+const ongoingFeedback = document.getElementById("ongoing-project-feedback");
+const refreshOngoingBtn = document.getElementById("refresh-ongoing-btn");
+const ongoingTableBody = document.querySelector("#ongoing-projects-table tbody");
 const sectionPanels = document.querySelectorAll(".admin-section");
 const navLinks = document.querySelectorAll(".admin-nav__link");
 const eventsTableBody = document.querySelector("#events-table tbody");
@@ -43,11 +50,13 @@ let eventsCache = [];
 let upcomingCache = [];
 let volunteersCache = [];
 let contactsCache = [];
+let ongoingCache = [];
 let currentMediaEntries = [];
 let mediaOrderDirty = false;
 let dragStartIndex = null;
 let activePanel = "manage-section";
 let upcomingEditingId = null;
+let ongoingEditingId = null;
 
 const pad2 = (value) => value.toString().padStart(2, "0");
 const monthLookup = {
@@ -104,6 +113,25 @@ const toComparableDate = (rawValue) => {
   if (!rawValue) return null;
   const fallback = new Date(rawValue);
   return Number.isNaN(fallback.getTime()) ? null : fallback;
+};
+
+const formatDurationLabel = (startDate, endDate) => {
+  const start = toComparableDate(startDate);
+  const end = toComparableDate(endDate);
+  if (start && end) {
+    if (start.toDateString() === end.toDateString()) {
+      return `${start.toLocaleDateString()} · Single day`;
+    }
+    return `${start.toLocaleDateString()} → ${end.toLocaleDateString()}`;
+  }
+  if (start) {
+    return `${start.toLocaleDateString()} onwards`;
+  }
+  if (end) {
+    return `Until ${end.toLocaleDateString()}`;
+  }
+  if (startDate && endDate) return `${startDate} → ${endDate}`;
+  return startDate || endDate || "Timeline TBA";
 };
 
 const parseMediaEntries = (value) => {
@@ -352,6 +380,7 @@ const renderEventsTable = (events = []) => {
 
 const upcomingPosterField = () => upcomingForm?.querySelector('input[name="storedPosterId"]');
 const posterFileInput = () => upcomingForm?.querySelector('input[name="posterFile"]');
+const ongoingPosterField = () => ongoingForm?.querySelector('input[name="storedOngoingPosterId"]');
 
 const parseUpcomingPayload = () => {
   if (!upcomingForm) throw new Error("Upcoming event form missing");
@@ -376,6 +405,35 @@ const parseUpcomingPayload = () => {
     endDate,
     status: volunteerEnabled ? "needs-volunteers" : "scheduled",
     posterFileId: upcomingPosterField()?.value || ""
+  };
+};
+
+const parseOngoingPayload = () => {
+  if (!ongoingForm) throw new Error("Ongoing project form missing");
+  const formData = new FormData(ongoingForm);
+  const slug = formData.get("opSlug")?.toString().trim();
+  const title = formData.get("opTitle")?.toString().trim();
+  const description = formData.get("opDescription")?.toString().trim();
+  const agenda = formData.get("opAgenda")?.toString().trim();
+  const location = formData.get("opLocation")?.toString().trim();
+  const startDate = formData.get("opStartDate")?.toString().trim();
+  const endDate = formData.get("opEndDate")?.toString().trim();
+  const status = formData.get("opStatus")?.toString().trim() || "active";
+
+  if (!slug || !title || !description || !agenda || !location || !startDate || !endDate) {
+    throw new Error("Please fill in all required ongoing project fields.");
+  }
+
+  return {
+    slug,
+    title,
+    description,
+    agenda,
+    location,
+    startDate,
+    endDate,
+    status,
+    posterFileId: ongoingPosterField()?.value || ""
   };
 };
 
@@ -487,25 +545,6 @@ const renderUpcomingTable = (documents = []) => {
     return;
   }
 
-  const buildDurationLabel = (startRaw, endRaw) => {
-    const startComparable = toComparableDate(startRaw);
-    const endComparable = toComparableDate(endRaw);
-    if (startComparable && endComparable) {
-      if (startComparable.toDateString() === endComparable.toDateString()) {
-        return `${startComparable.toLocaleDateString()} · Single day`;
-      }
-      return `${startComparable.toLocaleDateString()} → ${endComparable.toLocaleDateString()}`;
-    }
-    if (startComparable) {
-      return `${startComparable.toLocaleDateString()} onwards`;
-    }
-    if (endComparable) {
-      return `Until ${endComparable.toLocaleDateString()}`;
-    }
-    if (startRaw && endRaw) return `${startRaw} → ${endRaw}`;
-    return startRaw || endRaw || "Date to be announced";
-  };
-
   const evaluateDateStatus = (startRaw, endRaw) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -523,7 +562,7 @@ const renderUpcomingTable = (documents = []) => {
 
   documents.forEach((doc) => {
     const { isToday, hasEnded } = evaluateDateStatus(doc.startDate, doc.endDate);
-    const durationLabel = buildDurationLabel(doc.startDate, doc.endDate);
+    const durationLabel = formatDurationLabel(doc.startDate, doc.endDate);
     const posterThumb = doc.posterFileId
       ? `<img src="${storagePreviewUrl(doc.posterFileId)}" alt="${doc.title}" />`
       : "—";
@@ -655,6 +694,196 @@ const attachUpcomingActionHandlers = () => {
 const handleConvertUpcoming = async (docId) => {
   if (!window.confirm("Convert this event into an album now?")) return;
   await convertUpcomingDocToAlbum(docId);
+};
+
+const ongoingStatusMeta = {
+  active: { badge: "success", label: "Active" },
+  paused: { badge: "warning", label: "Paused" },
+  completed: { badge: "muted", label: "Completed" }
+};
+
+const getOngoingStatusBadge = (status) => {
+  const normalized = (status || "").toLowerCase();
+  const meta = ongoingStatusMeta[normalized] || { badge: "info", label: status || "Scheduled" };
+  return `<span class="badge badge--${meta.badge}">${meta.label}</span>`;
+};
+
+const resetOngoingForm = () => {
+  if (!ongoingForm) return;
+  ongoingForm.reset();
+  ongoingForm.dataset.mode = "create";
+  ongoingEditingId = null;
+  const storedPoster = ongoingPosterField();
+  if (storedPoster) storedPoster.value = "";
+  if (ongoingCancelBtn) ongoingCancelBtn.hidden = true;
+};
+
+const populateOngoingForm = (doc) => {
+  if (!ongoingForm || !doc) return;
+  ongoingForm.elements.opTitle.value = doc.title || "";
+  ongoingForm.elements.opSlug.value = doc.slug || doc.$id;
+  ongoingForm.elements.opLocation.value = doc.location || "";
+  ongoingForm.elements.opStartDate.value = doc.startDate ? doc.startDate.slice(0, 10) : "";
+  ongoingForm.elements.opEndDate.value = doc.endDate ? doc.endDate.slice(0, 10) : "";
+  ongoingForm.elements.opDescription.value = doc.description || "";
+  ongoingForm.elements.opAgenda.value = doc.agenda || "";
+  if (ongoingForm.elements.opStatus) {
+    ongoingForm.elements.opStatus.value = doc.status || "active";
+  }
+  const storedPoster = ongoingPosterField();
+  if (storedPoster) storedPoster.value = doc.posterFileId || "";
+};
+
+const upsertOngoingProject = async () => {
+  if (!ongoingForm) return;
+  const { databases } = getClient();
+  try {
+    setFeedback(ongoingFeedback, "Saving ongoing project…");
+    const payload = parseOngoingPayload();
+    const formData = new FormData(ongoingForm);
+    const posterFile = formData.get("opPosterFile");
+    if (posterFile instanceof File && posterFile.size) {
+      if (payload.posterFileId) {
+        await deletePosterFile(payload.posterFileId);
+      }
+      payload.posterFileId = await uploadPosterFile(posterFile);
+      const storedPoster = ongoingPosterField();
+      if (storedPoster) storedPoster.value = payload.posterFileId;
+    }
+
+    const isEdit = ongoingForm.dataset.mode === "edit" && ongoingEditingId;
+    const docId = isEdit ? ongoingEditingId : payload.slug;
+
+    if (isEdit) {
+      await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.ongoingProjects, docId, payload);
+    } else {
+      const permissions = [Appwrite.Permission.read(Appwrite.Role.any())];
+      await databases.createDocument(
+        APPWRITE_CONFIG.databaseId,
+        APPWRITE_CONFIG.collections.ongoingProjects,
+        docId,
+        payload,
+        permissions
+      );
+    }
+
+    setFeedback(ongoingFeedback, "Ongoing project saved.");
+    resetOngoingForm();
+    await loadOngoingProjects();
+  } catch (error) {
+    console.error(error);
+    setFeedback(ongoingFeedback, error?.message || "Failed to save ongoing project.", true);
+  }
+};
+
+const renderOngoingTable = (documents = []) => {
+  if (!ongoingTableBody) return;
+  ongoingTableBody.innerHTML = "";
+  if (!documents.length) {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td colspan="7">No ongoing projects yet. Use the form above to add one.</td>`;
+    ongoingTableBody.appendChild(row);
+    return;
+  }
+
+  documents.forEach((doc) => {
+    const durationLabel = formatDurationLabel(doc.startDate, doc.endDate);
+    const posterThumb = doc.posterFileId
+      ? `<img src="${storagePreviewUrl(doc.posterFileId)}" alt="${doc.title}" />`
+      : "—";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td data-label="Project">
+        <strong>${doc.title}</strong>
+        <small>${doc.slug}</small>
+      </td>
+      <td data-label="Duration">${durationLabel}</td>
+      <td data-label="Location">${doc.location || "—"}</td>
+      <td data-label="Agenda">${doc.agenda || "—"}</td>
+      <td data-label="Status">${getOngoingStatusBadge(doc.status)}</td>
+      <td data-label="Poster" class="ongoing-table__poster">${posterThumb}</td>
+      <td class="admin-actions-cell">
+        <button class="ghost-btn ghost-btn--small" data-edit-ongoing="${doc.$id}">Edit</button>
+        <button class="ghost-btn ghost-btn--small ghost-btn--danger" data-delete-ongoing="${doc.$id}">Delete</button>
+      </td>
+    `;
+    ongoingTableBody.appendChild(tr);
+  });
+
+  attachOngoingActionHandlers();
+};
+
+const startOngoingEdit = async (docId) => {
+  if (!ongoingForm) return;
+  try {
+    const doc =
+      ongoingCache.find((item) => item.$id === docId) ||
+      (await getClient().databases.getDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.ongoingProjects, docId));
+    populateOngoingForm(doc);
+    ongoingForm.dataset.mode = "edit";
+    ongoingEditingId = doc.$id;
+    if (ongoingCancelBtn) ongoingCancelBtn.hidden = false;
+    setFeedback(ongoingFeedback, "");
+    ongoingSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    console.error(error);
+    setFeedback(ongoingFeedback, error?.message || "Unable to load ongoing project.", true);
+  }
+};
+
+const handleDeleteOngoing = async (docId) => {
+  if (!window.confirm("Delete this ongoing project?")) return;
+  const { databases } = getClient();
+  try {
+    setFeedback(ongoingFeedback, "Deleting ongoing project…");
+    const doc = await databases.getDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.ongoingProjects, docId);
+    if (doc.posterFileId) {
+      await deletePosterFile(doc.posterFileId);
+    }
+    await databases.deleteDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.ongoingProjects, docId);
+    setFeedback(ongoingFeedback, "Ongoing project deleted.");
+    if (ongoingEditingId === docId) {
+      resetOngoingForm();
+    }
+    await loadOngoingProjects();
+  } catch (error) {
+    console.error(error);
+    setFeedback(ongoingFeedback, error?.message || "Unable to delete ongoing project.", true);
+  }
+};
+
+const attachOngoingActionHandlers = () => {
+  if (!ongoingTableBody) return;
+  ongoingTableBody.querySelectorAll("[data-edit-ongoing]").forEach((btn) =>
+    btn.addEventListener("click", () => startOngoingEdit(btn.dataset.editOngoing))
+  );
+  ongoingTableBody.querySelectorAll("[data-delete-ongoing]").forEach((btn) =>
+    btn.addEventListener("click", () => handleDeleteOngoing(btn.dataset.deleteOngoing))
+  );
+};
+
+const loadOngoingProjects = async () => {
+  if (!ongoingTableBody) return;
+  const { databases } = getClient();
+  ongoingTableBody.innerHTML = "";
+  try {
+    const queries = [];
+    if (Appwrite.Query?.orderAsc) {
+      queries.push(Appwrite.Query.orderAsc("startDate"));
+    }
+    const response = await databases.listDocuments(
+      APPWRITE_CONFIG.databaseId,
+      APPWRITE_CONFIG.collections.ongoingProjects,
+      queries
+    );
+    ongoingCache = response.documents || [];
+    renderOngoingTable(ongoingCache);
+    setFeedback(ongoingFeedback, "");
+  } catch (error) {
+    console.error(error);
+    setFeedback(ongoingFeedback, "Unable to load ongoing projects. Check Appwrite permissions.", true);
+    ongoingTableBody.innerHTML = `<tr><td colspan="7">Unable to load ongoing projects.</td></tr>`;
+  }
 };
 
 const convertExpiredUpcomingEvents = async (documents = []) => {
@@ -870,8 +1099,10 @@ const showPanel = (panelId) => {
   sectionPanels.forEach((section) => {
     if (section.id === panelId || section.id === "album-workspace") {
       section.hidden = false;
+      section.removeAttribute("hidden");
     } else if (section.id !== "album-workspace") {
       section.hidden = true;
+      section.setAttribute("hidden", "true");
     }
   });
   navLinks.forEach((link) => {
@@ -881,6 +1112,8 @@ const showPanel = (panelId) => {
     loadEvents();
   } else if (panelId === "upcoming-section" && !upcomingCache.length) {
     loadUpcomingEvents();
+  } else if (panelId === "ongoing-section" && !ongoingCache.length) {
+    loadOngoingProjects();
   } else if (panelId === "volunteer-section" && !volunteersCache.length) {
     loadVolunteers();
   } else if (panelId === "contacts-section" && !contactsCache.length) {
@@ -888,6 +1121,10 @@ const showPanel = (panelId) => {
   }
   if (panelId !== "published-section") {
     toggleWorkspace(false);
+  }
+  const targetSection = document.getElementById(panelId);
+  if (targetSection) {
+    targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
 
@@ -1322,6 +1559,7 @@ const initDashboard = async () => {
   await requireSession();
   await loadEvents();
   await loadUpcomingEvents();
+  await loadOngoingProjects();
   toggleWorkspace(false);
 };
 
@@ -1335,8 +1573,18 @@ upcomingCancelBtn?.addEventListener("click", () => {
   setFeedback(upcomingFeedback, "");
 });
 
-refreshUpcomingBtn?.addEventListener("click", () => {
-  loadUpcomingEvents();
+refreshUpcomingBtn?.addEventListener("click", loadUpcomingEvents);
+
+saveOngoingBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
+  upsertOngoingProject();
 });
+
+ongoingCancelBtn?.addEventListener("click", () => {
+  resetOngoingForm();
+  setFeedback(ongoingFeedback, "");
+});
+
+refreshOngoingBtn?.addEventListener("click", loadOngoingProjects);
 
 initDashboard();

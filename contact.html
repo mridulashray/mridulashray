@@ -15,19 +15,61 @@
   <body>
     <header class="site-header">
       <div class="container nav-wrapper">
-        <div class="brand">
+        <a class="brand" href="index.html">
           <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
           <span class="brand__name">Mridulashray</span>
-        </div>
+        </a>
         <nav class="main-nav" aria-label="Primary">
-          <a href="index.html">Home</a>
-          <a href="about.html">About Us</a>
-          <a href="volunteer.html">Volunteer</a>
-          <a href="events.html">Events</a>
-          <a href="contact.html" class="active">Contact Us</a>
-          <a href="compliance.html">Compliance & Legal</a>
-          <a href="terms.html">Terms and Conditions</a>
-          <a href="payment.html" class="main-nav__donate">Donate</a>
+          <div class="nav-item">
+            <a href="index.html" class="nav-link">Home</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="about">
+            <a href="about.html" class="nav-link nav-link--primary">About Us</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle About Us menu" data-nav-trigger="about" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown" id="nav-dropdown-about" role="menu" aria-label="About Us sections">
+              <p class="nav-dropdown__label">About Us</p>
+              <ul>
+                <li><a href="about-story.html">Our Story</a></li>
+                <li><a href="about-board.html">Boards / Officials</a></li>
+                <li><a href="about-offerings.html">Our Offerings</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="volunteer.html" class="nav-link">Volunteer</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="events">
+            <a href="events.html" class="nav-link nav-link--primary">Events</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle Events menu" data-nav-trigger="events" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown nav-dropdown--wide" id="nav-dropdown-events" role="menu" aria-label="Events menu">
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Organised Events</p>
+                <ul class="nav-events-list" data-nav-events-list>
+                  <li class="nav-dropdown__empty">Albums are syncing…</li>
+                </ul>
+              </div>
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Our Projects</p>
+                <ul>
+                  <li><a href="events-upcoming.html">Upcoming Project</a></li>
+                  <li><a href="events-ongoing.html">Ongoing Project</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="contact.html" class="nav-link is-active">Contact Us</a>
+          </div>
+          <div class="nav-item">
+            <a href="terms.html" class="nav-link">Terms and Conditions</a>
+          </div>
+          <div class="nav-item">
+            <a href="payment.html" class="nav-link main-nav__donate">Donate</a>
+          </div>
         </nav>
         <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
           <span></span>
@@ -49,7 +91,7 @@
         ></iframe>
       </section>
 
-      <section class="contact-panel">
+      <section class="contact-panel" id="contact-panel">
         <div class="contact-panel__overlay" aria-hidden="true"></div>
         <div class="contact-panel__inner">
           <div class="contact-panel__grid">
@@ -60,12 +102,14 @@
             <div class="contact-panel__form-wrapper">
               <div class="contact-panel__intro">
                 <p>Contact Us:</p>
-                <h2>After reviewing, we will get back to you.</h2>
+                <h2>Send us your questions, ideas, or invitations.</h2>
               </div>
+              <br>
               <form class="contact-panel__form" action="https://formsubmit.co/mridulashrayorg@gmail.com" method="POST">
                 <input type="hidden" name="_subject" value="New Contact Request - Mridulashray" />
                 <input type="hidden" name="_template" value="table" />
                 <input type="hidden" name="form_source" value="Contact Page" />
+                <input type="hidden" name="_next" value="" data-contact-next />
                 <div class="contact-panel__form-row">
                   <label for="contact-name">Name:</label>
                   <input id="contact-name" type="text" name="name" placeholder="Enter your full name" required />
@@ -83,6 +127,7 @@
                   <textarea id="contact-message" name="message" rows="4" placeholder="Tell us how we can help you" required></textarea>
                 </div>
                 <button type="submit" class="contact-panel__submit">Submit</button>
+                <p class="contact-panel__thanks" id="contact-thanks" hidden>Thanks for reaching out to us.</p>
               </form>
             </div>
           </div>
@@ -136,7 +181,6 @@
               <li><a href="volunteer.html">Volunteer</a></li>
               <li><a href="events.html">Events</a></li>
               <li><a href="contact.html" class="active">Contact Us</a></li>
-              <li><a href="compliance.html">Compliance &amp; Legal</a></li>
               <li><a href="terms.html">Terms and Conditions</a></li>
               <li><a href="payment.html">Donate</a></li>
             </ul>

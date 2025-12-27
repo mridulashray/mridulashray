@@ -15,19 +15,61 @@
   <body>
     <header class="site-header">
       <div class="container nav-wrapper">
-        <div class="brand">
+        <a class="brand" href="index.html">
           <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
           <span class="brand__name">Mridulashray</span>
-        </div>
+        </a>
         <nav class="main-nav" aria-label="Primary">
-          <a href="index.html">Home</a>
-          <a href="about.html">About Us</a>
-          <a href="volunteer.html">Volunteer</a>
-          <a href="events.html">Events</a>
-          <a href="contact.html">Contact Us</a>
-          <a href="compliance.html">Compliance &amp; Legal</a>
-          <a href="terms.html" class="active">Terms and Conditions</a>
-          <a href="payment.html" class="main-nav__donate">Donate</a>
+          <div class="nav-item">
+            <a href="index.html" class="nav-link">Home</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="about">
+            <a href="about.html" class="nav-link nav-link--primary">About Us</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle About Us menu" data-nav-trigger="about" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown" id="nav-dropdown-about" role="menu" aria-label="About Us sections">
+              <p class="nav-dropdown__label">About Us</p>
+              <ul>
+                <li><a href="about-story.html">Our Story</a></li>
+                <li><a href="about-board.html">Boards / Officials</a></li>
+                <li><a href="about-offerings.html">Our Offerings</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="volunteer.html" class="nav-link">Volunteer</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="events">
+            <a href="events.html" class="nav-link nav-link--primary">Events</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle Events menu" data-nav-trigger="events" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown nav-dropdown--wide" id="nav-dropdown-events" role="menu" aria-label="Events menu">
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Organised Events</p>
+                <ul class="nav-events-list" data-nav-events-list>
+                  <li class="nav-dropdown__empty">Albums are syncing…</li>
+                </ul>
+              </div>
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Our Projects</p>
+                <ul>
+                  <li><a href="events-upcoming.html">Upcoming Project</a></li>
+                  <li><a href="events-ongoing.html">Ongoing Project</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="contact.html" class="nav-link">Contact Us</a>
+          </div>
+          <div class="nav-item">
+            <a href="terms.html" class="nav-link is-active">Terms and Conditions</a>
+          </div>
+          <div class="nav-item">
+            <a href="payment.html" class="nav-link main-nav__donate">Donate</a>
+          </div>
         </nav>
         <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
           <span></span>
@@ -160,6 +202,78 @@
               For inspection requests or certified copies, please write to <a href="mailto:mridulashrayorg@gmail.com">mridulashrayorg@gmail.com</a>.
             </p>
           </div>
+
+          <div class="policy-section">
+            <h2>12. Compliance &amp; Legal Governance</h2>
+            <p>
+              To reinforce transparency and accountability, the following compliance practices are permanently woven into our Terms and Conditions. These sections
+              consolidate the former “Compliance &amp; Legal” page so all regulatory information lives alongside our primary terms.
+            </p>
+          </div>
+
+          <div class="policy-section">
+            <h3>Organizational Compliance</h3>
+            <ul>
+              <li>All registrations, licences, and approvals for the trust remain current and auditable.</li>
+              <li>Program, governance, and finance documentation is archived systematically for statutory inspections.</li>
+              <li>Every activity executed by Mridulashray aligns with the objectives listed in our founding documents.</li>
+            </ul>
+          </div>
+
+          <div class="policy-section">
+            <h3>Financial Compliance &amp; Audits</h3>
+            <ul>
+              <li>Certified auditors review our books annually and issue formal audit reports.</li>
+              <li>Transparent bookkeeping ensures donations are traceable from receipt to utilisation.</li>
+              <li>We follow all applicable Income Tax provisions for charitable organisations and provide summaries or statements on request.</li>
+            </ul>
+          </div>
+
+          <div class="policy-section">
+            <h3>Ethical Standards &amp; Governance</h3>
+            <ul>
+              <li>Donations are used solely for beneficiary-facing programmes approved by trustees.</li>
+              <li>Beneficiaries are supported without discrimination; staff and volunteers adhere to a strict ethical code.</li>
+              <li>Misuse of funds, resources, or influence is prohibited and triggers disciplinary action.</li>
+            </ul>
+          </div>
+
+          <div class="policy-section">
+            <h3>Data Protection &amp; Privacy</h3>
+            <p>Personal data from donors, volunteers, and beneficiaries is handled with care:</p>
+            <ul>
+              <li>Information is collected only with consent and used for communication, verification, or statutory reporting.</li>
+              <li>No personal data is disclosed to third parties without a legitimate purpose.</li>
+              <li>Sensitive records are stored securely with access restricted to authorised personnel.</li>
+            </ul>
+          </div>
+
+          <div class="policy-section">
+            <h3>Child Protection Commitment</h3>
+            <ul>
+              <li>Safeguarding protocols protect every child who engages with our programmes.</li>
+              <li>Images or personal identifiers of minors are never published without documented consent.</li>
+              <li>All representatives must complete orientation on child-safety guidelines before field deployment.</li>
+            </ul>
+          </div>
+
+          <div class="policy-section">
+            <h3>Volunteer Compliance Expectations</h3>
+            <ul>
+              <li>Volunteers follow safety instructions, respect beneficiaries, and uphold community trust.</li>
+              <li>Discriminatory, harmful, or negligent behaviour is not tolerated.</li>
+              <li>All on-ground actions must be coordinated with authorised Mridulashray leads.</li>
+            </ul>
+          </div>
+
+          <div class="policy-section">
+            <h3>Legal Responsibility &amp; Transparency</h3>
+            <ul>
+              <li>Mridulashray is not liable for losses from website misuse, third-party outages, or issues caused by user negligence.</li>
+              <li>Technical disruptions beyond our control may temporarily impact services.</li>
+              <li>Program impact notes, fund utilisation highlights, and audited statements are shared publicly or on request to maintain trust.</li>
+            </ul>
+          </div>
         </article>
       </section>
     </main>
@@ -210,7 +324,6 @@
               <li><a href="volunteer.html">Volunteer</a></li>
               <li><a href="events.html">Events</a></li>
               <li><a href="contact.html">Contact Us</a></li>
-              <li><a href="compliance.html">Compliance &amp; Legal</a></li>
               <li><a href="terms.html" class="active">Terms and Conditions</a></li>
               <li><a href="payment.html">Donate</a></li>
             </ul>

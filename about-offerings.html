@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Offerings | Mridulashray</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrapper">
+        <a class="brand" href="index.html">
+          <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
+          <span class="brand__name">Mridulashray</span>
+        </a>
+        <nav class="main-nav" aria-label="Primary">
+          <div class="nav-item">
+            <a href="index.html" class="nav-link">Home</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="about">
+            <a href="about.html" class="nav-link nav-link--primary is-active">About Us</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle About Us menu" data-nav-trigger="about" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown" id="nav-dropdown-about" role="menu" aria-label="About Us sections">
+              <p class="nav-dropdown__label">About Us</p>
+              <ul>
+                <li><a href="about-story.html">Our Story</a></li>
+                <li><a href="about-board.html">Boards / Officials</a></li>
+                <li><a href="about-offerings.html" class="is-active">Our Offerings</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="volunteer.html" class="nav-link">Volunteer</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="events">
+            <a href="events.html" class="nav-link nav-link--primary">Events</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle Events menu" data-nav-trigger="events" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown nav-dropdown--wide" id="nav-dropdown-events" role="menu" aria-label="Events menu">
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Organised Events</p>
+                <ul class="nav-events-list" data-nav-events-list>
+                  <li class="nav-dropdown__empty">Albums are syncing…</li>
+                </ul>
+              </div>
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Our Projects</p>
+                <ul>
+                  <li><a href="events-upcoming.html">Upcoming Project</a></li>
+                  <li><a href="events-ongoing.html">Ongoing Project</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="contact.html" class="nav-link">Contact Us</a>
+          </div>
+          <div class="nav-item">
+            <a href="terms.html" class="nav-link">Terms and Conditions</a>
+          </div>
+          <div class="nav-item">
+            <a href="payment.html" class="nav-link main-nav__donate">Donate</a>
+          </div>
+        </nav>
+        <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <a class="donate-btn" href="payment.html">Donate</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="offerings-hero" id="what-we-serve">
+        <div class="container offerings-hero__grid">
+          <div class="offerings-hero__content">
+            <p class="offerings-hero__eyebrow">What we serve</p>
+            <h1>Care circles woven with skill, study &amp; shelter</h1>
+            <p>
+              Every programme is a living ecosystem—mentors guiding first-generation learners, artisans skilling young women, caregivers protecting abandoned animals,
+              and volunteers planting micro-forests that cool their neighborhoods. Together they form a continuum of dignity.
+            </p>
+            <p>
+              On this page you can trace how a single contribution powers classrooms, sewing labs, tree nurseries, and elder care kitchens across Haryana. Meet the
+              initiatives that thousands lean on every month.
+            </p>
+            <div class="offerings-hero__stats" role="list">
+              <article class="offerings-hero__stat" role="listitem">
+                <p class="offerings-hero__stat-label">Training Hours / month</p>
+                <p class="offerings-hero__stat-value stat-counter" data-target="480" data-suffix="+">0</p>
+                <span>Women &amp; girls mastering income-ready crafts.</span>
+              </article>
+              <article class="offerings-hero__stat" role="listitem">
+                <p class="offerings-hero__stat-label">Learners Hosted</p>
+                <p class="offerings-hero__stat-value stat-counter" data-target="210">0</p>
+                <span>Reading-room aspirants chasing competitive exams.</span>
+              </article>
+              <article class="offerings-hero__stat" role="listitem">
+                <p class="offerings-hero__stat-label">Community Drives</p>
+                <p class="offerings-hero__stat-value stat-counter" data-target="35">0</p>
+                <span>Plantations, clean-ups &amp; relief efforts every quarter.</span>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="program-stories" id="impact">
+        <div class="container">
+          <div class="program-stories__intro">
+            <p class="program-stories__kicker">Our Offerings</p>
+            <h2>Stories from the ground</h2>
+            <p>
+              Each initiative is rooted in lived realities—women rediscovering their talent, students finding safe study spaces, or volunteers strengthening entire
+              neighborhoods. Explore the live state of the programs Mridulashray nurtures every week.
+            </p>
+          </div>
+
+          <article class="story story--overlay">
+            <div class="story__media">
+              <img src="images/homepage3.png" alt="Women learning stitching in Mridulashray training center" />
+            </div>
+            <div class="story__content">
+              <h3>Stitching Training</h3>
+              <p>
+                Our Silai School empowers women and young girls with free tailoring and finishing courses. Alongside craft skills, they gain confidence, peer support, and
+                a clear pathway to financial independence.
+              </p>
+              <p class="story__meta">Daily batches • Rewari &amp; nearby villages</p>
+              <a href="volunteer.html" class="story__action-link">Join as mentor</a>
+            </div>
+          </article>
+
+          <article class="story story--reverse">
+            <div class="story__media">
+              <img src="images/homepage4.png" alt="Students preparing for competitive exams in reading room" />
+            </div>
+            <div class="story__content">
+              <h3>Reading Room for Underprivileged Students</h3>
+              <p>
+                A serene, well-lit reading room designed for UPSC, banking, and other aspirants who cannot afford coaching hubs. We offer study desks, reference books, and
+                mentors who keep learners focused through long preparation cycles.
+              </p>
+              <p class="story__meta">Open 7 days • quiet and supervised</p>
+              <ul class="story__list">
+                <li>Guidance on schedules and scholarship forms</li>
+                <li>Volunteers mentoring and tracking daily study plans</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="story story--overlay">
+            <div class="story__media">
+              <img src="images/homepage5.png" alt="Volunteers planting saplings during an environment drive" />
+            </div>
+            <div class="story__content">
+              <h3>Environment Conservation</h3>
+              <p>
+                We conduct plantation drives, waste-reduction campaigns, and biodiversity walks that turn citizens into long-term stewards of the planet. Measurable
+                climate action starts in our own neighborhoods.
+              </p>
+              <ul class="story__list">
+                <li>Community-led sapling care plans</li>
+                <li>Workshops on soil health &amp; water conservation</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="story story--overlay">
+            <div
+              class="story__media"
+              id="gallery-cow-shelter"
+              data-gallery-images="images/homepage6_cow1.png|images/homepage6_cow2.png|images/homepage6_cow3.png"
+              data-gallery-index="0"
+            >
+              <img src="images/homepage6_cow1.png" alt="Cows resting safely inside Mridulashray shelter" />
+            </div>
+            <div class="story__content">
+              <h3>Cow Shelter Home</h3>
+              <p>
+                The Gau Shaala rescues abandoned cattle, ensuring nutritious feed, veterinary care, and patient caregivers. Every stall reflects dignity for animals who
+                once wandered streets.
+              </p>
+              <p class="story__meta">Capacity: 70+ cows • 24x7 caregivers</p>
+              <button class="story__action" type="button" data-gallery-trigger="#gallery-cow-shelter">View More</button>
+            </div>
+          </article>
+
+          <article class="story story--overlay">
+            <div
+              class="story__media"
+              id="gallery-trees"
+              data-gallery-images="images/homepage7_tree1.png|images/homepage7_tree2.png"
+              data-gallery-index="0"
+            >
+              <img src="images/homepage7_tree1.png" alt="Volunteer planting a sapling in a rural community" />
+            </div>
+            <div class="story__content">
+              <h3>Trees Planted</h3>
+              <p>
+                Thousands of saplings nurtured with community guardianship. Every new plantation circle receives drip irrigation tips, mulch support, and citizen monitors
+                who log growth.
+              </p>
+              <p class="story__meta">12 micro-forests • 3,500+ saplings</p>
+              <button class="story__action" type="button" data-gallery-trigger="#gallery-trees">View More</button>
+            </div>
+          </article>
+
+          <article class="story story--reverse">
+            <div
+              class="story__media"
+              id="gallery-volunteer"
+              data-gallery-images="images/homepage8_1.png|images/homepage8_2.png"
+              data-gallery-index="0"
+            >
+              <img src="images/homepage8_1.png" alt="Volunteer programme clean-up drive" />
+            </div>
+            <div class="story__content">
+              <h3>Volunteer Program</h3>
+              <p>
+                Led by Dev Sir, our volunteer collective anchors every project—from relief distribution to student mentorship. They keep communities energized and
+                accountable.
+              </p>
+              <ul class="story__list">
+                <li>Weekend clean-up and plantation drives</li>
+                <li>Onboarding for corporate &amp; campus groups</li>
+              </ul>
+              <button class="story__action" type="button" data-gallery-trigger="#gallery-volunteer">View More</button>
+            </div>
+          </article>
+
+          <article class="story story--overlay">
+            <div
+              class="story__media"
+              id="gallery-women"
+              data-gallery-images="images/homepage9_WE1.png|images/homepage9_WE2.png|images/homepage9_WE3.png"
+              data-gallery-index="0"
+            >
+              <img src="images/homepage9_WE1.png" alt="Women learning new skills at empowerment program" />
+            </div>
+            <div class="story__content">
+              <h3>Women &amp; Girl Empowerment</h3>
+              <p>
+                Skill sprints covering Silai, mehndi, beauty arts, and digital confidence. Graduates leave with portfolios, peer networks, and seed funding connects.
+              </p>
+              <p class="story__meta">500+ trainees • 18 mentor-artisans</p>
+              <button class="story__action" type="button" data-gallery-trigger="#gallery-women">View More</button>
+            </div>
+          </article>
+
+          <article class="story story--overlay">
+            <div class="story__media">
+              <img src="images/homepage10.png" alt="Volunteers serving elders in old age home" />
+            </div>
+            <div class="story__content">
+              <h3>Old Age Home Support</h3>
+              <p>
+                Regular visits deliver meals, physiotherapy camps, and conversation circles for elders who crave company. We ensure every resident feels seen and
+                celebrated.
+              </p>
+              <a class="story__action-link" href="payment.html">Support the initiative</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <img src="images/logo.png" alt="Mridulashray logo" />
+          <div>
+            <p class="footer-brand__name">Mridulashray</p>
+            <p class="footer-brand__tagline">Serving dignity, education &amp; empowerment.</p>
+          </div>
+        </div>
+        <div class="footer-grid">
+          <div>
+            <h4>Services</h4>
+            <ul class="footer-service-links">
+              <li><a href="index.html#service-stitching">Stitching Training</a></li>
+              <li><a href="index.html#service-reading-room">Reading Room for Competitive Exams</a></li>
+              <li><a href="index.html#service-environment">Environment Conservation</a></li>
+              <li><a href="index.html#service-cow-shelter">Cow Shelter Home (Gau Shaala)</a></li>
+              <li><a href="index.html#service-tree-plantation">Tree Plantation Drives</a></li>
+              <li><a href="index.html#service-volunteer-support">Volunteer Support Programs</a></li>
+              <li><a href="index.html#service-women-empowerment">Women &amp; Girl Empowerment Programs</a></li>
+              <li><a href="index.html#service-old-age-home">Old Age Home Support</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Address</h4>
+            <p>
+              Mata Din &amp; Sons, Chemists, Gokul Bazar,<br />
+              Haryana, India,<br />
+              Rewari - 123401
+            </p>
+            <br />
+            <div class="footer-contact">
+              <h4>Contact Us On:</h4>
+              <p class="contact-phone">
+                <span aria-hidden="true">📞</span>
+                <a href="tel:+9109899469717">098994 69717</a>
+              </p>
+            </div>
+          </div>
+          <div>
+            <h4>Pages</h4>
+            <ul class="footer-links">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="volunteer.html">Volunteer</a></li>
+              <li><a href="events.html">Events</a></li>
+              <li><a href="contact.html">Contact Us</a></li>
+              <li><a href="terms.html">Terms and Conditions</a></li>
+              <li><a href="payment.html">Donate</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Social Media Links</h4>
+            <ul class="social-links">
+              <li>
+                <a href="https://www.facebook.com/profile.php?id=100075828498346" aria-label="Mridulashray on Facebook">
+                  <span class="social-icon social-icon--fb">f</span>
+                  Mridulashray.org
+                </a>
+              </li>
+              <li>
+                <a href="https://x.com/Mridulashray1" aria-label="Mridulashray on X">
+                  <span class="social-icon social-icon--x">𝕏</span>
+                  Mridulashray1
+                </a>
+              </li>
+              <li>
+                <a href="https://www.instagram.com/mridulashray?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" aria-label="Mridulashray on Instagram">
+                  <span class="social-icon social-icon--ig" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="img" focusable="false">
+                      <path
+                        d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm0 2h10c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3H7c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3zm9 1a1 1 0 000 2 1 1 0 000-2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"
+                      ></path>
+                    </svg>
+                  </span>
+                  @mridulashray
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="footer-copy">© <span id="footer-year"></span> Mridulashray. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="appwrite-config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

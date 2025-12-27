@@ -15,19 +15,61 @@
   <body>
     <header class="site-header">
       <div class="container nav-wrapper">
-        <div class="brand">
+        <a class="brand" href="index.html">
           <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
           <span class="brand__name">Mridulashray</span>
-        </div>
+        </a>
         <nav class="main-nav" aria-label="Primary">
-          <a href="index.html">Home</a>
-          <a href="about.html">About Us</a>
-          <a href="volunteer.html">Volunteer</a>
-          <a href="events.html" class="active">Events</a>
-          <a href="contact.html">Contact Us</a>
-          <a href="compliance.html">Compliance & Legal</a>
-          <a href="terms.html">Terms and Conditions</a>
-          <a href="payment.html" class="main-nav__donate">Donate</a>
+          <div class="nav-item">
+            <a href="index.html" class="nav-link">Home</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="about">
+            <a href="about.html" class="nav-link nav-link--primary">About Us</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle About Us menu" data-nav-trigger="about" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown" id="nav-dropdown-about" role="menu" aria-label="About Us sections">
+              <p class="nav-dropdown__label">About Us</p>
+              <ul>
+                <li><a href="about-story.html">Our Story</a></li>
+                <li><a href="about-board.html">Boards / Officials</a></li>
+                <li><a href="about-offerings.html">Our Offerings</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="volunteer.html" class="nav-link">Volunteer</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="events">
+            <a href="events.html" class="nav-link nav-link--primary is-active">Events</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle Events menu" data-nav-trigger="events" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown nav-dropdown--wide" id="nav-dropdown-events" role="menu" aria-label="Events menu">
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Organised Events</p>
+                <ul class="nav-events-list" data-nav-events-list>
+                  <li class="nav-dropdown__empty">Albums are syncing…</li>
+                </ul>
+              </div>
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Our Projects</p>
+                <ul>
+                  <li><a href="events-upcoming.html">Upcoming Project</a></li>
+                  <li><a href="events-ongoing.html">Ongoing Project</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="contact.html" class="nav-link">Contact Us</a>
+          </div>
+          <div class="nav-item">
+            <a href="terms.html" class="nav-link">Terms and Conditions</a>
+          </div>
+          <div class="nav-item">
+            <a href="payment.html" class="nav-link main-nav__donate">Donate</a>
+          </div>
         </nav>
         <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
           <span></span>
@@ -39,48 +81,179 @@
     </header>
 
     <main>
-      <section class="events-hero">
+      <section class="events-hero events-hero--image" aria-label="Events hero">
+        <div class="events-hero__overlay">
+          <img class="events-hero__image" src="images/Events-hero.png" alt="" aria-hidden="true" />
+        </div>
+      </section>
+
+      <section class="events-photo-wall events-photo-wall--early" aria-labelledby="events-photo-wall-title">
         <div class="container">
-          <div class="events-hero__content">
-            <p class="petal-badge">Field Diaries</p>
-            <h1>Event Albums &amp; Community Moments</h1>
-            <p>
-              Every drive, workshop, and outreach story is documented here so our supporters can witness the real smiles they power. Explore curated albums,
-              browse raw photo walls, and read context from the teams on-ground.
-            </p>
-            <div class="events-hero__stats">
-              <article>
-                <strong id="events-count">0</strong>
-                <span>Albums curated</span>
-              </article>
-              <article>
-                <strong id="events-photos-count">0</strong>
-                <span>Photos archived</span>
-              </article>
-              <article>
-                <strong id="events-impact-count">0</strong>
-                <span>Communities touched</span>
-              </article>
-            </div>
-            <div class="events-hero__actions">
-              <a class="ghost-btn ghost-btn--solid" href="volunteer.html">Volunteer at our next drive</a>
-              <a class="outline-link" href="contact.html">Invite us to your school</a>
-            </div>
+          <header>
+            <p class="petal-badge">Photo Wall</p>
+            <h2 id="events-photo-wall-title">Snapshots straight from the field</h2>
+            <p>Scroll through a living wall of images pulled from every active album.</p>
+          </header>
+          <div class="events-photo-wall__viewport">
+            <div class="events-photo-wall__grid" id="events-photo-wall-grid" aria-live="polite"></div>
           </div>
         </div>
       </section>
 
-      <section class="upcoming-events" aria-labelledby="upcoming-events-title">
-        <div class="container">
-          <div class="upcoming-events__header">
-            <div>
-              <p class="petal-badge">Invitation board</p>
-              <h2 id="upcoming-events-title">Upcoming events &amp; drives</h2>
-              <p>Mark your calendar for our next community gatherings. Each card doubles as an invite—tap in, spread the word, show up.</p>
+      <section class="events-portal" id="events-navigation" aria-label="Nested events navigation">
+        <div class="container events-portal__grid">
+          <aside class="events-portal__nav">
+            <button class="events-portal__tab is-active" type="button" data-primary-tab="organised">Organised Events</button>
+            <div class="events-portal__subnav" data-parent-tab="organised">
+              <p class="events-portal__label">Albums list</p>
+              <ul class="events-portal__list" id="organised-events-list">
+                <li class="events-portal__list-item is-placeholder">Albums are loading…</li>
+              </ul>
+              <p class="events-portal__empty" id="organised-events-empty" aria-live="polite"></p>
             </div>
+            <button class="events-portal__tab" type="button" data-primary-tab="projects">Our Projects</button>
+            <div class="events-portal__subnav" data-parent-tab="projects">
+              <div class="events-portal__subtabs" role="group" aria-label="Project views">
+                <button class="events-portal__subtab is-active" type="button" data-subtab="projects-upcoming">Upcoming Project</button>
+                <button class="events-portal__subtab" type="button" data-subtab="projects-ongoing">Ongoing Project</button>
+              </div>
+            </div>
+          </aside>
+          <div class="events-portal__panels">
+            <article class="events-portal__panel is-active" data-primary-panel="organised">
+              <div class="events-portal__panel-inner">
+                <div class="events-intro">
+                  <div class="events-intro__header">
+                    <span>Introduction</span>
+                  </div>
+                  <div class="events-intro__body">
+                    <h3>Organised Events Overview</h3>
+                    <p>
+                      Mridulashray brings together seva, sustainability, and culture. Every drive doubles as a classroom—children learn stewardship, elders rediscover dignity,
+                      and volunteers practise empathy in action.
+                    </p>
+                    <p>
+                      We document each organised event so supporters can revisit the stories, faces, and micro-milestones that make impact measurable. From sapling
+                      distributions to spiritual gaushala gatherings, every photo answers a “why” and “who benefited?”.
+                    </p>
+                    <p>
+                      These notes also help school leaders, donors, and government partners borrow formats that already work on-ground, accelerating the next wave of service.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="events-focus">
+                  <div class="events-focus__header">
+                    <p class="petal-badge">Stories in Focus</p>
+                    <h4>Title &amp; description from select events</h4>
+                    <p>Read condensed narratives tagged to each highlight shot—perfect for newsletters and updates.</p>
+                  </div>
+                  <div class="events-focus__grid events-highlight__grid" id="events-highlight-grid" aria-live="polite"></div>
+                </div>
+              </div>
+            </article>
+            <article class="events-portal__panel" data-primary-panel="projects">
+              <div class="events-portal__subpanels">
+                <div class="events-portal__subpanel is-active" data-subpanel="projects-upcoming">
+                  <section class="upcoming-events" aria-labelledby="upcoming-events-title">
+                    <div class="upcoming-events__header">
+                      <div>
+                        <p class="petal-badge">Invitation board</p>
+                        <h2 id="upcoming-events-title">Upcoming events &amp; drives</h2>
+                        <p>Mark your calendar for our next community gatherings. Each card doubles as an invite—tap in, spread the word, show up.</p>
+                      </div>
+                    </div>
+                    <div class="upcoming-events__grid" id="upcoming-events-grid" aria-live="polite"></div>
+                    <p class="upcoming-events__empty" id="upcoming-events-empty">Upcoming events will appear here once announced.</p>
+                  </section>
+                </div>
+                <div class="events-portal__subpanel" data-subpanel="projects-ongoing">
+                  <section class="govt-alert" id="rebuild-call">
+                    <div class="container">
+                      <div class="govt-alert__intro">
+                        <span class="petal-badge">Ongoing project</span>
+                        <h2>A Call to Rebuild Government Schools in Haryana</h2>
+                        <p>
+                          Government schools across Haryana are losing students to private campuses that promise better infrastructure, yet remain unaffordable for most
+                          families. Children from low-income homes are left to wonder where they belong as classrooms decay and morale drops.
+                        </p>
+                        <p>
+                          We cannot allow this deterioration to become permanent. Every child deserves engaging teachers, safe spaces, and the dignity of equal opportunity.
+                          Together we can reverse the exodus—by uplifting schools meant for the public, not abandoning them.
+                        </p>
+                      </div>
+
+                      <div class="govt-alert__layout">
+                        <div class="govt-alert__narrative">
+                          <article class="narrative-tile">
+                            <h3>The reality today</h3>
+                            <p>Broken desks, leaking roofs, and demotivated staff are forcing students out. Some schools report two-thirds of their classrooms unusable.</p>
+                            <ul class="petal-list">
+                              <li>70% of parents surveyed cite poor facilities as the #1 reason for exit.</li>
+                              <li>Students from deprived sections have no affordable alternative.</li>
+                              <li>Learning loss widens every term we wait.</li>
+                            </ul>
+                          </article>
+
+                          <article class="narrative-tile">
+                            <h3>What we are doing</h3>
+                            <p>
+                              We are convening government departments, teachers, and community champions to co-create improvement plans for each cluster of schools in
+                              Haryana. Repairs, teacher motivation workshops, and student wellness clubs are being mapped school by school.
+                            </p>
+                            <p>Transparent dashboards will keep communities updated on funds, timelines, and progress metrics.</p>
+                          </article>
+
+                          <article class="narrative-tile narrative-tile--action">
+                            <h3>How you can help</h3>
+                            <p>Ideas, manpower, CSR resources, and micro-donations ensure no child is left to study in neglect.</p>
+                            <div class="govt-alert__ctas">
+                              <a class="ghost-btn ghost-btn--solid" href="payment.html">Contribute Now</a>
+                              <a class="outline-link" href="volunteer.html">Volunteer or Share An Idea</a>
+                            </div>
+                          </article>
+
+                          <div class="govt-alert__stats">
+                            <div>
+                              <strong class="stat-counter" data-target="2500" data-suffix="+">0</strong>
+                              <span>Students at risk of dropping out in 2025</span>
+                            </div>
+                            <div>
+                              <strong class="stat-counter" data-target="48">0</strong>
+                              <span>Government schools identified for urgent upgrades</span>
+                            </div>
+                            <div>
+                              <strong class="stat-counter" data-target="12">0</strong>
+                              <span>Community coalitions already mobilized</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <aside class="govt-alert__gallery" aria-label="School conditions comparison">
+                          <figure class="gallery-card gallery-card--poor">
+                            <img src="images/poorSchool1.webp" alt="Damaged classroom in a government school" />
+                            <figcaption>Government classroom, Rewari block — damp walls &amp; broken benches.</figcaption>
+                          </figure>
+                          <figure class="gallery-card gallery-card--poor">
+                            <img src="images/poorSchool2.jpg" alt="Broken desks in government school" />
+                            <figcaption>Corridors without light or ventilation push students away.</figcaption>
+                          </figure>
+                          <figure class="gallery-card gallery-card--private">
+                            <img src="images/privateSchool1.webp" alt="Modern private school hallway" />
+                            <figcaption>Private campus facilities attract those who can afford high fees.</figcaption>
+                          </figure>
+                          <figure class="gallery-card gallery-card--private">
+                            <img src="images/privateSchool2.jpg" alt="Well-equipped private classroom" />
+                            <figcaption>Private classrooms with attentive mentors and smart tools stay out of reach for most rural learners.</figcaption>
+                          </figure>
+                        </aside>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </article>
           </div>
-          <div class="upcoming-events__grid" id="upcoming-events-grid" aria-live="polite"></div>
-          <p class="upcoming-events__empty" id="upcoming-events-empty">Upcoming events will appear here once announced.</p>
         </div>
       </section>
 
@@ -94,32 +267,6 @@
             </div>
           </header>
           <div class="events-gallery__grid" id="events-gallery-grid" aria-live="polite"></div>
-        </div>
-      </section>
-
-      <section class="events-photo-wall" aria-labelledby="events-photo-wall-title">
-        <div class="container">
-          <header>
-            <p class="petal-badge">Photo Wall</p>
-            <h2 id="events-photo-wall-title">Snapshots straight from the field</h2>
-            <p>Scroll through a living wall of images pulled from every active album.</p>
-          </header>
-          <div class="events-photo-wall__viewport">
-            <div class="events-photo-wall__grid" id="events-photo-wall-grid" aria-live="polite"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="events-highlight" aria-labelledby="events-highlight-title">
-        <div class="container">
-          <header class="events-gallery__header">
-            <div>
-              <p class="petal-badge">Stories in Focus</p>
-              <h2 id="events-highlight-title">Title &amp; description from select events</h2>
-              <p>Read condensed narratives tagged to each highlight shot—perfect for newsletters and updates.</p>
-            </div>
-          </header>
-          <div class="events-highlight__grid" id="events-highlight-grid" aria-live="polite"></div>
         </div>
       </section>
     </main>
@@ -187,7 +334,6 @@
               <li><a href="volunteer.html">Volunteer</a></li>
               <li><a href="events.html" class="active">Events</a></li>
               <li><a href="contact.html">Contact Us</a></li>
-              <li><a href="compliance.html">Compliance &amp; Legal</a></li>
               <li><a href="terms.html">Terms and Conditions</a></li>
               <li><a href="payment.html">Donate</a></li>
             </ul>

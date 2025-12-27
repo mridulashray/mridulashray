@@ -15,20 +15,63 @@
   <body>
     <header class="site-header">
       <div class="container nav-wrapper">
-        <div class="brand">
+        <a class="brand" href="index.html">
           <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
           <span class="brand__name">Mridulashray</span>
-        </div>
+        </a>
         <nav class="main-nav" aria-label="Primary">
-          <a href="index.html" class="active">Home</a>
-          <a href="about.html">About Us</a>
-          <a href="volunteer.html">Volunteer</a>
-          <a href="events.html">Events</a>
-          <a href="contact.html">Contact Us</a>
-          <a href="compliance.html">Compliance &amp; Legal</a>
-          <a href="terms.html">Terms and Conditions</a>
-          <a href="payment.html" class="main-nav__donate">Donate</a>
+          <div class="nav-item">
+            <a href="index.html" class="nav-link is-active">Home</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="about">
+            <a href="about.html" class="nav-link nav-link--primary">About Us</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle About Us menu" data-nav-trigger="about" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown" id="nav-dropdown-about" role="menu" aria-label="About Us sections">
+              <p class="nav-dropdown__label">About Us</p>
+              <ul>
+                <li><a href="about-story.html">Our Story</a></li>
+                <li><a href="about-board.html">Boards / Officials</a></li>
+                <li><a href="about-offerings.html">Our Offerings</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="volunteer.html" class="nav-link">Volunteer</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="events">
+            <a href="events.html" class="nav-link nav-link--primary">Events</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle Events menu" data-nav-trigger="events" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown nav-dropdown--wide" id="nav-dropdown-events" role="menu" aria-label="Events menu">
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Organised Events</p>
+                <ul class="nav-events-list" data-nav-events-list>
+                  <li class="nav-dropdown__empty">Albums are syncing…</li>
+                </ul>
+              </div>
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Our Projects</p>
+                <ul>
+                  <li><a href="events-upcoming.html">Upcoming Project</a></li>
+                  <li><a href="events-ongoing.html">Ongoing Project</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="contact.html" class="nav-link">Contact Us</a>
+          </div>
+          <div class="nav-item">
+            <a href="terms.html" class="nav-link">Terms and Conditions</a>
+          </div>
+          <div class="nav-item">
+            <a href="payment.html" class="nav-link main-nav__donate">Donate</a>
+          </div>
         </nav>
+        <div class="nav-screen" aria-hidden="true"></div>
         <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
           <span></span>
           <span></span>
@@ -45,14 +88,14 @@
             <img src="images/homepage1.png" alt="Students holding plants" />
             <div class="slide__content">
               <p class="kicker">Transforming lives through education, environment, and empowerment.</p>
-              <button class="ghost-btn">What we do</button>
+              <br /><br /><a class="ghost-btn" href="about-offerings.html">Our Offerings</a>
             </div>
           </article>
           <article class="slide" data-index="1">
             <img src="images/homepage2.png" alt="Volunteers planting trees" />
             <div class="slide__content">
               <p class="kicker">Planting trees today for a greener, healthier tomorrow.</p>
-              <button class="ghost-btn">What we do</button>
+              <br /><br /><a class="ghost-btn" href="about-offerings.html">Our Offerings</a>
             </div>
           </article>
         </div>
@@ -62,119 +105,12 @@
         </div>
       </section>
 
-      <section class="govt-alert" id="rebuild-call">
-        <div class="container">
-          <div class="govt-alert__intro">
-            <span class="petal-badge">Urgent appeal</span>
-            <h2>A Call to Rebuild Government Schools in Haryana</h2>
-            <p>
-              Government schools across Haryana are losing students to private campuses that promise better infrastructure, yet remain unaffordable for most
-              families. Children from low-income homes are left to wonder where they belong as classrooms decay and morale drops.
-            </p>
-            <p>
-              We cannot allow this deterioration to become permanent. Every child deserves engaging teachers, safe spaces, and the dignity of equal opportunity.
-              Together we can reverse the exodus—by uplifting schools meant for the public, not abandoning them.
-            </p>
-          </div>
-
-          <div class="govt-alert__layout">
-            <div class="govt-alert__narrative">
-              <article class="narrative-tile">
-                <h3>The reality today</h3>
-                <p>Broken desks, leaking roofs, and demotivated staff are forcing students out. Some schools report two-thirds of their classrooms unusable.</p>
-                <ul class="petal-list">
-                  <li>70% of parents surveyed cite poor facilities as the #1 reason for exit.</li>
-                  <li>Students from deprived sections have no affordable alternative.</li>
-                  <li>Learning loss widens every term we wait.</li>
-                </ul>
-              </article>
-
-              <article class="narrative-tile">
-                <h3>What we are doing</h3>
-                <p>
-                  We are convening government departments, teachers, and community champions to co-create improvement plans for each cluster of schools in
-                  Haryana. Repairs, teacher motivation workshops, and student wellness clubs are being mapped school by school.
-                </p>
-                <p>Transparent dashboards will keep communities updated on funds, timelines, and progress metrics.</p>
-              </article>
-
-              <article class="narrative-tile narrative-tile--action">
-                <h3>How you can help</h3>
-                <p>Ideas, manpower, CSR resources, and micro-donations ensure no child is left to study in neglect.</p>
-                <div class="govt-alert__ctas">
-                  <a class="ghost-btn ghost-btn--solid" href="payment.html">Contribute Now</a>
-                  <button class="outline-link">Volunteer or Share An Idea</button>
-                </div>
-              </article>
-
-              <div class="govt-alert__stats">
-                <div>
-                  <strong class="stat-counter" data-target="2500" data-suffix="+">0</strong>
-                  <span>Students at risk of dropping out in 2025</span>
-                </div>
-                <div>
-                  <strong class="stat-counter" data-target="48">0</strong>
-                  <span>Government schools identified for urgent upgrades</span>
-                </div>
-                <div>
-                  <strong class="stat-counter" data-target="12">0</strong>
-                  <span>Community coalitions already mobilized</span>
-                </div>
-              </div>
-            </div>
-
-            <aside class="govt-alert__gallery" aria-label="School conditions comparison">
-              <figure class="gallery-card gallery-card--poor">
-                <img src="images/poorSchool1.webp" alt="Damaged classroom in a government school" />
-                <figcaption>Government classroom, Rewari block — damp walls &amp; broken benches.</figcaption>
-              </figure>
-              <figure class="gallery-card gallery-card--poor">
-                <img src="images/poorSchool2.jpg" alt="Broken desks in government school" />
-                <figcaption>Corridors without light or ventilation push students away.</figcaption>
-              </figure>
-              <figure class="gallery-card gallery-card--private">
-                <img src="images/privateSchool1.webp" alt="Modern private school hallway" />
-                <figcaption>Private campus facilities attract those who can afford high fees.</figcaption>
-              </figure>
-              <figure class="gallery-card gallery-card--private">
-                <img src="images/privateSchool2.jpg" alt="Well-equipped private classroom" />
-                <figcaption>Private classrooms with attentive mentors and smart tools stay out of reach for most rural learners.</figcaption>
-              </figure>
-            </aside>
-          </div>
-
-          <div class="fund-card" aria-live="polite">
-            <div>
-              <h3>Raise a Fund</h3>
-              <p>Lead a micro-fundraiser to support teacher motivation, infrastructure, or student wellness.</p>
-            </div>
-            <form class="fund-form" action="payment.html" method="get">
-              <label>
-                Goal Amount (₹)
-                <input type="number" name="fund-goal" placeholder="e.g., 50,000" min="0" />
-              </label>
-              <label>
-                Focus Area
-                <select name="fund-focus">
-                  <option value="infrastructure">Infrastructure Repair</option>
-                  <option value="teachers">Teacher Motivation</option>
-                  <option value="supplies">Learning Materials</option>
-                  <option value="wellbeing">Student Wellbeing</option>
-                </select>
-              </label>
-              <button type="submit" class="ghost-btn ghost-btn--solid">Initiate Fundraiser</button>
-            </form>
-          </div>
-        </div>
-      </section>
-
       <section class="services-section" id="services">
         <div class="container">
           <div class="services-heading">
             <span class="services-heading__eyebrow" aria-hidden="true"></span>
             <div>
               <p class="services-heading__kicker">What we do?</p>
-              <h2>Some Services We Provide</h2>
               <p class="services-heading__lede">
                 We partner with communities across Haryana to blend livelihood training, education access, and compassionate care so every family feels supported.
               </p>
@@ -232,8 +168,8 @@
             <p class="program-stories__kicker">Impact in motion</p>
             <h2>Stories from the ground</h2>
             <p>
-              Each initiative is rooted in lived realities—women rediscovering their talent, students finding safe study spaces, or volunteers regenerating entire
-              neighborhoods. Explore a few of the programs Mridulashray nurtures every week.
+              Each initiative is rooted in lived realities—women rediscovering their talent, learners finding safe study spaces, and caregivers protecting animals with dignity.
+              Explore the flagship programmes powering our circles of care.
             </p>
           </div>
 
@@ -249,40 +185,6 @@
               </p>
               <p class="story__meta">Daily batches • Rewari &amp; nearby villages</p>
               <a href="volunteer.html" class="story__action-link">Join as mentor</a>
-            </div>
-          </article>
-
-          <article class="story story--split">
-            <div class="story__content">
-              <h3>Reading Room for Underprivileged Students</h3>
-              <p>
-                A serene, well-lit reading room designed for UPSC, banking, and other aspirants who cannot afford coaching hubs. We offer study desks, reference
-                books, and mentors who keep learners focused through long preparation cycles.
-              </p>
-              <ul>
-                <li>Open 7 days • quiet and supervised</li>
-                <li>Guidance on schedules and scholarship forms</li>
-              </ul>
-            </div>
-            <div class="story__media">
-              <img src="images/homepage4.png" alt="Students preparing for competitive exams in reading room" />
-            </div>
-          </article>
-
-          <article class="story story--split story--reverse">
-            <div class="story__media">
-              <img src="images/homepage5.png" alt="Volunteers planting saplings during an environment drive" />
-            </div>
-            <div class="story__content">
-              <h3>Environment Conservation</h3>
-              <p>
-                We conduct plantation drives, waste-reduction campaigns, and biodiversity walks that turn citizens into long-term stewards of the planet.
-                Measurable climate action starts in our own neighborhoods.
-              </p>
-              <ul>
-                <li>Community-led sapling care plans</li>
-                <li>Workshops on soil health &amp; water conservation</li>
-              </ul>
             </div>
           </article>
 
@@ -306,77 +208,72 @@
             </div>
           </article>
 
-          <article class="story story--overlay">
-            <div
-              class="story__media"
-              id="gallery-trees"
-              data-gallery-images="images/homepage7_tree1.png|images/homepage7_tree2.png"
-              data-gallery-index="0"
-            >
-              <img src="images/homepage7_tree1.png" alt="Volunteer planting a sapling in a rural community" />
-            </div>
+          <article class="story story--cta">
             <div class="story__content">
-              <h3>Trees Planted</h3>
-              <p>
-                Thousands of saplings nurtured with community guardianship. Every new plantation circle receives drip irrigation tips, mulch support, and citizen
-                monitors who log growth.
-              </p>
-              <p class="story__meta">12 micro-forests • 3,500+ saplings</p>
-              <button class="story__action" type="button" data-gallery-trigger="#gallery-trees">View More</button>
+              <a class="story__cta-link" href="about-offerings.html">
+                View More....
+                <span aria-hidden="true">→</span>
+              </a>
             </div>
           </article>
+        </div>
+      </section>
 
-          <article class="story story--split">
-            <div class="story__media story__media--collage">
-              <img src="images/homepage8_1.png" alt="Volunteers planting trees together" />
-              <img src="images/homepage8_2.png" alt="Volunteers preparing soil for saplings" />
-            </div>
-            <div class="story__content">
-              <h3>Volunteer Program</h3>
-              <p>
-                Led by Dev Sir, our volunteer collective anchors every project—from relief distribution to student mentorship. They keep communities energized and
-                accountable.
-              </p>
-              <ul>
-                <li>Weekend clean-up and plantation drives</li>
-                <li>Onboarding for corporate &amp; campus groups</li>
-              </ul>
-            </div>
-          </article>
+      <section class="home-contact-ribbon" aria-label="Quick contact strip">
+        <div class="home-contact-ribbon__inner">
+          <p>Need help for a visit or donation? Talk to us now.</p>
+          <a class="home-contact-ribbon__cta" href="contact.html">Contact Us</a>
+        </div>
+      </section>
 
-          <article class="story story--overlay">
-            <div
-              class="story__media"
-              id="gallery-women"
-              data-gallery-images="images/homepage9_WE1.png|images/homepage9_WE2.png|images/homepage9_WE3.png"
-              data-gallery-index="0"
-            >
-              <img src="images/homepage9_WE1.png" alt="Women learning new skills at empowerment program" />
-            </div>
-            <div class="story__content">
-              <h3>Women &amp; Girl Empowerment</h3>
-              <p>
-                Skill sprints covering Silai, mehndi, beauty arts, and digital confidence. Graduates leave with portfolios, peer networks, and seed funding
-                connects.
-              </p>
-              <p class="story__meta">500+ trainees • 18 mentor-artisans</p>
-              <button class="story__action" type="button" data-gallery-trigger="#gallery-women">View More</button>
-            </div>
-          </article>
-
-          <article class="story story--overlay story--calm">
-            <div class="story__media">
-              <img src="images/homepage10.png" alt="Volunteers serving elders in old age home" />
-            </div>
-            <div class="story__content">
-              <h3>Old Age Home Support</h3>
-              <p>
-                Regular visits deliver meals, physiotherapy camps, and conversation circles for elders who crave company. We ensure every resident feels seen and
-                celebrated.
-              </p>
-              <a href="contact.html" class="story__action-link">Support the initiative</a>
-            </div>
-          </article>
+      <section class="home-events-carousel" aria-label="Recent event highlights">
+        <div class="container">
+          <div class="home-events-carousel__header">
+            <p class="eyebrow">Events</p>
+            <h2>Impact moments on the move</h2>
+          </div>
+          <div class="home-events-carousel__track" id="home-events-track" tabindex="0" aria-label="Scrollable event stories">
+            <article class="home-event-card" data-fallback-card>
+              <img src="images/homepage7_tree1.png" alt="Volunteers planting saplings during Pushp Abhiyaan" />
+              <div>
+                <p class="home-event-card__badge">Green Drives</p>
+                <h3>Pushp Abhiyaan</h3>
+                <p>250 saplings planted across Rewari schools with student caretakers.</p>
+                <p class="home-event-card__meta">17 Aug 2024 · 250 saplings</p>
+                <a class="home-event-card__cta" href="events.html">
+                  View story <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
+            <article class="home-event-card" data-fallback-card>
+              <img src="images/homepage8_1.png" alt="Volunteers delivering relief kits to families" />
+              <div>
+                <p class="home-event-card__badge">Volunteer Corps</p>
+                <h3>Relief on Wheels</h3>
+                <p>Weekend drives that deliver ration and study kits to 80+ families.</p>
+                <p class="home-event-card__meta">02 Oct 2024 · 80+ families</p>
+                <a class="home-event-card__cta" href="events.html">
+                  View story <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
+            <article class="home-event-card" data-fallback-card>
+              <img src="images/homepage5.png" alt="Residents cleaning Ward 7 public spaces" />
+              <div>
+                <p class="home-event-card__badge">Community Action</p>
+                <h3>Ward 7 Clean-up</h3>
+                <p>Citizens and students removed 1.2 tons of waste from shared spaces.</p>
+                <p class="home-event-card__meta">15 Nov 2024 · 1.2 tons</p>
+                <a class="home-event-card__cta" href="events.html">
+                  View story <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
+            <p class="home-events-carousel__status" id="home-events-status" hidden>Events are syncing from our community cloud…</p>
+          </div>
+          <div class="home-events-carousel__footer">
+            <a class="ghost-btn" id="home-events-view-more" href="events.html">View more events</a>
+          </div>
         </div>
       </section>
 
@@ -436,7 +333,6 @@
               <li><a href="volunteer.html">Volunteer</a></li>
               <li><a href="events.html">Events</a></li>
               <li><a href="contact.html">Contact Us</a></li>
-              <li><a href="compliance.html">Compliance &amp; Legal</a></li>
               <li><a href="terms.html">Terms and Conditions</a></li>
               <li><a href="payment.html">Donate</a></li>
             </ul>

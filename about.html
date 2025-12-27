@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About Us | Mridulashray</title>
+    <link rel="icon" href="images/logo.png" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,47 +15,265 @@
   </head>
   <body>
     <header class="site-header">
-    <div class="container nav-wrapper">
-      <div class="brand">
-        <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
-        <span class="brand__name">Mridulashray</span>
+      <div class="container nav-wrapper">
+        <a class="brand" href="index.html">
+          <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
+          <span class="brand__name">Mridulashray</span>
+        </a>
+        <nav class="main-nav" aria-label="Primary">
+          <div class="nav-item">
+            <a href="index.html" class="nav-link">Home</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="about">
+            <a href="about.html" class="nav-link nav-link--primary is-active">About Us</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle About Us menu" data-nav-trigger="about" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown" id="nav-dropdown-about" role="menu" aria-label="About Us sections">
+              <p class="nav-dropdown__label">About Us</p>
+              <ul>
+                <li><a href="about-story.html">Our Story</a></li>
+                <li><a href="about-board.html">Boards / Officials</a></li>
+                <li><a href="about-offerings.html">Our Offerings</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="volunteer.html" class="nav-link">Volunteer</a>
+          </div>
+          <div class="nav-item nav-item--has-menu" data-nav="events">
+            <a href="events.html" class="nav-link nav-link--primary">Events</a>
+            <button class="nav-caret-btn" type="button" aria-label="Toggle Events menu" data-nav-trigger="events" aria-expanded="false">
+              <span class="nav-caret" aria-hidden="true">⌄</span>
+            </button>
+            <div class="nav-dropdown nav-dropdown--wide" id="nav-dropdown-events" role="menu" aria-label="Events menu">
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Organised Events</p>
+                <ul class="nav-events-list" data-nav-events-list>
+                  <li class="nav-dropdown__empty">Albums are syncing…</li>
+                </ul>
+              </div>
+              <div class="nav-dropdown__group">
+                <p class="nav-dropdown__label">Our Projects</p>
+                <ul>
+                  <li><a href="events-upcoming.html">Upcoming Project</a></li>
+                  <li><a href="events-ongoing.html">Ongoing Project</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a href="contact.html" class="nav-link">Contact Us</a>
+          </div>
+          <div class="nav-item">
+            <a href="terms.html" class="nav-link">Terms and Conditions</a>
+          </div>
+          <div class="nav-item">
+            <a href="payment.html" class="nav-link main-nav__donate">Donate</a>
+          </div>
+        </nav>
+        <div class="nav-screen" aria-hidden="true"></div>
+        <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <a class="donate-btn" href="payment.html">Donate</a>
       </div>
-      <nav class="main-nav" aria-label="Primary">
-        <a href="index.html">Home</a>
-        <a href="about.html" class="active">About Us</a>
-        <a href="volunteer.html">Volunteer</a>
-        <a href="events.html">Events</a>
-        <a href="contact.html">Contact Us</a>
-        <a href="compliance.html">Compliance &amp; Legal</a>
-        <a href="terms.html">Terms and Conditions</a>
-        <a href="payment.html" class="main-nav__donate">Donate</a>
-      </nav>
-      <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <a class="donate-btn" href="payment.html">Donate</a>
-    </div>
-  </header>
+    </header>
 
     <main>
-      <section class="page-status">
-        <div class="page-status__card">
-          <p class="petal-badge">Coming soon</p>
-          <h1>About Us page is under development</h1>
-          <p>
-            We’re compiling stories, impact data, and trust history for this section. Please check back shortly for a full overview of Mridulashray’s founding,
-            vision, and community programmes.
-          </p>
-          <div class="about-hero__cta">
-            <a class="ghost-btn ghost-btn--solid" href="index.html">Return to Home</a>
-            <a class="outline-link" href="contact.html">Contact our team</a>
+      <section class="about-hero" aria-label="About Mridulashray mission">
+        <div class="container about-hero__inner">
+          <div class="about-hero__copy">
+            <p class="eyebrow">About Mridulashray</p>
+            <h1>Neighbors building circles of care</h1>
+            <p>
+              Mridulashray is a people-led trust from Rewari that restores dignity through practical action—reviving schools, supporting Gau Shaala shelters, hosting
+              women-led earning labs, and responding to every call for help with empathy.
+            </p>
+            <p>
+              The photograph you see is more than a hero image; it captures our volunteers stepping into classrooms, streets, and farms with sleeves rolled up and hearts
+              full of purpose. Every frame echoes our promise: no child, caregiver, or elder is left behind.
+            </p>
+            <div class="about-hero__ctas">
+              <a class="ghost-btn ghost-btn--solid" href="about-story.html">Meet the founders</a>
+              <a class="ghost-btn" href="about-offerings.html">Explore offerings</a>
+            </div>
+          </div>
+          <div class="about-hero__metrics">
+            <article>
+              <p class="label">Families reached</p>
+              <p class="value stat-counter" data-target="1100" data-suffix="+">0</p>
+              <p>Relief kits, medical camps, and daily nutrition drives across Rewari.</p>
+            </article>
+            <article>
+              <p class="label">Community volunteers</p>
+              <p class="value stat-counter" data-target="250">0</p>
+              <p>Teachers, artisans, and students guiding programmes each week.</p>
+            </article>
+            <article>
+              <p class="label">Villages onboarded</p>
+              <p class="value stat-counter" data-target="15">0</p>
+              <p>Every location co-designs projects so impact belongs to the people.</p>
+            </article>
           </div>
         </div>
       </section>
-    </main>
 
+      <section class="about-promise" id="about-story">
+        <div class="container about-promise__grid">
+          <div>
+            <p class="eyebrow">Why we exist</p>
+            <h2>The promise that guides our every step</h2>
+            <p>
+              We began as neighbors collecting notebooks for government-school students. That spark spread into stitching classrooms, tree nurseries, cattle shelters,
+              and learning labs for competitive exams. Each initiative was born out of a real request from the community, so we stayed close to the ground and expanded
+              only when the neighborhood was ready to steward it.
+            </p>
+            <p>
+              Today, Mridulashray leads coordinated efforts with panchayats, school teachers, doctors, and youth leaders. We do not parachute solutions; we embed
+              ourselves until the local team can run independently. That is why our centres feel like home—painted by beneficiaries, stocked by volunteers, and open to
+              anyone seeking dignity.
+            </p>
+          </div>
+          <ul class="about-promise__list">
+            <li>
+              <strong>Learning-first interventions</strong>
+              <span>Reading rooms, mobile libraries, and mentorship circles equip first-generation learners with confidence and companionship.</span>
+            </li>
+            <li>
+              <strong>Care for caregivers</strong>
+              <span>Gau Shaala staff, elder-care workers, and women entrepreneurs receive stipends, rest spaces, and mental wellness support.</span>
+            </li>
+            <li>
+              <strong>Public systems revived</strong>
+              <span>We repair classrooms, refurbish anganwadis, and modernise community halls so government assets shine again.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="about-pillars" aria-labelledby="about-pillars-title">
+        <div class="container">
+          <div class="about-pillars__intro">
+            <p class="eyebrow">What we nurture</p>
+            <h2 id="about-pillars-title">Four pillars that describe Mridulashray in action</h2>
+            <p>
+              Every pillar is elaborated below so you can understand how the programme feels on the ground—the partners involved, the people served, and the behaviors
+              we encourage everywhere we go.
+            </p>
+          </div>
+          <div class="about-pillars__grid">
+            <article>
+              <h3>Environmental Conservation</h3>
+              <p>
+                Rewari Pushp Abhiyaan plants flowering saplings in schools, public parks, and Gaushalas. Children adopt beds, water them daily, and log growth so ecology
+                becomes a lived subject.
+              </p>
+            </article>
+            <article>
+              <h3>Education Support</h3>
+              <p>
+                We renovate classrooms, build libraries, and keep reading rooms open late for aspirants. Volunteers tutor in maths, English, digital skills, and exam
+                strategy.
+              </p>
+            </article>
+            <article>
+              <h3>Social Welfare</h3>
+              <p>
+                Health camps, Silai schools, women collectives, and Gau Shaala care units ensure nourishment, livelihood opportunities, and compassionate shelter.
+              </p>
+            </article>
+            <article>
+              <h3>Community Engagement</h3>
+              <p>
+                We organise local festivals, awareness rallies, and youth fellowships that build unity, celebrate culture, and keep civic responsibility alive.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-detail" aria-label="Illustrated details about Mridulashray">
+        <div class="container about-detail__grid">
+          <figure class="about-detail__figure">
+            <img src="images/aboutdetail.png" alt="Illustration describing Mridulashray focus areas" />
+            <figcaption>Illustration shared by our design volunteers to summarise our focus areas.</figcaption>
+          </figure>
+          <div class="about-detail__content">
+            <p class="eyebrow">How the graphic translates into action</p>
+            <h2>From illustration to implementation</h2>
+            <p>
+              The detailed artwork above lives on the walls of our centres. It reminds visitors that Mridulashray is simultaneously planting trees, uplifting classrooms,
+              supporting livelihoods, and strengthening social cohesion. Each quadrant turns into weekly schedules, budgets, and volunteer rosters.
+            </p>
+            <ol>
+              <li>
+                <strong>Environmental conservation</strong> – Sapling drives, drip-irrigation demos, and composting lessons led by students and farmers.
+              </li>
+              <li>
+                <strong>Education support</strong> – Reading mentors, scholarship form filling desks, and digital labs ensuring no learner is left offline.
+              </li>
+              <li>
+                <strong>Social welfare</strong> – Health screenings, elder-care visits, women &amp; girl empowerment workshops, and animal relief teams.
+              </li>
+              <li>
+                <strong>Community engagement</strong> – Street plays, awareness walks, and cultural evenings that keep neighborhoods informed and inspired.
+              </li>
+            </ol>
+            <p>
+              We elaborate on each point while onboarding partners so expectations are transparent. Supporters receive monthly notes capturing stories, numbers, and the next set
+              of needs emerging from the field.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-next-steps">
+        <div class="container">
+          <div class="about-next-steps__card">
+            <div class="about-next-steps__grid">
+              <div class="about-next-steps__copy">
+                <p class="eyebrow">What’s next</p>
+                <h2>Become part of the story</h2>
+                <p>
+                  Whether you wish to mentor, donate, or document impact stories, we have a space for you. Reach out, visit a centre, and experience how tenderness and
+                  discipline combine at Mridulashray.
+                </p>
+                <div class="about-next-steps__chips" role="list">
+                  <span role="listitem">Mentor weekend learning pods</span>
+                  <span role="listitem">Sponsor Gau Shaala care kits</span>
+                  <span role="listitem">Document stories from the field</span>
+                </div>
+              </div>
+              <div class="about-next-steps__panel">
+                <p class="about-next-steps__panel-title">How can you get involved?</p>
+                <ul class="about-next-steps__list">
+                  <li>Walk into a reading room and mentor aspirants.</li>
+                  <li>Fund weekly nutrition kits for Gau Shaala caregivers.</li>
+                  <li>Help us document stories so supporters see impact.</li>
+                </ul>
+                <div class="about-next-steps__actions">
+                  <a class="ghost-btn ghost-btn--solid" href="volunteer.html">Volunteer with us</a>
+                  <a class="ghost-btn" href="payment.html">Be a Donor</a>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-contact-strip" aria-label="Connect with Mridulashray">
+        <div class="about-contact-strip__single-line container">
+          <p>For any queries, you can reach out to our team.</p>
+          <br><br>
+          <a class="ghost-btn ghost-btn--solid" href="contact.html">Contact Us</a>
+        </div>
+      </section>
+    </main>
+<br>
     <footer class="site-footer">
       <div class="container footer-inner">
         <div class="footer-brand">
@@ -102,7 +321,6 @@
               <li><a href="volunteer.html">Volunteer</a></li>
               <li><a href="events.html">Events</a></li>
               <li><a href="contact.html">Contact Us</a></li>
-              <li><a href="compliance.html">Compliance &amp; Legal</a></li>
               <li><a href="terms.html">Terms and Conditions</a></li>
               <li><a href="payment.html">Donate</a></li>
             </ul>
@@ -141,7 +359,7 @@
       </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="vendor/appwrite.min.js"></script>
     <script src="appwrite-config.js"></script>
     <script src="script.js"></script>
   </body>

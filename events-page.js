@@ -8,10 +8,62 @@
   const highlightGridEl = document.getElementById("events-highlight-grid");
   const upcomingGridEl = document.getElementById("upcoming-events-grid");
   const upcomingEmptyEl = document.getElementById("upcoming-events-empty");
-  const counters = {
-    events: document.getElementById("events-count"),
-    photos: document.getElementById("events-photos-count"),
-    impact: document.getElementById("events-impact-count")
+  const eventsPortalEl = document.getElementById("events-navigation");
+  const portalTabs = eventsPortalEl ? Array.from(eventsPortalEl.querySelectorAll(".events-portal__tab")) : [];
+  const portalPanels = eventsPortalEl ? Array.from(eventsPortalEl.querySelectorAll(".events-portal__panel")) : [];
+  const projectSubtabs = eventsPortalEl ? Array.from(eventsPortalEl.querySelectorAll(".events-portal__subtab")) : [];
+  const projectSubpanels = eventsPortalEl ? Array.from(eventsPortalEl.querySelectorAll(".events-portal__subpanel")) : [];
+  const organisedListEl = document.getElementById("organised-events-list");
+  const organisedEmptyEl = document.getElementById("organised-events-empty");
+  const navAlbumLists = document.querySelectorAll("[data-nav-events-list]");
+  const NAV_ALBUM_HASH_PREFIX = "#album-";
+
+  const getAlbumSlugFromHash = (hash) => {
+    if (!hash || typeof hash !== "string") return null;
+    return hash.startsWith(NAV_ALBUM_HASH_PREFIX) ? hash.slice(NAV_ALBUM_HASH_PREFIX.length) : null;
+  };
+
+  let deferredNavAlbumSlug = getAlbumSlugFromHash(window.location.hash);
+  const redirectToAlbumPage = (slug) => {
+    if (!slug) return;
+    const targetUrl = `event-album.html?album=${encodeURIComponent(slug)}`;
+    window.location.href = targetUrl;
+  };
+  const collapseNavDropdowns = () => {
+    document.querySelectorAll(".nav-item--open").forEach((item) => {
+      item.classList.remove("nav-item--open");
+      const trigger = item.querySelector("[data-nav-trigger]");
+      if (trigger) trigger.setAttribute("aria-expanded", "false");
+    });
+  };
+  const collapseMobileNav = () => {
+    const navToggleBtn = document.querySelector(".nav-toggle");
+    const mainNavEl = document.querySelector(".main-nav");
+    document.body.classList.remove("nav-open");
+    if (mainNavEl) {
+      mainNavEl.classList.remove("is-open", "is-closing");
+    }
+    if (navToggleBtn) {
+      navToggleBtn.setAttribute("aria-expanded", "false");
+    }
+  };
+  const closeGlobalNav = () => {
+    collapseNavDropdowns();
+    collapseMobileNav();
+  };
+  const handleDeferredNavAlbum = () => {
+    if (!deferredNavAlbumSlug) return;
+    redirectToAlbumPage(deferredNavAlbumSlug);
+    deferredNavAlbumSlug = null;
+  };
+  const onNavAlbumLinkClick = (event) => {
+    const link = event.target.closest("a[data-album-slug]");
+    if (!link) return;
+    const slug = link.dataset.albumSlug || getAlbumSlugFromHash(link.getAttribute("href"));
+    if (!slug) return;
+    event.preventDefault();
+    closeGlobalNav();
+    redirectToAlbumPage(slug);
   };
   const VOLUNTEER_PAGE_URL = "volunteer.html";
 
@@ -270,6 +322,7 @@
       eventsGridEl.classList.toggle("events-gallery__grid--compact", isCompact);
     }
     if (documents.length === 0) {
+      updateOrganisedEventsList(documents);
       return;
     }
     documents.forEach((doc) => {
@@ -294,10 +347,45 @@
         doc.impactCount ? `${doc.impactCount} beneficiaries` : "Impact TBC"
       }
           </p>
+          <button class="event-card__cta" type="button">View more</button>
         </div>
       `;
       eventsGridEl.appendChild(card);
     });
+    updateOrganisedEventsList(documents);
+  };
+
+  const updateOrganisedEventsList = (documents = []) => {
+    if (!organisedListEl) return;
+    organisedListEl.innerHTML = "";
+    if (!documents.length) {
+      if (organisedEmptyEl) {
+        organisedEmptyEl.textContent = "Published albums will auto-populate here.";
+      }
+      const placeholder = document.createElement("li");
+      placeholder.className = "events-portal__list-item is-placeholder";
+      placeholder.textContent = "No published albums yet.";
+      organisedListEl.appendChild(placeholder);
+      return;
+    }
+    if (organisedEmptyEl) {
+      organisedEmptyEl.textContent = "";
+    }
+    const fragment = document.createDocumentFragment();
+    documents.forEach((doc) => {
+      const slug = doc.slug || doc.$id;
+      if (!slug) return;
+      const li = document.createElement("li");
+      li.className = "events-portal__list-item";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "events-portal__list-link";
+      button.textContent = doc.title || doc.name || "Untitled album";
+      button.dataset.albumSlug = slug;
+      li.appendChild(button);
+      fragment.appendChild(li);
+    });
+    organisedListEl.appendChild(fragment);
   };
 
   const toMediaEntries = (doc) => {
@@ -478,7 +566,8 @@
       return;
     }
 
-    documents.slice(0, 3).forEach((doc) => {
+    const highlightCount = Math.min(documents.length, 4);
+    documents.slice(0, highlightCount).forEach((doc) => {
       const mediaFiles = Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds.filter(Boolean) : [];
       const coverId = doc.coverFileId || mediaFiles[0];
       const imageIds = mediaFiles.length ? mediaFiles : coverId ? [coverId] : [];
@@ -534,18 +623,6 @@
     initHighlightSlides();
   };
 
-  const setCounters = (documents = []) => {
-    if (!counters.events || !counters.photos || !counters.impact) return;
-    const totalEvents = documents.length;
-    const totalPhotos = documents.reduce(
-      (sum, doc) => sum + ((doc.mediaFileIds && doc.mediaFileIds.length) || 0),
-      0
-    );
-    const totalImpact = documents.reduce((sum, doc) => sum + (doc.impactCount || 0), 0);
-    counters.events.textContent = totalEvents.toString();
-    counters.photos.textContent = totalPhotos.toString();
-    counters.impact.textContent = totalImpact.toString();
-  };
 
   const closeAlbumModal = () => {
     if (!modalEl) return;
@@ -663,7 +740,7 @@
       renderEvents(docsToRender);
       renderPhotoWall(docsToRender);
       renderHighlights(docsToRender);
-      setCounters(docsToRender);
+      handleDeferredNavAlbum();
       await loadUpcomingEventsPublic(appwriteClient);
     } catch (error) {
       console.error("Unable to fetch events", error);
@@ -707,6 +784,47 @@
     }
   };
 
+  const initEventsPortalNav = () => {
+    if (!eventsPortalEl) return;
+    const setPrimaryTab = (tabName) => {
+      portalTabs.forEach((tab) => {
+        tab.classList.toggle("is-active", tab.dataset.primaryTab === tabName);
+      });
+      portalPanels.forEach((panel) => {
+        panel.classList.toggle("is-active", panel.dataset.primaryPanel === tabName);
+      });
+    };
+
+    const setProjectSubtab = (subtabName) => {
+      projectSubtabs.forEach((btn) => {
+        btn.classList.toggle("is-active", btn.dataset.subtab === subtabName);
+      });
+      projectSubpanels.forEach((panel) => {
+        panel.classList.toggle("is-active", panel.dataset.subpanel === subtabName);
+      });
+    };
+
+    portalTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.primaryTab;
+        if (!target) return;
+        setPrimaryTab(target);
+      });
+    });
+
+    projectSubtabs.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.subtab;
+        if (!target) return;
+        setProjectSubtab(target);
+      });
+    });
+
+    setPrimaryTab("organised");
+    setProjectSubtab("projects-upcoming");
+  };
+
+  initEventsPortalNav();
   loadPublishedEvents();
 
   if (eventsGridEl) {
@@ -716,6 +834,24 @@
       openAlbumModal(card.dataset.albumSlug);
     });
   }
+
+  if (organisedListEl) {
+    organisedListEl.addEventListener("click", (event) => {
+      const button = event.target.closest(".events-portal__list-link");
+      if (!button?.dataset?.albumSlug) return;
+      openAlbumModal(button.dataset.albumSlug);
+    });
+  }
+
+  if (navAlbumLists.length) {
+    navAlbumLists.forEach((list) => list.addEventListener("click", onNavAlbumLinkClick));
+  }
+
+  window.addEventListener("hashchange", () => {
+    const slug = getAlbumSlugFromHash(window.location.hash);
+    deferredNavAlbumSlug = slug;
+    handleDeferredNavAlbum();
+  });
 
   if (modalCloseBtn) {
     modalCloseBtn.addEventListener("click", closeAlbumModal);

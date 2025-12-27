@@ -97,6 +97,10 @@
           <span class="admin-nav__icon" aria-hidden="true">🎉</span>
           <span>Upcoming Events</span>
         </button>
+        <button type="button" class="admin-nav__link" data-panel-target="ongoing-section">
+          <span class="admin-nav__icon" aria-hidden="true">📌</span>
+          <span>Ongoing Projects</span>
+        </button>
         <button type="button" class="admin-nav__link" data-panel-target="volunteer-section">
           <span class="admin-nav__icon" aria-hidden="true">🤝</span>
           <span>Volunteer Details</span>
@@ -312,6 +316,84 @@
                 <span class="admin-form__feedback" id="album-media-feedback"></span>
               </form>
             </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="ongoing-section" hidden aria-labelledby="ongoing-projects-title">
+          <div class="admin-section__header">
+            <div>
+              <p class="petal-badge">Live Initiatives</p>
+              <h2 id="ongoing-projects-title">Ongoing Projects & Campaigns</h2>
+              <p>Document the work already in motion—share status, agenda, and timelines so the public page stays fresh.</p>
+            </div>
+            <button type="button" class="ghost-btn ghost-btn--solid" id="refresh-ongoing-btn">Refresh ongoing list</button>
+          </div>
+
+          <form id="ongoing-project-form" class="admin-form-grid">
+            <input type="hidden" name="storedOngoingPosterId" />
+            <label>
+              <span>Project Title *</span>
+              <input type="text" name="opTitle" placeholder="Eg. Government School Infrastructure Sprint" required />
+            </label>
+            <label>
+              <span>Project Slug / ID *</span>
+              <input type="text" name="opSlug" placeholder="govt-school-sprint-q1" required />
+            </label>
+            <label>
+              <span>Location *</span>
+              <input type="text" name="opLocation" placeholder="District / Village / Cluster" required />
+            </label>
+            <label>
+              <span>Start Date *</span>
+              <input type="text" name="opStartDate" placeholder="E.g. 04-01-2026" required />
+            </label>
+            <label>
+              <span>End Date *</span>
+              <input type="text" name="opEndDate" placeholder="E.g. 31-03-2026" required />
+            </label>
+            <label>
+              <span>Status</span>
+              <select name="opStatus">
+                <option value="active" selected>Active</option>
+                <option value="paused">Paused</option>
+                <option value="completed">Completed</option>
+              </select>
+            </label>
+            <label class="full-row">
+              <span>Agenda *</span>
+              <textarea name="opAgenda" placeholder="Share the plan, stakeholders, what success looks like…" required></textarea>
+            </label>
+            <label class="full-row">
+              <span>Description *</span>
+              <textarea name="opDescription" placeholder="Long-form narrative, context, impact stats." required></textarea>
+            </label>
+            <label class="full-row">
+              <span>Poster / Visual</span>
+              <input type="file" name="opPosterFile" accept="image/*" />
+            </label>
+          </form>
+          <div class="admin-panel__actions">
+            <button class="ghost-btn ghost-btn--solid" id="save-ongoing-btn" type="button">Save Ongoing Project</button>
+            <button class="ghost-btn ghost-btn--small" id="ongoing-cancel-btn" type="button" hidden>Cancel edit</button>
+            <span class="admin-form__feedback" id="ongoing-project-feedback"></span>
+          </div>
+
+          <div class="admin-table-wrapper">
+            <table class="admin-table admin-table--ongoing" id="ongoing-projects-table">
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Duration</th>
+                  <th>Location</th>
+                  <th>Agenda</th>
+                  <th>Status</th>
+                  <th>Poster</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <p class="admin-upload-hint">Projects listed here automatically appear on the public \"Ongoing Projects\" page.</p>
           </div>
         </section>
 
