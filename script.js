@@ -202,6 +202,9 @@ const mainNav = document.querySelector(".main-nav");
 const navItems = document.querySelectorAll(".nav-item--has-menu");
 const navEventsLists = document.querySelectorAll("[data-nav-events-list]");
 const galleryButtons = document.querySelectorAll("[data-gallery-trigger]");
+const galleryMediaEls = document.querySelectorAll("[data-gallery-images]");
+const galleryAutoAdvanceMap = new Map();
+const GALLERY_INTERVAL_MS = 7500;
 const scriptPromises = new Map();
 const APPWRITE_CDN_URL = "https://cdn.jsdelivr.net/npm/appwrite@13.0.0";
 const APPWRITE_CONFIG_PATH = "appwrite-config.js";
@@ -596,9 +599,6 @@ const createHomeEventCard = (doc) => {
       <h3>${title}</h3>
       <p>${description}</p>
       <p class="home-event-card__meta">${impactLabel ? `${dateLabel} · ${impactLabel}` : dateLabel}</p>
-      <a class="home-event-card__cta" href="${albumHref}">
-        View story <span aria-hidden="true">→</span>
-      </a>
     </div>
   `;
   return card;
@@ -798,23 +798,52 @@ const advanceGallery = (rootId) => {
   }, 150);
 };
 
-if (galleryButtons.length > 0) {
-  galleryButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const targetId = btn.dataset.galleryTrigger;
-      if (!targetId) return;
-      advanceGallery(targetId);
-    });
-  });
+const ensureGallerySelector = (mediaEl, fallbackIndex = 0) => {
+  if (!mediaEl.id) {
+    mediaEl.id = `auto-gallery-${fallbackIndex + 1}`;
+  }
+  return `#${mediaEl.id}`;
+};
 
-  document.querySelectorAll("[data-gallery-images]").forEach((el) => {
-    const raw = el.dataset.galleryImages || "";
-    const list = raw
-      .split("|")
-      .map((src) => src.trim())
-      .filter(Boolean);
-    if (list.length > 0) {
-      el.dataset.galleryIndexCurrent = `1/${list.length}`;
-    }
+const startGalleryAutoAdvance = (mediaEl, fallbackIndex = 0) => {
+  const rootId = ensureGallerySelector(mediaEl, fallbackIndex);
+  if (galleryAutoAdvanceMap.has(rootId)) return;
+  const intervalId = window.setInterval(() => advanceGallery(rootId), GALLERY_INTERVAL_MS);
+  galleryAutoAdvanceMap.set(rootId, intervalId);
+};
+
+const stopGalleryAutoAdvance = (mediaEl) => {
+  const rootId = ensureGallerySelector(mediaEl);
+  const intervalId = galleryAutoAdvanceMap.get(rootId);
+  if (intervalId) {
+    clearInterval(intervalId);
+    galleryAutoAdvanceMap.delete(rootId);
+  }
+};
+
+galleryButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.galleryTrigger;
+    if (!targetId) return;
+    advanceGallery(targetId);
   });
-}
+});
+
+galleryMediaEls.forEach((el, index) => {
+  const raw = el.dataset.galleryImages || "";
+  const list = raw
+    .split("|")
+    .map((src) => src.trim())
+    .filter(Boolean);
+  if (list.length === 0) return;
+
+  const initialIndex = Number(el.dataset.galleryIndex || "0");
+  el.dataset.galleryIndex = String(initialIndex);
+  el.dataset.galleryIndexCurrent = `${initialIndex + 1}/${list.length}`;
+
+  startGalleryAutoAdvance(el, index);
+  el.addEventListener("mouseenter", () => stopGalleryAutoAdvance(el));
+  el.addEventListener("mouseleave", () => startGalleryAutoAdvance(el, index));
+  el.addEventListener("focusin", () => stopGalleryAutoAdvance(el));
+  el.addEventListener("focusout", () => startGalleryAutoAdvance(el, index));
+});
