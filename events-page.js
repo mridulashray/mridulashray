@@ -816,6 +816,7 @@
       btn.addEventListener("click", () => {
         const target = btn.dataset.subtab;
         if (!target) return;
+        setPrimaryTab("projects");
         setProjectSubtab(target);
       });
     });

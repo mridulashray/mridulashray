@@ -1243,10 +1243,6 @@ body::before {
   background: linear-gradient(135deg, rgba(255, 248, 242, 0.96), rgba(246, 212, 197, 0.4));
 }
 
-.payment-page .container {
-  width: min(1000px, 92%);
-}
-
 .payment-wrapper {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
@@ -1748,9 +1744,58 @@ body::before {
     width: 100%;
     text-align: center;
   }
+  .payment-steps h2 {
+    font-size: 1.25rem;
+  }
+  .payment-steps li,
+  .payment-info p,
+  .payment-info span {
+    font-size: 0.94rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-card,
+  .payment-info {
+    padding: 0.85rem 1rem;
+    border-radius: 20px;
+  }
+  .payment-card h1 {
+    font-size: 1.55rem;
+  }
+  .payment-card p,
+  .payment-form label,
+  .payment-form input,
+  .payment-form textarea,
+  .payment-info p,
+  .payment-steps li {
+    font-size: 0.88rem;
+  }
+  .input-with-prefix {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.95rem;
+  }
+  .payment-actions .ghost-btn {
+    font-size: 0.95rem;
+    padding: 0.65rem 1rem;
+  }
+  .upi-id-chip {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .upi-id-chip button {
+    align-self: flex-start;
+    width: auto;
+  }
 }
 
 @media (max-width: 640px) {
+  .payment-page {
+    padding: 2.5rem 0 3.5rem;
+  }
+  .payment-wrapper {
+    width: 100%;
+  }
   .contact-map {
     height: 320px;
   }
@@ -2065,7 +2110,34 @@ body::before {
   }
   .payment-card,
   .payment-info {
-    padding: 1.3rem;
+    padding: 1rem 1.15rem;
+    max-width: 520px;
+    margin: 0 auto;
+    border-radius: 24px;
+  }
+  .payment-card .petal-badge {
+    font-size: 0.82rem;
+  }
+  .payment-card h1 {
+    font-size: 1.75rem;
+  }
+  .payment-card p {
+    font-size: 0.95rem;
+  }
+  .payment-form label {
+    font-size: 0.9rem;
+  }
+  .payment-form input,
+  .payment-form textarea {
+    font-size: 0.95rem;
+  }
+  .payment-actions {
+    gap: 0.5rem;
+    flex-direction: column;
+  }
+  .payment-actions .ghost-btn {
+    width: 100%;
+    justify-content: center;
   }
   .payment-steps ol {
     margin-left: 1rem;
@@ -2685,16 +2757,15 @@ body::before {
 
 .home-events-carousel__track {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(280px, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: clamp(1rem, 3vw, 1.75rem);
-  padding-bottom: 0.5rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
+  align-items: start;
+  align-content: start;
+  padding-bottom: clamp(1rem, 3vw, 1.8rem);
 }
 
 .home-events-carousel__track::-webkit-scrollbar {
+  width: 6px;
   height: 8px;
 }
 
@@ -2718,13 +2789,11 @@ body::before {
   background: #fff;
   border-radius: 28px;
   box-shadow: 0 20px 50px rgba(69, 44, 44, 0.1);
-  border: 1px solid rgba(69, 44, 44, 0.08);
-  padding: 1.1rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   scroll-snap-align: start;
-  min-height: 360px;
 }
 
 .home-event-card img,
@@ -2796,9 +2865,15 @@ body::before {
   letter-spacing: 0.12em;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .home-events-carousel__track {
+    grid-auto-flow: column;
+    grid-template-columns: none;
     grid-auto-columns: minmax(240px, 75%);
+    padding-bottom: 0.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
   }
 }
 
