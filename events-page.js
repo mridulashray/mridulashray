@@ -8,6 +8,8 @@
   const highlightGridEl = document.getElementById("events-highlight-grid");
   const upcomingGridEl = document.getElementById("upcoming-events-grid");
   const upcomingEmptyEl = document.getElementById("upcoming-events-empty");
+  const eventsOngoingGridEl = document.getElementById("events-ongoing-grid");
+  const eventsOngoingEmptyEl = document.getElementById("events-ongoing-empty");
   const eventsPortalEl = document.getElementById("events-navigation");
   const portalTabs = eventsPortalEl ? Array.from(eventsPortalEl.querySelectorAll(".events-portal__tab")) : [];
   const portalPanels = eventsPortalEl ? Array.from(eventsPortalEl.querySelectorAll(".events-portal__panel")) : [];
@@ -742,6 +744,7 @@
       renderHighlights(docsToRender);
       handleDeferredNavAlbum();
       await loadUpcomingEventsPublic(appwriteClient);
+      await loadOngoingProjectsPublic(appwriteClient);
     } catch (error) {
       console.error("Unable to fetch events", error);
       if (eventsEmptyEl && eventsEmptyEl.classList) {
@@ -749,6 +752,7 @@
         eventsEmptyEl.textContent = "Unable to fetch events right now. Please try again later.";
       }
       await loadUpcomingEventsPublic(appwriteClient);
+      await loadOngoingProjectsPublic(appwriteClient);
     }
   };
 
@@ -780,6 +784,93 @@
       if (upcomingEmptyEl) {
         upcomingEmptyEl.style.display = "block";
         upcomingEmptyEl.textContent = "Unable to load upcoming events right now.";
+      }
+    }
+  };
+
+  const ONGOING_STATUS_META = {
+    active: { label: "Active", css: "ongoing-card__status ongoing-card__status--active" },
+    paused: { label: "Paused", css: "ongoing-card__status ongoing-card__status--paused" },
+    completed: { label: "Completed", css: "ongoing-card__status ongoing-card__status--completed" }
+  };
+
+  const renderOngoingProjects = (documents = []) => {
+    if (!eventsOngoingGridEl) return;
+    eventsOngoingGridEl.innerHTML = "";
+    if (!documents.length) {
+      if (eventsOngoingEmptyEl) {
+        eventsOngoingEmptyEl.style.display = "block";
+        eventsOngoingEmptyEl.textContent = "Ongoing projects will appear here once published.";
+      }
+      return;
+    }
+    if (eventsOngoingEmptyEl) {
+      eventsOngoingEmptyEl.style.display = "none";
+    }
+    const fragment = document.createDocumentFragment();
+    documents.forEach((doc) => {
+      const statusKey = (doc.status || "active").toLowerCase();
+      const statusMeta = ONGOING_STATUS_META[statusKey] || { label: doc.status || "Scheduled", css: "ongoing-card__status" };
+      const card = document.createElement("article");
+      card.className = "ongoing-card";
+      const posterMarkup = doc.posterFileId
+        ? `<div class="ongoing-card__poster">
+            <img src="${storagePreviewUrl(doc.posterFileId)}" alt="${doc.title || "Ongoing project poster"}" loading="lazy" />
+          </div>`
+        : "";
+      card.innerHTML = `
+        <div class="${statusMeta.css}">
+          <span aria-hidden="true"></span>
+          ${statusMeta.label}
+        </div>
+        <div class="ongoing-card__header">
+          <div class="ongoing-card__info">
+            <h3>${doc.title || "Untitled project"}</h3>
+            <p class="ongoing-card__duration">${formatDurationLabel(doc.startDate, doc.endDate)}</p>
+            <div class="ongoing-card__meta">
+              <span>📍 ${doc.location || "Location TBA"}</span>
+            </div>
+          </div>
+          ${posterMarkup}
+        </div>
+        <div class="ongoing-card__agenda">
+          <h3>Agenda</h3>
+          <p>${doc.agenda || "Details will be shared soon."}</p>
+        </div>
+        <p class="ongoing-card__description">${doc.description || "Impact updates coming shortly."}</p>
+      `;
+      fragment.appendChild(card);
+    });
+    eventsOngoingGridEl.appendChild(fragment);
+  };
+
+  const loadOngoingProjectsPublic = async (existingClient = null) => {
+    if (!eventsOngoingGridEl) return;
+    const appwriteClient = existingClient || (await ensureAppwriteClient().catch(() => null));
+    if (!appwriteClient || !appwriteClient.databases) {
+      if (eventsOngoingEmptyEl) {
+        eventsOngoingEmptyEl.style.display = "block";
+        eventsOngoingEmptyEl.textContent = "Ongoing projects will appear once published.";
+      }
+      return;
+    }
+    try {
+      const queries = [];
+      if (Appwrite.Query?.orderDesc) {
+        queries.push(Appwrite.Query.orderDesc("$updatedAt"));
+      }
+      const response = await appwriteClient.databases.listDocuments(
+        APPWRITE_CONFIG.databaseId,
+        APPWRITE_CONFIG.collections.ongoingProjects,
+        queries
+      );
+      const documents = response.documents || [];
+      renderOngoingProjects(documents);
+    } catch (error) {
+      console.error("Unable to fetch ongoing projects", error);
+      if (eventsOngoingEmptyEl) {
+        eventsOngoingEmptyEl.style.display = "block";
+        eventsOngoingEmptyEl.textContent = "Unable to load ongoing projects right now.";
       }
     }
   };
