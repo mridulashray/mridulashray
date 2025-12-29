@@ -81,11 +81,39 @@
       </div>
     </header>
 
-    <main class="page-status" aria-label="Under development placeholder">
-      <span class="petal-badge">Under development</span>
-      <h1>Upcoming Projects page is in progress</h1>
-      <p>Volunteer drives, calendar teasers, and CTA cards will appear here soon so you can RSVP to future events in one place.</p>
-      <a class="ghost-btn ghost-btn--solid" href="events.html">Return to Events</a>
+    <main>
+      <section class="upcoming-hero">
+        <div class="container upcoming-hero__grid">
+          <div class="upcoming-hero__content">
+            <p class="petal-badge">Upcoming Events</p>
+            <h1>Latest drives announced by the admin team</h1>
+            <p>Browse the gallery below to view every upcoming event that has been published.</p>
+          </div>
+          <div class="upcoming-hero__image">
+            <img src="images/upcoming-events-hero.png" alt="Upcoming events collage" loading="lazy" />
+          </div>
+        </div>
+      </section>
+      <br><br>
+      <section class="upcoming-events upcoming-events--standalone" aria-labelledby="upcoming-events-title">
+        <div class="container">
+          <div class="upcoming-events__header">
+            <div>
+              <p class="petal-badge">Invitation board</p>
+              <h2 id="upcoming-events-title">Upcoming events &amp; drives</h2>
+              <p>Cards below sync directly from our admin portal—refresh often or share the link with friends who may want to champion these missions.</p>
+            </div>
+            <div class="upcoming-events__chips">
+              <span>🌳 Tree plantations</span>
+              <span>📖 Study support</span>
+              <span>🧡 Community care</span>
+            </div>
+          </div>
+          <div class="upcoming-events__grid" id="upcoming-events-grid" aria-live="polite"></div>
+          <p class="upcoming-events__empty" id="upcoming-events-empty">Upcoming events will appear here once announced.</p>
+        </div>
+      </section>
+
     </main>
 
     <footer class="site-footer">
@@ -172,8 +200,9 @@
       </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-    <script src="appwrite-config.js"></script>
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0" data-appwrite-cdn="true"></script>
+    <script src="appwrite-config.js"></script>
+    <script src="events-page.js"></script>
   </body>
 </html>
