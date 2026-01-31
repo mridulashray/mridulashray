@@ -22,80 +22,7 @@
         --board-card-shadow: 0 25px 50px rgba(12, 9, 24, 0.08);
       }
 
-      @media (max-width: 520px) {
-        .board-page {
-          padding: 4rem 0 3rem;
-        }
-
-        .board-hero {
-          grid-template-columns: 1fr;
-          padding: 1.4rem 1rem 1.8rem;
-          gap: 1.25rem;
-          text-align: center;
-        }
-
-        .board-hero__content {
-          order: 2;
-        }
-
-        .board-hero h1 {
-          font-size: 1.45rem;
-        }
-
-        .board-hero__highlights {
-          text-align: left;
-        }
-
-        .board-hero__collage {
-          order: 1;
-          flex-direction: row;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: center;
-          align-self: center;
-          gap: 0.6rem;
-        }
-
-        .board-collage__img {
-          width: clamp(90px, 36vw, 140px);
-        }
-
-        .board-directory {
-          width: 100%;
-          grid-template-columns: 1fr;
-          padding: 1.4rem 1rem 1.8rem;
-          margin: 0 auto;
-          row-gap: 1.75rem;
-        }
-
-        .board-directory__list-wrapper {
-          border-right: none;
-          border-bottom: 1px solid rgba(31, 28, 46, 0.08);
-          padding-right: 0;
-          padding-bottom: 1.2rem;
-        }
-
-        .board-directory__list {
-          gap: 0.65rem;
-        }
-
-        .board-detail {
-          padding: 1.2rem;
-        }
-
-        .board-detail__profile {
-          flex-direction: column;
-        }
-
-        .board-detail__media,
-        .board-detail__media img {
-          width: 100%;
-        }
-
-        .board-detail__meta {
-          grid-template-columns: 1fr;
-        }
-      }
+      
 
       @keyframes panelRise {
         0% {
@@ -454,6 +381,83 @@
         padding-left: 1.1rem;
         color: var(--board-muted);
       }
+      .board-detail__close {
+        position: absolute;
+        top: 0.9rem;
+        right: 0.9rem;
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(191, 103, 48, 0.16);
+        color: var(--board-ink);
+        font-size: 1.3rem;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, transform 0.2s ease;
+        display: flex;
+      }
+
+      .board-detail--inline .board-detail__close {
+        display: none;
+      }
+
+      .board-detail__close:focus-visible,
+      .board-detail__close:hover {
+        background: rgba(191, 103, 48, 0.3);
+        transform: translateY(-1px);
+      }
+
+      .board-detail-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(12, 9, 24, 0.55);
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 350;
+      }
+
+      .board-detail-overlay.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .board-detail-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 1.5rem 1rem;
+        z-index: 400;
+      }
+
+      .board-detail-modal.is-open {
+        display: flex;
+      }
+
+      .board-detail--modal {
+        width: min(460px, 95vw);
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+        position: relative;
+        padding: 2.25rem 1.5rem 1.35rem;
+      }
+
+      .board-detail--modal .board-detail__media {
+        width: 100%;
+      }
+
+      .board-detail--modal .board-detail__profile {
+        flex-direction: column;
+      }
+
+      body.board-modal-open {
+        overflow: hidden;
+      }
 
       @media (max-width: 1100px) {
         .board-hero {
@@ -570,6 +574,91 @@
 
         .board-detail__media {
           width: 100%;
+        }
+
+        .board-detail--inline {
+          display: none;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .board-page {
+          padding: 4rem 0 3rem;
+        }
+
+        .board-hero {
+          grid-template-columns: 1fr;
+          padding: 1.3rem 0.85rem 1.7rem;
+          gap: 1.15rem;
+          text-align: center;
+          margin: 0;
+        }
+
+        .board-hero__content {
+          order: 2;
+        }
+
+        .board-hero h1 {
+          font-size: 1.45rem;
+        }
+
+        .board-hero__collage {
+          order: 1;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          gap: 0.6rem;
+          padding-right: 0;
+        }
+
+        .board-collage__img {
+          width: clamp(90px, 36vw, 140px);
+        }
+
+        .board-directory-shell {
+          padding: 1.75rem 0.85rem 3rem;
+        }
+
+        .board-directory {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          padding: 1.3rem 0.9rem 1.7rem;
+          margin: 0;
+          row-gap: 1.6rem;
+        }
+
+        .board-directory__list-wrapper {
+          border-right: none;
+          border-bottom: 1px solid rgba(31, 28, 46, 0.08);
+          padding-right: 0;
+          padding-bottom: 1.1rem;
+        }
+
+        .board-directory__list {
+          gap: 0.5rem;
+        }
+
+        .directory-item {
+          font-size: 0.95rem;
+        }
+
+        .board-detail {
+          padding: 1.15rem;
+        }
+
+        .board-detail__profile {
+          flex-direction: column;
+        }
+
+        .board-detail__media,
+        .board-detail__media img {
+          width: 100%;
+        }
+
+        .board-detail__meta {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -720,7 +809,7 @@
                 </li>
               </ul>
             </div>
-            <div class="board-detail" role="tabpanel" aria-labelledby="official-tab-adesh">
+            <div class="board-detail board-detail--inline" data-board-detail="inline" role="tabpanel" aria-labelledby="official-tab-adesh">
               <div class="board-detail__profile">
                 <div class="board-detail__media">
                   <img id="detail-image" src="Officials/Dr Adesh Saxena/adesh_saxena.jpeg" alt="Portrait of Dr. Adesh Saxena" />
@@ -756,6 +845,44 @@
             </div>
           </article>
         </section>
+        <div class="board-detail-overlay" data-board-overlay aria-hidden="true"></div>
+        <div class="board-detail-modal" data-board-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="detail-name-modal">
+          <article class="board-detail board-detail--modal" data-board-detail="modal">
+            <button class="board-detail__close" type="button" aria-label="Close details" data-board-close>&times;</button>
+            <div class="board-detail__profile">
+              <div class="board-detail__media">
+                <img id="detail-image-modal" src="Officials/Dr Adesh Saxena/adesh_saxena.jpeg" alt="Portrait of Dr. Adesh Saxena" />
+              </div>
+              <div class="board-detail__info">
+                <p class="board-detail__tag" id="detail-tag-modal">Healthcare Council</p>
+                <h3 id="detail-name-modal">Dr. Adesh Saxena</h3>
+                <p class="board-detail__role" id="detail-role-modal">CEO, Shri Ashwini Saxena Multi-speciality Hospital · ENT Surgeon</p>
+                <p class="board-detail__summary" id="detail-summary-modal">
+                  MBBS (1983) and MS (ENT, 1987) from Delhi University with award-winning research on external rhinoplasty. Leads cochlear implant, Safe Sound, and advanced sinus surgery services in Rewari.
+                </p>
+              </div>
+            </div>
+            <div class="board-detail__meta" id="detail-meta-modal">
+              <div>
+                <dt>Education</dt>
+                <dd>MBBS 1983 · MS (ENT) 1987 (Delhi University)</dd>
+              </div>
+              <div>
+                <dt>Leadership</dt>
+                <dd>Past President AOI Haryana · IMA Rewari</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>Cochlear implants · Rhinoplasty · Safe Sound</dd>
+              </div>
+            </div>
+            <ul class="board-detail__highlights" id="detail-highlights-modal">
+              <li>Gold Medal &amp; Smt. Mukut Saharia Award (AOI Delhi, 1987).</li>
+              <li>Organised Haryana AOICON with live surgical fellowships.</li>
+              <li>Haryana representative for National Initiative for Safe Sound.</li>
+            </ul>
+          </article>
+        </div>
       </div>
     </main>
 
@@ -993,28 +1120,71 @@
         const detailSummary = document.getElementById("detail-summary");
         const detailMeta = document.getElementById("detail-meta");
         const detailHighlights = document.getElementById("detail-highlights");
+        const boardDetailInline = document.querySelector('[data-board-detail="inline"]');
+        const boardDetailModal = document.querySelector('[data-board-detail="modal"]');
+        const detailImageModal = document.getElementById("detail-image-modal");
+        const detailTagModal = document.getElementById("detail-tag-modal");
+        const detailNameModal = document.getElementById("detail-name-modal");
+        const detailRoleModal = document.getElementById("detail-role-modal");
+        const detailSummaryModal = document.getElementById("detail-summary-modal");
+        const detailMetaModal = document.getElementById("detail-meta-modal");
+        const detailHighlightsModal = document.getElementById("detail-highlights-modal");
         const boardDetail = document.querySelector(".board-detail");
+        const boardOverlay = document.querySelector("[data-board-overlay]");
+        const boardModalShell = document.querySelector("[data-board-modal]");
+        const boardCloseBtn = document.querySelector("[data-board-close]");
 
-        function renderOfficial(key) {
-          const official = officials[key];
-          if (!official) return;
-          detailImage.src = official.image;
-          detailImage.alt = `Portrait of ${official.name}`;
-          detailTag.textContent = official.tag;
-          detailName.textContent = official.name;
-          detailRole.textContent = official.role;
-          detailSummary.textContent = official.summary;
-          detailMeta.innerHTML = official.meta
-            .map(
-              (item) => `
+        function populateDetail(target, official) {
+          if (!target || !official) return;
+          const imageEl = target.querySelector("#" + (target.dataset.boardDetail === "modal" ? "detail-image-modal" : "detail-image"));
+          const tagEl = target.querySelector("#" + (target.dataset.boardDetail === "modal" ? "detail-tag-modal" : "detail-tag"));
+          const nameEl = target.querySelector("#" + (target.dataset.boardDetail === "modal" ? "detail-name-modal" : "detail-name"));
+          const roleEl = target.querySelector("#" + (target.dataset.boardDetail === "modal" ? "detail-role-modal" : "detail-role"));
+          const summaryEl = target.querySelector("#" + (target.dataset.boardDetail === "modal" ? "detail-summary-modal" : "detail-summary"));
+          const metaEl = target.querySelector("#" + (target.dataset.boardDetail === "modal" ? "detail-meta-modal" : "detail-meta"));
+          const highlightsEl = target.querySelector("#" + (target.dataset.boardDetail === "modal" ? "detail-highlights-modal" : "detail-highlights"));
+
+          if (imageEl) {
+            imageEl.src = official.image;
+            imageEl.alt = `Portrait of ${official.name}`;
+          }
+          if (tagEl) tagEl.textContent = official.tag;
+          if (nameEl) nameEl.textContent = official.name;
+          if (roleEl) roleEl.textContent = official.role;
+          if (summaryEl) summaryEl.textContent = official.summary;
+          if (metaEl)
+            metaEl.innerHTML = official.meta
+              .map(
+                (item) => `
                 <div>
                   <dt>${item.label}</dt>
                   <dd>${item.value}</dd>
                 </div>`
-            )
-            .join("");
-          detailHighlights.innerHTML = official.highlights.map((item) => `<li>${item}</li>`).join("");
+              )
+              .join("");
+          if (highlightsEl) highlightsEl.innerHTML = official.highlights.map((item) => `<li>${item}</li>`).join("");
         }
+
+        function renderOfficial(key) {
+          const official = officials[key];
+          if (!official) return;
+          populateDetail(boardDetailInline, official);
+          populateDetail(boardDetailModal, official);
+        }
+
+        function openModal() {
+          boardOverlay?.classList.add("is-visible");
+          boardModalShell?.classList.add("is-open");
+          document.body.classList.add("board-modal-open");
+        }
+
+        function closeModal() {
+          boardOverlay?.classList.remove("is-visible");
+          boardModalShell?.classList.remove("is-open");
+          document.body.classList.remove("board-modal-open");
+        }
+
+        const prefersModal = () => window.matchMedia("(max-width: 640px)").matches;
 
         listButtons.forEach((button) => {
           button.addEventListener("click", () => {
@@ -1024,13 +1194,33 @@
               btn.classList.toggle("is-active", btn === button);
               btn.setAttribute("aria-selected", btn === button ? "true" : "false");
             });
-            boardDetail.setAttribute("aria-labelledby", button.id);
-            boardDetail.classList.add("is-refreshing");
+            boardDetailInline?.setAttribute("aria-labelledby", button.id);
+            boardDetailInline?.classList.add("is-refreshing");
             requestAnimationFrame(() => {
               renderOfficial(currentKey);
-              setTimeout(() => boardDetail.classList.remove("is-refreshing"), 450);
+              setTimeout(() => boardDetailInline?.classList.remove("is-refreshing"), 450);
             });
+            if (prefersModal()) {
+              renderOfficial(currentKey);
+              boardModalShell?.setAttribute("aria-labelledby", button.id);
+              openModal();
+            }
           });
+        });
+
+        boardOverlay?.addEventListener("click", closeModal);
+        boardCloseBtn?.addEventListener("click", closeModal);
+
+        window.addEventListener("keyup", (event) => {
+          if (event.key === "Escape" && boardModalShell?.classList.contains("is-open")) {
+            closeModal();
+          }
+        });
+
+        window.addEventListener("resize", () => {
+          if (!prefersModal()) {
+            closeModal();
+          }
         });
 
         renderOfficial(listButtons[0]?.dataset.official || "adesh");
