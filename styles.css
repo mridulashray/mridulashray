@@ -199,6 +199,109 @@ body.nav-open .nav-screen {
   text-decoration: none;
 }
 
+.about-nav-section {
+  padding: clamp(3rem, 7vw, 5rem) 0;
+  background: linear-gradient(145deg, rgba(255, 248, 242, 0.6), rgba(214, 240, 225, 0.4));
+}
+
+.about-nav__intro {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 3rem;
+}
+
+.about-nav__intro h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  margin: 0.4rem 0 1rem;
+}
+
+.about-nav__intro p {
+  color: var(--color-ink-soft);
+  line-height: 1.75;
+}
+
+.about-nav__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+}
+
+.about-nav__card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 12px 32px rgba(69, 44, 44, 0.08);
+  border: 1px solid rgba(69, 44, 44, 0.06);
+  text-decoration: none;
+  color: var(--color-ink);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-nav__card:hover,
+.about-nav__card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(69, 44, 44, 0.12);
+  border-color: var(--color-petal);
+}
+
+.about-nav__card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.about-nav__card h3 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  margin: 0 0 0.75rem;
+  color: var(--color-ink);
+}
+
+.about-nav__card p {
+  color: var(--color-ink-soft);
+  line-height: 1.65;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.about-nav__card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--color-petal);
+  margin-top: 1.25rem;
+  font-weight: 700;
+  transition: transform 0.2s ease;
+}
+
+.about-nav__card:hover .about-nav__card-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 640px) {
+  .about-nav__grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .about-nav__card {
+    padding: 1.5rem;
+  }
+
+  .about-nav__card-icon {
+    font-size: 2rem;
+  }
+
+  .about-nav__card h3 {
+    font-size: 1.25rem;
+  }
+}
+
 @media (max-width: 640px) {
   .about-contact-strip__inner {
     text-align: center;
