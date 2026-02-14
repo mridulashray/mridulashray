@@ -1629,6 +1629,79 @@ body::before {
   }
 }
 
+/* Payment page – small mobile alignment (no right-side crop, similar to VMV page) */
+@media (max-width: 360px) {
+  .payment-page .container {
+    width: 100%;
+  }
+
+  .payment-wrapper {
+    width: 100%;
+    max-width: 100vw;
+    gap: 1rem;
+  }
+
+  .payment-card,
+  .payment-info {
+    margin: 0;
+    padding: 1rem 0.9rem;
+    border-radius: 20px;
+    box-shadow: 0 16px 32px rgba(69, 44, 44, 0.1);
+  }
+
+  .payment-card h1 {
+    font-size: 1.6rem;
+  }
+
+  .payment-card p {
+    font-size: 0.95rem;
+  }
+}
+
+/* Extra-small screens: make donate layout fit even on ultra narrow phones */
+@media (max-width: 159px) {
+  .container {
+    width: 100%;
+  }
+
+  .payment-page {
+    padding: 2rem 0 3rem;
+  }
+
+  .payment-card,
+  .payment-info {
+    padding: 0.85rem 0.9rem;
+    border-radius: 20px;
+  }
+
+  .payment-card h1 {
+    font-size: 1.45rem;
+  }
+
+  .payment-card p,
+  .payment-form label,
+  .payment-form input,
+  .payment-form textarea,
+  .payment-info p,
+  .payment-steps li {
+    font-size: 0.85rem;
+  }
+
+  .input-with-prefix {
+    padding: 0.55rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .payment-actions .ghost-btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .payment-qr__image {
+    max-width: 180px;
+  }
+}
+
 .site-footer {
   background: #050505;
   color: #f5f5f5;
