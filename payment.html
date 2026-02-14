@@ -88,10 +88,10 @@
             <h1>Complete your donation</h1>
             <p>
               Every rupee keeps children in safe classrooms, restores infrastructure, and boosts community teachers. Enter any amount, share an optional note, and
-              we’ll route you to your preferred UPI app instantly.
+              we’ll open your preferred UPI app so you can confirm the payment.
             </p>
 
-            <form id="payment-form" class="payment-form" data-upi-id="gpay-11183798364@okbizaxis">
+            <form id="payment-form" class="payment-form" data-upi-id="7045332855-3@ybl">
               <label>
                 Donation Amount (₹)
                 <div class="input-with-prefix">
@@ -111,31 +111,45 @@
               </label>
 
               <div class="payment-actions">
-                <button type="submit" class="ghost-btn ghost-btn--solid">Proceed with UPI</button>
-                <p class="form-hint">You’ll be prompted by your UPI app/browser. No fees are deducted from your gift.</p>
+                <button type="submit" class="ghost-btn ghost-btn--solid">Open UPI app to pay</button>
+                <p class="form-hint">We’ll open any installed UPI app (PhonePe, GPay, Paytm, etc.) so you can securely confirm the payment.</p>
               </div>
               <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
             </form>
           </article>
 
           <aside class="payment-info" aria-label="UPI payment details">
+            <div class="payment-qr">
+              <p class="payment-qr__eyebrow">Instant UPI</p>
+              <h2 class="payment-qr__title">Scan to donate now</h2>
+              <p class="payment-qr__text">Open your UPI app and simply scan this code to support classrooms, teachers and community work in Rewari.</p>
+              <div class="payment-qr__image-wrap">
+                <img
+                  src="images/paymentqr/shrikesh-payment-qr.png"
+                  alt="UPI QR code for Mridulashray donations"
+                  class="payment-qr__image"
+                />
+                <p class="payment-qr__caption">Works with PhonePe, Google Pay, Paytm and all major UPI apps.</p>
+              </div>
+            </div>
+
             <div class="upi-id-block">
-              <p>Prefer sending money manually?</p>
+              <p>Prefer sending money manually instead of scanning?</p>
               <div class="upi-id-chip">
                 <span>UPI ID:</span>
-                <strong id="upi-id-text">gpay-11183798364@okbizaxis</strong>
+                <strong id="upi-id-text">7045332855-3@ybl</strong>
                 <button type="button" id="copy-upi-btn">Copy</button>
               </div>
-              <p class="upi-note">Use any UPI app, paste the ID, and mention “Mridulashray Support” in the note.</p>
+              <p class="upi-note">Use any UPI app, paste the ID and mention “Mridulashray Support” in the note/message.</p>
             </div>
 
             <div class="payment-steps">
               <h2>How it works</h2>
               <ol>
-                <li>Enter or review your amount above.</li>
-                <li>Hit “Proceed with UPI” to trigger the payment intent.</li>
-                <li>Approve the payment in your preferred UPI app.</li>
-                <li>Share the confirmation screenshot at <a href="mailto:mridulashrayorg@gmail.com">mridulashrayorg@gmail.com</a> for instant acknowledgement.</li>
+                <li>Enter the amount you wish to donate.</li>
+                <li>Tap “Open UPI app to pay” or scan the QR using your UPI app.</li>
+                <li>Approve the payment in your preferred app.</li>
+                <li>Optionally share the confirmation screenshot at <a href="mailto:mridulashrayorg@gmail.com">mridulashrayorg@gmail.com</a> for instant acknowledgement.</li>
               </ol>
             </div>
           </aside>

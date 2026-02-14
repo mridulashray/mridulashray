@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Our Story | Mridulashray</title>
+    <title>Vision, Mission & Values | Mridulashray</title>
     <link rel="icon" href="images/logo.png" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,6 +12,362 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .vmv-hero {
+        position: relative;
+        padding: clamp(4rem, 8vw, 6rem) 0 clamp(3.5rem, 7vw, 5rem);
+        background-image:
+          linear-gradient(120deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.45)),
+          url('images/VMV_Backdrop.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #ffffff;
+      }
+
+      .vmv-hero__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+      }
+
+      .vmv-hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 4.2vw, 3.4rem);
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+      }
+
+      .vmv-hero__subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 640px;
+      }
+
+      .vmv-hero__layout {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .vmv-hero__text {
+        text-align: left;
+      }
+
+      .vmv-hero__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+        font-size: 0.85rem;
+      }
+
+      .vmv-hero__chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(12, 24, 16, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(6px);
+      }
+
+      .vmv-hero__chip-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      @media (max-width: 768px) {
+        .vmv-hero {
+          text-align: center;
+        }
+
+        .vmv-hero__text {
+          text-align: center;
+        }
+
+        .vmv-hero__subtitle {
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .vmv-hero__chips {
+          justify-content: center;
+        }
+      }
+      
+      .vmv-section {
+        padding: clamp(4rem, 8vw, 6rem) 0;
+      }
+      
+      .vmv-section__content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: flex-start;
+        justify-items: center; /* center both columns as a group */
+        position: relative;
+        min-height: 600px;
+      }
+      
+      .vmv-section__left {
+        align-items: flex-end;
+        text-align: right;
+      }
+      
+      .vmv-section__right {
+        align-items: flex-start;
+        text-align: left;
+        margin-top: 200px;
+      }
+      
+      .vmv-section__icon {
+        color: var(--color-deep-leaf);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -40px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 12px rgba(69, 44, 44, 0.15);
+      }
+      
+      .vmv-section__tree {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1;
+        width: 100vw; /* let background span full viewport width */
+        height: 100%;
+      }
+
+
+      .vmv-section__tree img {
+            border-radius: 15px;
+            width: 100%;
+            max-width: 1200px;
+            height: auto;
+            object-fit: contain;
+            box-shadow:
+                  0px 35px 40px #e5842a
+
+}
+
+
+      
+      .vmv-section__text {
+        max-width: 360px;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(69, 44, 44, 0.1);
+        border: none; /* no visible borders on sides/bottom */
+        font-size: 0.85rem; /* slightly smaller body text */
+        line-height: 1.5;
+      }
+
+      /* Panel color accents to mimic table-style cards from the reference */
+      .vmv-section__left .vmv-section__text {
+        border-top: 6px solid #e5842a; /* warm orange for Vision */
+        background: #fff7ef;
+        margin-right: 2.9rem; /* pull left card slightly away from tree */
+        margin-top: 0.5rem; /* lift left card a bit higher */
+      }
+
+      .vmv-section__right .vmv-section__text {
+        border-top: 6px solid #2b8a4b; /* green for Mission */
+        background: #f2fff6;
+        margin-left: 2.5rem; /* pull right card slightly away from tree */
+      }
+
+      /* Slightly smaller headings inside the cards so they feel lighter over the image */
+      .vmv-section__text h2 {
+        font-size: 1.7rem;
+      }
+
+      /* Core Values section */
+      .values-section {
+        padding: clamp(3.5rem, 7vw, 5rem) 0 4rem;
+        background: linear-gradient(180deg, #fff7ef 0%, #fdf7ed 40%, #f4fbf4 100%);
+      }
+
+      .values-section__inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        border: 1px solid #e5842a;
+        border-radius: 30px;
+        padding: 30px;
+      }
+
+      .values-section__header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .values-section__title {
+        display: inline-block;
+        padding: 0.6rem 2.5rem;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #e5842a, #f6a63b);
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.95rem;
+      }
+
+      .values-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 2.25rem 2.5rem;
+      }
+
+      .value-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .value-card__icon {
+        width: 64px;
+        height: 64px;
+        flex-shrink: 0;
+      }
+
+      .value-card__icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .value-card__title {
+        font-weight: 600;
+        font-size: 1.05rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .value-card__subtitle {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #7b5231;
+        margin-bottom: 0.25rem;
+      }
+
+      .value-card__text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .values-tagline {
+        margin-top: 2.75rem;
+        text-align: center;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #5a4634;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .values-tagline__icon {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+      }
+
+      .values-tagline__icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .values-tagline__end-icons {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .values-tagline strong {
+        font-weight: 600;
+      }
+
+      @media (max-width: 992px) {
+        .values-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .values-grid {
+          grid-template-columns: 1fr;
+        }
+        .value-card {
+          grid-template-columns: 1fr;
+        }
+        .value-card__icon {
+          width: 56px;
+          height: 56px;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        /* Keep laptop-style layout (two cards side by side with tree centered) on mobile */
+        .vmv-section__content {
+          grid-template-columns: 1fr 1fr;
+          gap: 1.25rem;
+          min-height: 600px;
+        }
+
+        .vmv-section__tree {
+          top: 70%;
+          /* other properties (absolute, center) stay same as desktop */
+        }
+
+        .vmv-section__tree img {
+          max-width: 660px;
+        }
+
+        .vmv-section__left,
+        .vmv-section__right {
+          align-items: flex-start;
+          text-align: left;
+        }
+
+        .vmv-section__right {
+          margin-top: 190px; /* tiny reduction so composition is a bit tighter */
+        }
+
+        /* Slightly smaller, narrower cards on mobile while keeping layout */
+        .vmv-section__text {
+          max-width: 270px;
+          padding: 0.9rem 1rem;
+          font-size: 0.78rem;
+        }
+
+        .vmv-section__text h2 {
+          font-size: 1.3rem;
+          line-height: 1.22;
+        }
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -20,7 +376,6 @@
           <img src="images/logo.png" alt="Mridulashray logo" class="brand__logo" />
           <span class="brand__name">Mridulashray</span>
         </a>
-        <!-- Main navigation -->
         <nav class="main-nav" aria-label="Primary">
           <div class="nav-item">
             <a href="index.html" class="nav-link">Home</a>
@@ -83,11 +438,176 @@
       </div>
     </header>
 
-    <main class="page-status" aria-label="Under development placeholder">
-      <span class="petal-badge">Under development</span>
-      <h1>Our Story page is in progress</h1>
-      <p>We’re crafting a detailed narrative about Mridulashray’s beginnings, volunteers, and milestones. Please check back soon for the full story.</p>
-      <a class="ghost-btn ghost-btn--solid" href="about.html">Return to About Us</a>
+    <main>
+      <section class="vmv-hero">
+        <div class="vmv-hero__inner">
+          <div class="vmv-hero__layout">
+            <div class="vmv-hero__text">
+              <h1>Vision, Mission &amp; Values</h1>
+              <p class="vmv-hero__subtitle">
+                A focused glimpse into what Mridulashray stands for today and the future we are steadily building for Rewari.
+              </p>
+              <div class="vmv-hero__chips">
+                <span class="vmv-hero__chip" style="color:#8ec5ff;">
+                  <span class="vmv-hero__chip-dot"></span>
+                  Education &amp; skill-building
+                </span>
+                <span class="vmv-hero__chip" style="color:#9be7b5;">
+                  <span class="vmv-hero__chip-dot"></span>
+                  Environment &amp; green action
+                </span>
+                <span class="vmv-hero__chip" style="color:#ffd29b;">
+                  <span class="vmv-hero__chip-dot"></span>
+                  Welfare, dignity &amp; care
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="vmv-section">
+        <div class="vmv-section__content">
+          <div class="vmv-section__left">
+            <div class="vmv-section__icon">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3-1.34 3-3-3z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="vmv-section__text">
+              <div class="ourVisionText">
+                <p class="eyebrow">Our Vision</p>
+                <h2>Building a future where every community thrives with dignity and opportunity</h2>
+                <br>
+                <p>
+                  We envision Rewari as a model of sustainable development where education reaches every doorstep, environmental stewardship is a shared responsibility, and social welfare creates pathways to self-reliance. Our vision is not just about growth—it's about meaningful, inclusive progress that honors local wisdom while embracing innovation.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="vmv-section__tree">
+            <img src="images/vmv-mid-tree.png" alt="Tree representing growth and sustainability" />
+          </div>
+          
+          <div class="vmv-section__right">
+            <div class="vmv-section__icon">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="vmv-section__text">
+              <p class="eyebrow">Our Mission</p>
+              <h2>To empower communities through education, environment, and social welfare</h2>
+             <br> 
+              <p>
+                Mridulashray exists to bridge gaps between potential and opportunity. We mobilize resources, knowledge, and volunteers to create practical solutions for real-world challenges. Our mission focuses on four pillars: education that builds confidence, environmental action that sustains livelihoods, social welfare that protects the vulnerable, and community engagement that fosters ownership.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="values-section" aria-labelledby="core-values-heading">
+        <div class="values-section__inner">
+          <div class="values-section__header">
+            <span class="values-section__title" id="core-values-heading">Our Core Values</span>
+          </div>
+
+          <div class="values-grid">
+            <div class="value-card">
+              <div class="value-card__icon">
+                <img src="images/VMV2.png" alt="Compassion icon" />
+              </div>
+              <div>
+                <div class="value-card__title">Compassion <span class="value-card__subtitle">(Karuna)</span></div>
+                <p class="value-card__text">
+                  We honour the dignity and care of every individual, responding with empathy and kindness to those who are vulnerable, distressed, or in need.
+                </p>
+              </div>
+            </div>
+
+            <div class="value-card">
+              <div class="value-card__icon">
+                <img src="images/VMV3.png" alt="Selfless service icon" />
+              </div>
+              <div>
+                <div class="value-card__title">Selfless Service <span class="value-card__subtitle">(Seva)</span></div>
+                <p class="value-card__text">
+                  We serve communities with humility and dedication, placing collective well-being above personal gain and creating bridges of trust.
+                </p>
+              </div>
+            </div>
+
+            <div class="value-card">
+              <div class="value-card__icon">
+                <img src="images/VMV4.png" alt="Excellence and integrity icon" />
+              </div>
+              <div>
+                <div class="value-card__title">Excellence &amp; Integrity</div>
+                <p class="value-card__text">
+                  We uphold high standards of transparency, accountability, and professionalism in every initiative and partnership.
+                </p>
+              </div>
+            </div>
+
+            <div class="value-card">
+              <div class="value-card__icon">
+                <img src="images/VMV5.png" alt="Environmental stewardship icon" />
+              </div>
+              <div>
+                <div class="value-card__title">Environmental Stewardship</div>
+                <p class="value-card__text">
+                  We nurture and protect nature through conscious choices, conservation efforts, and sustainable practices in our programmes.
+                </p>
+              </div>
+            </div>
+
+            <div class="value-card">
+              <div class="value-card__icon">
+                <img src="images/VMV10.png" alt="Dignity and equality icon" />
+              </div>
+              <div>
+                <div class="value-card__title">Dignity &amp; Equality</div>
+                <p class="value-card__text">
+                  We create inclusive spaces where every person is respected, heard, and given fair opportunities to grow and participate.
+                </p>
+              </div>
+            </div>
+
+            <div class="value-card">
+              <div class="value-card__icon">
+                <img src="images/VMV18.png" alt="Sustainable impact icon" />
+              </div>
+              <div>
+                <div class="value-card__title">Sustainable Impact</div>
+                <p class="value-card__text">
+                  We focus on long-term transformation by building resilient systems and empowering communities to lead their own progress.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="values-tagline">
+            <span class="values-tagline__icon">
+              <img src="images/VMV19.png" alt="Decorative leaf icon" />
+            </span>
+            <span>
+              <strong>Compassion</strong> meets strategy. <strong>Excellence</strong> serves community.
+              <br />
+              <strong>Every action</strong> builds a better future for all living beings.
+            </span>
+            <span class="values-tagline__end-icons">
+              <span class="values-tagline__icon">
+                <img src="images/VMV20.png" alt="Decorative flourish icon" />
+              </span>
+              <span class="values-tagline__icon">
+                <img src="images/VMV21.png" alt="Decorative flourish icon" />
+              </span>
+            </span>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
@@ -133,6 +653,7 @@
             <h4>Pages</h4>
             <ul class="footer-links">
               <li><a href="index.html">Home</a></li>
+              <li><a href="about.html" class="active">About Us</a></li>
               <li><a href="volunteer.html">Volunteer</a></li>
               <li><a href="events.html">Events</a></li>
               <li><a href="contact.html">Contact Us</a></li>
@@ -177,5 +698,52 @@
     <script src="vendor/appwrite.min.js"></script>
     <script src="appwrite-config.js"></script>
     <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const pages = document.querySelectorAll('.vmv-intro__page');
+        const sections = {
+          vision: document.querySelector('.vmv-section__left'),
+          mission: document.querySelector('.vmv-section__right'),
+          values: null // Will add later
+        };
+        
+        let currentSection = 'vision';
+        
+        // Initialize
+        if (sections.vision) {
+          sections.vision.classList.add('active');
+        }
+        
+        // Debug logging
+        console.log('Sections found:', sections);
+        console.log('Pages found:', pages);
+        
+        pages.forEach(page => {
+          page.addEventListener('click', function() {
+            console.log('Clicked:', this.dataset.section);
+            const targetSection = this.dataset.section;
+            
+            // Hide current section
+            if (sections[currentSection]) {
+              sections[currentSection].classList.remove('active');
+              sections[currentSection].classList.add('next');
+            }
+            
+            // Show new section after animation
+            setTimeout(() => {
+              if (sections[currentSection]) {
+                sections[currentSection].classList.remove('next');
+              }
+              
+              if (sections[targetSection]) {
+                sections[targetSection].classList.add('active');
+              }
+              
+              currentSection = targetSection;
+            }, 400);
+          });
+        });
+      });
+    </script>
   </body>
 </html>
