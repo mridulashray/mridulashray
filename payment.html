@@ -87,77 +87,113 @@
 
     <main>
       <section class="payment-page">
-        <div class="container payment-wrapper">
-          <article class="payment-card">
-            <span class="petal-badge">Direct Support</span>
-            <h1>Complete your donation</h1>
-            <p>
-              Every rupee keeps children in safe classrooms, restores infrastructure, and boosts community teachers. Enter any amount, share an optional note, and
-              we’ll open your preferred UPI app so you can confirm the payment.
+        <div class="container payment-shell">
+          <header class="payment-hero">
+            <div class="payment-hero__eyebrow">Donate to Mridulashray</div>
+            <h1 class="payment-hero__title">Complete your donation</h1>
+            <p class="payment-hero__subtitle">
+              Enter an amount and pay instantly via UPI to support our community work in and around Rewari.
             </p>
+          </header>
 
-            <form id="payment-form" class="payment-form" data-upi-id="7045332855-3@ybl">
-              <label>
-                Donation Amount (₹)
-                <div class="input-with-prefix">
-                  <span aria-hidden="true">₹</span>
-                  <input type="number" name="amount" min="1" step="1" placeholder="5000" required />
+          <div class="payment-layout">
+            <article class="payment-panel" aria-label="Donate online">
+              <span class="petal-badge">Quick UPI donation</span>
+              <h2 class="payment-panel__title">Make a secure contribution</h2>
+              <p class="payment-panel__text">
+                Pick a suggested amount or enter any value that works for you. Well open your preferred UPI app so you can confirm the payment yourself.
+              </p>
+
+              <form id="payment-form" class="payment-form" data-upi-id="7045332855-3@ybl">
+                <div class="payment-amount">
+                  <label class="payment-field">
+                    <span class="payment-field__label">Donation amount (₹)</span>
+                    <div class="input-with-prefix">
+                      <span aria-hidden="true">₹</span>
+                      <input type="number" name="amount" min="1" step="1" placeholder="2500" required />
+                    </div>
+                  </label>
+
+                  <div class="payment-presets" aria-label="Quick amount buttons">
+                    <button type="button" class="payment-preset" data-amount="501">₹501</button>
+                    <button type="button" class="payment-preset" data-amount="1100">₹1,100</button>
+                    <button type="button" class="payment-preset" data-amount="2500">₹2,500</button>
+                    <button type="button" class="payment-preset" data-amount="5100">₹5,100</button>
+                  </div>
                 </div>
-              </label>
 
-              <label>
-                Your Name (optional)
-                <input type="text" name="supporter-name" placeholder="Enter your Name" />
-              </label>
+                <div class="payment-grid-fields">
+                  <label class="payment-field">
+                    <span class="payment-field__label">Your name (optional)</span>
+                    <input type="text" name="supporter-name" placeholder="Enter your full name" />
+                  </label>
 
-              <label>
-                Note to our team (optional)
-                <textarea name="note" rows="3" placeholder="Tell us how you’d like the funds to be used"></textarea>
-              </label>
+                  <label class="payment-field">
+                    <span class="payment-field__label">Email / Phone (optional)</span>
+                    <input type="text" name="contact" placeholder="For acknowledgement or receipts" />
+                  </label>
+                </div>
 
-              <div class="payment-actions">
-                <button type="submit" class="ghost-btn ghost-btn--solid">Open UPI app to pay</button>
-                <p class="form-hint">We’ll open any installed UPI app (PhonePe, GPay, Paytm, etc.) so you can securely confirm the payment.</p>
-              </div>
-              <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
-            </form>
-          </article>
+                <label class="payment-field">
+                  <span class="payment-field__label">Message to our team (optional)</span>
+                  <textarea name="note" rows="3" placeholder="Tell us if you want to support a specific cause – education, women, enviroment, elders, etc."></textarea>
+                </label>
 
-          <aside class="payment-info" aria-label="UPI payment details">
-            <div class="payment-qr">
-              <p class="payment-qr__eyebrow">Instant UPI</p>
-              <h2 class="payment-qr__title">Scan to donate now</h2>
-              <p class="payment-qr__text">Open your UPI app and simply scan this code to support classrooms, teachers and community work in Rewari.</p>
-              <div class="payment-qr__image-wrap">
-                <img
-                  src="images/paymentqr/shrikesh-payment-qr.png"
-                  alt="UPI QR code for Mridulashray donations"
-                  class="payment-qr__image"
-                />
-                <p class="payment-qr__caption">Works with PhonePe, Google Pay, Paytm and all major UPI apps.</p>
-              </div>
-            </div>
+                <div class="payment-actions">
+                  <button type="submit" class="ghost-btn ghost-btn--solid payment-submit">
+                    Open UPI app to pay
+                  </button>
+                  <p class="form-hint">
+                    We never store your card details. You approve the payment only inside your own UPI app (PhonePe, Google Pay, Paytm, etc.).
+                  </p>
+                  <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
+                </div>
+              </form>
 
-            <div class="upi-id-block">
-              <p>Prefer sending money manually instead of scanning?</p>
-              <div class="upi-id-chip">
-                <span>UPI ID:</span>
-                <strong id="upi-id-text">7045332855-3@ybl</strong>
-                <button type="button" id="copy-upi-btn">Copy</button>
-              </div>
-              <p class="upi-note">Use any UPI app, paste the ID and mention “Mridulashray Support” in the note/message.</p>
-            </div>
+            </article>
 
-            <div class="payment-steps">
-              <h2>How it works</h2>
-              <ol>
-                <li>Enter the amount you wish to donate.</li>
-                <li>Tap “Open UPI app to pay” or scan the QR using your UPI app.</li>
-                <li>Approve the payment in your preferred app.</li>
-                <li>Optionally share the confirmation screenshot at <a href="mailto:mridulashrayorg@gmail.com">mridulashrayorg@gmail.com</a> for instant acknowledgement.</li>
-              </ol>
-            </div>
-          </aside>
+            <aside class="payment-side" aria-label="Other ways to donate and details">
+              <section class="payment-card-qr">
+                <header class="payment-card-qr__header">
+                  <p class="payment-qr__eyebrow">Scan &amp; pay instantly</p>
+                  <h2 class="payment-card-qr__title">UPI QR for Mridulashray</h2>
+                </header>
+                <div class="payment-qr__body">
+                  <div class="payment-qr__image-wrap">
+                    <img
+                      src="images/paymentqr/shrikesh-payment-qr.png"
+                      alt="UPI QR code for Mridulashray donations"
+                      class="payment-qr__image"
+                    />
+                  </div>
+                  <p class="payment-qr__caption">Open any UPI app and scan this code to donate securely.</p>
+                </div>
+              </section>
+
+              <section class="payment-upi">
+                <h3 class="payment-upi__title">UPI ID details</h3>
+                <p class="payment-upi__text">Prefer entering the ID manually instead of scanning the code?</p>
+                <div class="upi-id-chip">
+                  <span>UPI ID</span>
+                  <strong id="upi-id-text">7045332855-3@ybl</strong>
+                  <button type="button" id="copy-upi-btn">Copy</button>
+                </div>
+                <p class="upi-note">Use any UPI app, paste the ID and mention Mridulashray Support in the note/message.</p>
+              </section>
+
+              <section class="payment-steps">
+                <h3>How to donate in 3 simple steps</h3>
+                <ol>
+                  <li>Choose an amount and click Open UPI app to pay or scan the QR code.</li>
+                  <li>Approve the payment in your preferred UPI app.</li>
+                  <li>
+                    Optionally share the confirmation screenshot at
+                    <a href="mailto:mridulashrayorg@gmail.com">mridulashrayorg@gmail.com</a> for quick acknowledgement.
+                  </li>
+                </ol>
+              </section>
+            </aside>
+          </div>
         </div>
       </section>
     </main>
@@ -245,6 +281,25 @@
         <p class="footer-copy">© <span id="footer-year"></span> Mridulashray. All rights reserved.</p>
       </div>
     </footer>
+
+    <script>
+      (function () {
+        var form = document.getElementById("payment-form");
+        if (!form) return;
+
+        var amountInput = form.querySelector('input[name="amount"]');
+        var presetButtons = form.querySelectorAll(".payment-preset[data-amount]");
+
+        presetButtons.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var value = this.getAttribute("data-amount");
+            if (!amountInput || !value) return;
+            amountInput.value = value;
+            amountInput.focus();
+          });
+        });
+      })();
+    </script>
 
     <script src="script.js"></script>
   </body>
