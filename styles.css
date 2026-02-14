@@ -1,6 +1,3 @@
-body{
-        overflow-x: hidden;
-      }
 .nav-screen {
   position: fixed;
   inset: 0;
@@ -625,10 +622,11 @@ body.nav-open .nav-screen {
   color: var(--color-ink);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  min-height: 100%;
 }
 
 body {
@@ -637,6 +635,7 @@ body {
   line-height: 1.6;
   position: relative;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 body::before {
@@ -1347,6 +1346,8 @@ body::before {
 .payment-page {
   padding: clamp(3rem, 6vw, 5rem) 0 clamp(4rem, 7vw, 6rem);
   background: linear-gradient(135deg, rgba(255, 248, 242, 0.96), rgba(246, 212, 197, 0.4));
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .payment-wrapper {
@@ -1355,11 +1356,13 @@ body::before {
   gap: clamp(2rem, 4vw, 3.5rem);
   align-items: start;
   width: 100%;
+  max-width: 100vw;
 }
 
 .payment-card,
 .payment-info {
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -1595,6 +1598,34 @@ body::before {
 
   .payment-info {
     order: 2;
+  }
+}
+
+@media (max-width: 440px) {
+  .payment-page {
+    padding: 2.5rem 0 3.5rem;
+  }
+
+  .payment-card {
+    padding: 1.5rem 1.3rem;
+  }
+
+  .payment-info {
+    padding: 1.5rem 1.3rem;
+  }
+
+  .payment-form label {
+    font-size: 0.9rem;
+  }
+
+  .input-with-prefix,
+  .payment-form input,
+  .payment-form textarea {
+    font-size: 0.95rem;
+  }
+
+  .payment-qr__image {
+    max-width: 200px;
   }
 }
 
