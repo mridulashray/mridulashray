@@ -5571,7 +5571,8 @@ body::before {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    /* Slightly less than -50% to avoid a visible snap when the animation loops */
+    transform: translateX(-49.9%);
   }
 }
 

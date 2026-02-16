@@ -241,6 +241,74 @@
   const albumsCache = new Map();
   let currentAlbumSlug = null;
 
+  // --- Photo wall marquee state ---
+  let photoWallMarqueeState = {
+    frameId: null,
+    lastTs: 0,
+    offset: 0,
+    // pixels per second (tweak for perceived speed)
+    speed: 60
+  };
+
+  const stopPhotoWallMarquee = () => {
+    if (photoWallMarqueeState.frameId) {
+      cancelAnimationFrame(photoWallMarqueeState.frameId);
+      photoWallMarqueeState.frameId = null;
+    }
+    if (photoWallGridEl) {
+      photoWallGridEl.style.transform = "";
+    }
+  };
+
+  const startPhotoWallMarquee = () => {
+    if (!photoWallGridEl || !photoWallViewportEl) return;
+    const items = Array.from(photoWallGridEl.children);
+    if (items.length === 0) return;
+
+    stopPhotoWallMarquee();
+
+    // Ensure enough content width for a smooth marquee by duplicating once if needed.
+    if (photoWallGridEl.scrollWidth < photoWallViewportEl.clientWidth * 1.5) {
+      items.forEach((node) => {
+        const clone = node.cloneNode(true);
+        photoWallGridEl.appendChild(clone);
+      });
+    }
+
+    photoWallMarqueeState.offset = 0;
+    photoWallMarqueeState.lastTs = performance.now();
+
+    const step = (ts) => {
+      // Clamp delta time so occasional frame drops don't cause big jumps
+      const dt = Math.min((ts - photoWallMarqueeState.lastTs) / 1000, 0.05);
+      photoWallMarqueeState.lastTs = ts;
+      const speed = photoWallMarqueeState.speed;
+
+      let offset = photoWallMarqueeState.offset - speed * dt;
+
+      // Recycle items from left to right when they move out of view
+      let firstChild = photoWallGridEl.firstElementChild;
+      while (firstChild) {
+        const firstWidth = firstChild.getBoundingClientRect().width;
+        if (!Number.isFinite(firstWidth) || firstWidth <= 0) break;
+        if (Math.abs(offset) >= firstWidth) {
+          offset += firstWidth;
+          photoWallGridEl.appendChild(firstChild);
+          firstChild = photoWallGridEl.firstElementChild;
+        } else {
+          break;
+        }
+      }
+
+      photoWallMarqueeState.offset = offset;
+      photoWallGridEl.style.transform = `translateX(${offset}px)`;
+
+      photoWallMarqueeState.frameId = requestAnimationFrame(step);
+    };
+
+    photoWallMarqueeState.frameId = requestAnimationFrame(step);
+  };
+
   const storagePreviewUrl = (fileId) => `${STORAGE_BASE}/${fileId}/view?project=${APPWRITE_CONFIG.projectId}`;
 
   let appwriteInitPromise = null;
@@ -419,7 +487,8 @@
         buckets.set(key, []);
       }
       const bucket = buckets.get(key);
-      if (bucket.length < 2) {
+      // Allow up to 10 photos per album/event in the photo wall
+      if (bucket.length < 10) {
         bucket.push(entry);
       }
     });
@@ -442,20 +511,31 @@
 
   const renderPhotoWall = (documents = []) => {
     if (!photoWallGridEl) return;
+    stopPhotoWallMarquee();
     const allEntries = [];
     documents.forEach((doc) => {
       const mediaEntries = toMediaEntries(doc);
-      const fallbackId = doc.coverFileId || (Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds[0] : null);
-      const normalizedEntries = mediaEntries.length
-        ? mediaEntries
-        : fallbackId
-          ? [
-              {
-                fileId: fallbackId,
-                filename: doc.title || doc.name || "Event photo"
-              }
-            ]
-          : [];
+      const mediaFileIds = Array.isArray(doc.mediaFileIds) ? doc.mediaFileIds.filter(Boolean) : [];
+
+      // Prefer explicit mediaEntries when available. Otherwise, fall back to
+      // the first 5–10 media file ids so each album contributes multiple photos.
+      let normalizedEntries = [];
+      if (mediaEntries.length) {
+        normalizedEntries = mediaEntries;
+      } else if (mediaFileIds.length) {
+        const sliceCount = Math.min(mediaFileIds.length, 10);
+        normalizedEntries = mediaFileIds.slice(0, sliceCount).map((fileId) => ({
+          fileId,
+          filename: doc.title || doc.name || "Event photo"
+        }));
+      } else if (doc.coverFileId) {
+        normalizedEntries = [
+          {
+            fileId: doc.coverFileId,
+            filename: doc.title || doc.name || "Event photo"
+          }
+        ];
+      }
       normalizedEntries.forEach((entry) => {
         if (!entry?.fileId) return;
         allEntries.push({
@@ -481,13 +561,12 @@
       photoWallViewportEl.classList.remove("is-empty");
     }
 
-    // Enable looping animation even when there are fewer than 6 entries,
-    // so the photo wall always has gentle motion when there is content.
-    const shouldLoop = curatedEntries.length >= 1;
-    const entriesToRender = shouldLoop ? [...curatedEntries, ...curatedEntries] : curatedEntries;
+    // Render a single sequence of curated entries; marquee logic will recycle
+    // DOM nodes for a seamless, continuous scroll.
+    const entriesToRender = curatedEntries;
     if (photoWallGridEl.classList) {
-      photoWallGridEl.classList.toggle("is-looping", shouldLoop);
-      photoWallGridEl.classList.toggle("is-compact", !shouldLoop);
+      photoWallGridEl.classList.remove("is-looping");
+      photoWallGridEl.classList.toggle("is-compact", entriesToRender.length === 0);
     }
 
     entriesToRender.forEach((entry) => {
@@ -498,6 +577,11 @@
       `;
       photoWallGridEl.appendChild(card);
     });
+
+    // Start continuous marquee when we have content.
+    if (curatedEntries.length) {
+      startPhotoWallMarquee();
+    }
   };
 
   const highlightSliderControllers = new Set();
