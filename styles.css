@@ -628,7 +628,6 @@ body.nav-open .nav-screen {
 html {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
   min-height: 100%;
 }
 
@@ -637,7 +636,6 @@ body {
   color: var(--color-ink);
   line-height: 1.6;
   position: relative;
-  overflow-x: hidden;
   min-height: 100vh;
 }
 
@@ -5481,7 +5479,7 @@ body::before {
 
 .events-photo-wall__grid {
   display: flex;
-  gap: 0.6rem;
+  gap: 0;
   align-items: flex-end;
 }
 
