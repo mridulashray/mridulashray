@@ -5484,7 +5484,7 @@ body::before {
 }
 
 .events-photo-wall__grid.is-looping {
-  animation: photoWallScroll 15s linear infinite;
+  animation: photoWallScroll 6s linear infinite;
 }
 
 .events-photo-wall__grid.is-looping:hover {
