@@ -25,6 +25,8 @@ const refreshOngoingBtn = document.getElementById("refresh-ongoing-btn");
 const ongoingTableBody = document.querySelector("#ongoing-projects-table tbody");
 const sectionPanels = document.querySelectorAll(".admin-section");
 const navLinks = document.querySelectorAll(".admin-nav__link");
+const adminNav = document.getElementById("admin-dashboard-nav");
+const adminNavToggle = document.querySelector(".admin-nav-toggle");
 const eventsTableBody = document.querySelector("#events-table tbody");
 const albumWorkspace = document.getElementById("album-workspace");
 const albumWorkspaceTitle = document.getElementById("album-workspace-title");
@@ -1132,7 +1134,19 @@ navLinks.forEach((link) => {
   link.addEventListener("click", () => {
     const target = link.dataset.panelTarget;
     showPanel(target);
+    if (window.innerWidth <= 700 && adminNav && adminNavToggle) {
+      adminNav.classList.remove("is-open");
+      adminNavToggle.classList.remove("is-open");
+      adminNavToggle.setAttribute("aria-expanded", "false");
+    }
   });
+});
+
+adminNavToggle?.addEventListener("click", () => {
+  if (!adminNav) return;
+  const isOpen = adminNav.classList.toggle("is-open");
+  adminNavToggle.classList.toggle("is-open", isOpen);
+  adminNavToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
 });
 
 const toggleWorkspace = (visible) => {

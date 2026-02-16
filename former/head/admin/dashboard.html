@@ -82,9 +82,14 @@
         <div class="admin-shell__meta">
           <span class="admin-badge" id="admin-session-name">Logged in</span>
           <button class="ghost-btn ghost-btn--solid" id="logout-btn" type="button">Log out</button>
+          <button class="admin-nav-toggle" type="button" aria-expanded="false" aria-controls="admin-dashboard-nav">
+            <span class="admin-nav-toggle__bar"></span>
+            <span class="admin-nav-toggle__bar"></span>
+            <span class="admin-nav-toggle__bar"></span>
+          </button>
         </div>
       </div>
-      <nav class="admin-nav admin-nav--inline" aria-label="Dashboard navigation">
+      <nav class="admin-nav admin-nav--inline" id="admin-dashboard-nav" aria-label="Dashboard navigation">
         <button type="button" class="admin-nav__link is-active" data-panel-target="manage-section">
           <span class="admin-nav__icon" aria-hidden="true">📁</span>
           <span>Add Album</span>
