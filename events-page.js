@@ -481,7 +481,9 @@
       photoWallViewportEl.classList.remove("is-empty");
     }
 
-    const shouldLoop = curatedEntries.length >= 6;
+    // Enable looping animation even when there are fewer than 6 entries,
+    // so the photo wall always has gentle motion when there is content.
+    const shouldLoop = curatedEntries.length >= 1;
     const entriesToRender = shouldLoop ? [...curatedEntries, ...curatedEntries] : curatedEntries;
     if (photoWallGridEl.classList) {
       photoWallGridEl.classList.toggle("is-looping", shouldLoop);
