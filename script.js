@@ -774,7 +774,7 @@ if (paymentForm) {
       if (isMobileDevice()) {
         const upiUrl = new URL("upi://pay");
         upiUrl.searchParams.set("pa", upiId);
-        upiUrl.searchParams.set("pn", "Mridulashray");
+        upiUrl.searchParams.set("pn", "SHRIKESH SHETTY");
         upiUrl.searchParams.set("cu", "INR");
         upiUrl.searchParams.set("tn", `${note} - ${donorName}`);
 
