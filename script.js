@@ -663,12 +663,11 @@ const formatAmount = (value) => {
 
 const paymentForm = document.getElementById("payment-form");
 const paymentStatus = document.getElementById("payment-status");
+const paymentSubmitBtn = document.getElementById("payment-submit-btn");
+const screenshotForm = document.getElementById("screenshot-form");
+const screenshotStatus = document.getElementById("screenshot-status");
 const copyUpiBtn = document.getElementById("copy-upi-btn");
 const upiIdText = document.getElementById("upi-id-text");
-const amountInput =
-  paymentForm && typeof paymentForm.querySelector === "function"
-    ? paymentForm.querySelector('input[name="amount"]')
-    : null;
 
 const setStatus = (message, isError = false) => {
   if (!paymentStatus) return;
@@ -676,43 +675,117 @@ const setStatus = (message, isError = false) => {
   paymentStatus.style.color = isError ? "#b3261e" : "#2f6354";
 };
 
-if (paymentForm && amountInput) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const presetAmount = urlParams.get("fund-goal") || urlParams.get("amount");
-  if (presetAmount) {
-    amountInput.value = formatAmount(presetAmount);
-  }
+const isMobileDevice = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
 
-  paymentForm.addEventListener("submit", (event) => {
+if (paymentForm && paymentSubmitBtn) {
+  const paidWithQrCheckbox = paymentForm.querySelector('input[name="paidWithQr"]');
+  if (paidWithQrCheckbox) {
+    paidWithQrCheckbox.addEventListener("change", () => {
+      if (paidWithQrCheckbox.checked) {
+        paymentSubmitBtn.textContent = "Paid";
+      } else {
+        paymentSubmitBtn.textContent = "Open UPI app to pay";
+      }
+    });
+  }
+}
+
+if (paymentForm) {
+  paymentForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const upiId = paymentForm.dataset.upiId || "mridulashray@upi";
     const donorInput =
       typeof paymentForm.querySelector === "function"
         ? paymentForm.querySelector('input[name="supporter-name"]')
         : null;
+    const contactInput =
+      typeof paymentForm.querySelector === "function"
+        ? paymentForm.querySelector('input[name="contact"]')
+        : null;
     const noteInput =
       typeof paymentForm.querySelector === "function"
         ? paymentForm.querySelector('textarea[name="note"]')
         : null;
-    const donorName = donorInput && donorInput.value ? donorInput.value.trim() : "Friend of Mridulashray";
+    const paidWithQrInput =
+      typeof paymentForm.querySelector === "function"
+        ? paymentForm.querySelector('input[name="paidWithQr"]')
+        : null;
+    const donorName = donorInput && donorInput.value ? donorInput.value.trim() : "";
+    const contactValue = contactInput && contactInput.value ? contactInput.value.trim() : "";
     const note = noteInput && noteInput.value ? noteInput.value.trim() : "Support for Mridulashray schools";
-    const amountValue = formatAmount(amountInput.value);
+    const paidWithQr = paidWithQrInput && paidWithQrInput.checked;
 
-    if (!amountValue) {
-      setStatus("Please enter a valid amount (minimum ₹1).", true);
-      amountInput.focus();
+    if (!donorName) {
+      setStatus("Please enter your full name.", true);
+      if (donorInput) donorInput.focus();
       return;
     }
 
-    const upiUrl = new URL("upi://pay");
-    upiUrl.searchParams.set("pa", upiId);
-    upiUrl.searchParams.set("pn", "Mridulashray");
-    upiUrl.searchParams.set("cu", "INR");
-    upiUrl.searchParams.set("am", amountValue);
-    upiUrl.searchParams.set("tn", `${note} - ${donorName}`);
+    if (!contactValue) {
+      setStatus("Please enter your email.", true);
+      if (contactInput) contactInput.focus();
+      return;
+    }
 
-    setStatus("Opening your UPI app...");
-    window.location.href = upiUrl.toString();
+    // Try to save donor details to Appwrite before opening the UPI app.
+    try {
+      const config = getPublicAppwriteConfig();
+      if (!config || !config.collections || !config.collections.donations) {
+        throw new Error("Donations collection not configured.");
+      }
+
+      const appwriteClient = await ensurePublicAppwrite();
+      const { databases } = appwriteClient;
+      const nowIso = new Date().toISOString();
+
+      const paymentId = `MRD-${Date.now().toString(36).toUpperCase()}`;
+      const paymentMethod = paidWithQr ? "Paid through QR" : "Paid through UPI app";
+
+      await databases.createDocument(
+        config.databaseId,
+        config.collections.donations,
+        Appwrite.ID ? Appwrite.ID.unique() : undefined,
+        {
+          donorName,
+          donorEmail: contactValue,
+          note,
+          upiIdUsed: upiId,
+          status: "pending",
+          paymentId,
+          paymentMethod,
+          hasScreenshot: false,
+          createdAt: nowIso,
+          updatedAt: nowIso
+        }
+      );
+      const baseMessage = `Saved your details. Your Payment ID is ${paymentId}. Please save this ID and use the form below to submit your screenshot.`;
+      if (paidWithQr) {
+        setStatus(`${baseMessage} We have marked this as paid via QR.`);
+      } else {
+        setStatus(`${baseMessage} Opening your UPI app…`);
+      }
+    } catch (error) {
+      console.error("Unable to save donation in Appwrite", error);
+      // Continue with payment flow even if saving fails.
+      setStatus("Opening your UPI app… (we could not save your details this time)");
+    }
+
+    if (!paidWithQr) {
+      if (isMobileDevice()) {
+        const upiUrl = new URL("upi://pay");
+        upiUrl.searchParams.set("pa", upiId);
+        upiUrl.searchParams.set("pn", "Mridulashray");
+        upiUrl.searchParams.set("cu", "INR");
+        upiUrl.searchParams.set("tn", `${note} - ${donorName}`);
+
+        window.location.href = upiUrl.toString();
+      } else {
+        setStatus(
+          "You don't seem to have a UPI payment app installed on this device. Please try scanning the QR code using another device that has a UPI app.",
+          true
+        );
+      }
+    }
   });
 }
 
@@ -726,6 +799,84 @@ if (copyUpiBtn && upiIdText) {
       }, 2000);
     } catch (error) {
       setStatus("Copy not supported on this browser. Long-press to copy.", true);
+    }
+  });
+}
+
+if (screenshotForm) {
+  screenshotForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!screenshotStatus) return;
+
+    const paymentIdInput = screenshotForm.querySelector('input[name="paymentId"]');
+    const fileInput = screenshotForm.querySelector('input[name="paymentScreenshot"]');
+
+    const paymentId = paymentIdInput && paymentIdInput.value ? paymentIdInput.value.trim() : "";
+    if (!paymentId) {
+      screenshotStatus.textContent = "Please enter your Payment ID.";
+      screenshotStatus.style.color = "#b3261e";
+      if (paymentIdInput) paymentIdInput.focus();
+      return;
+    }
+
+    const screenshotFile = fileInput && fileInput.files ? fileInput.files[0] : null;
+    if (!(screenshotFile instanceof File) || !screenshotFile || !screenshotFile.size) {
+      screenshotStatus.textContent = "Please upload your payment screenshot.";
+      screenshotStatus.style.color = "#b3261e";
+      if (fileInput) fileInput.focus();
+      return;
+    }
+
+    try {
+      const config = getPublicAppwriteConfig();
+      if (!config || !config.collections || !config.collections.paymentScreenshots) {
+        throw new Error("Payment screenshots collection not configured.");
+      }
+
+      const appwriteClient = await ensurePublicAppwrite();
+      const { databases, storage } = appwriteClient;
+      const nowIso = new Date().toISOString();
+
+      const fileId = Appwrite.ID ? Appwrite.ID.unique() : undefined;
+      const filePermissions = [Appwrite.Permission.read(Appwrite.Role.any())];
+      const uploaded = await storage.createFile(config.bucketId, fileId, screenshotFile, filePermissions);
+
+      const screenshotFileId = uploaded.$id;
+
+      await databases.createDocument(
+        config.databaseId,
+        config.collections.paymentScreenshots,
+        Appwrite.ID ? Appwrite.ID.unique() : undefined,
+        {
+          paymentId,
+          screenshotFileId,
+          createdAt: nowIso
+        }
+      );
+
+      // Optionally flag matching donation as having a screenshot
+      try {
+        const donationList = await databases.listDocuments(config.databaseId, config.collections.donations, [
+          Appwrite.Query.equal("paymentId", paymentId)
+        ]);
+        const match = donationList.documents && donationList.documents[0];
+        if (match) {
+          await databases.updateDocument(config.databaseId, config.collections.donations, match.$id, {
+            hasScreenshot: true,
+            updatedAt: nowIso
+          });
+        }
+      } catch (innerError) {
+        console.warn("Unable to update donation with screenshot flag", innerError);
+      }
+
+      screenshotStatus.textContent = "Screenshot submitted successfully. Thank you!";
+      screenshotStatus.style.color = "#2f6354";
+      screenshotForm.reset();
+    } catch (error) {
+      console.error("Unable to submit payment screenshot", error);
+      screenshotStatus.textContent = error?.message || "Unable to submit screenshot right now.";
+      screenshotStatus.style.color = "#b3261e";
     }
   });
 }

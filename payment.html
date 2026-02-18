@@ -105,32 +105,16 @@
               </p>
 
               <form id="payment-form" class="payment-form" data-upi-id="7045332855-3@ybl">
-                <div class="payment-amount">
-                  <label class="payment-field">
-                    <span class="payment-field__label">Donation amount (₹)</span>
-                    <div class="input-with-prefix">
-                      <span aria-hidden="true">₹</span>
-                      <input type="number" name="amount" min="1" step="1" placeholder="2500" required />
-                    </div>
-                  </label>
-
-                  <div class="payment-presets" aria-label="Quick amount buttons">
-                    <button type="button" class="payment-preset" data-amount="501">₹501</button>
-                    <button type="button" class="payment-preset" data-amount="1100">₹1,100</button>
-                    <button type="button" class="payment-preset" data-amount="2500">₹2,500</button>
-                    <button type="button" class="payment-preset" data-amount="5100">₹5,100</button>
-                  </div>
-                </div>
 
                 <div class="payment-grid-fields">
                   <label class="payment-field">
-                    <span class="payment-field__label">Your name (optional)</span>
-                    <input type="text" name="supporter-name" placeholder="Enter your full name" />
+                    <span class="payment-field__label">Your name</span>
+                    <input type="text" name="supporter-name" placeholder="Enter your full name" required />
                   </label>
 
                   <label class="payment-field">
-                    <span class="payment-field__label">Email / Phone (optional)</span>
-                    <input type="text" name="contact" placeholder="For acknowledgement or receipts" />
+                    <span class="payment-field__label">Email</span>
+                    <input type="email" name="contact" placeholder="For acknowledgement or receipts" required />
                   </label>
                 </div>
 
@@ -140,7 +124,13 @@
                 </label>
 
                 <div class="payment-actions">
-                  <button type="submit" class="ghost-btn ghost-btn--solid payment-submit">
+                  <label class="payment-field" style="margin-bottom: 0.75rem;">
+                    <span class="payment-field__label" style="font-weight: 500;">
+                      <input type="checkbox" name="paidWithQr" id="paid-with-qr" style="margin-right: 0.5rem;" />
+                      I have already paid by scanning the QR code
+                    </span>
+                  </label>
+                  <button type="submit" class="ghost-btn ghost-btn--solid payment-submit" id="payment-submit-btn">
                     Open UPI app to pay
                   </button>
                   <p class="form-hint">
@@ -149,6 +139,28 @@
                   <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
                 </div>
               </form>
+
+              <section class="payment-panel-extra" aria-label="Submit payment screenshot">
+                <form id="screenshot-form" class="payment-form">
+                  <h3 class="payment-panel__subtitle">Submit your payment screenshot</h3>
+                  <p class="payment-panel__text">
+                    After you complete the payment in your UPI app, enter your Payment ID and upload a screenshot so our
+                    team can verify and record your donation.
+                  </p>
+                  <label class="payment-field">
+                    <span class="payment-field__label">Payment ID</span>
+                    <input type="text" name="paymentId" placeholder="e.g. MRD-ABC123" required />
+                  </label>
+                  <label class="payment-field">
+                    <span class="payment-field__label">Payment screenshot *</span>
+                    <input type="file" name="paymentScreenshot" accept="image/*" required />
+                  </label>
+                  <div class="payment-actions">
+                    <button type="submit" class="ghost-btn ghost-btn--solid">Submit screenshot</button>
+                    <p class="payment-status" id="screenshot-status" role="status" aria-live="polite"></p>
+                  </div>
+                </form>
+              </section>
 
             </article>
 
@@ -300,7 +312,8 @@
         });
       })();
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="appwrite-config.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

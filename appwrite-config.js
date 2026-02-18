@@ -9,6 +9,8 @@ const APPWRITE_CONFIG = {
     events: "events",
     volunteers: "volunteers",
     contactDetails: "contactDetails",
+    donations: "donations",
+    paymentScreenshots: "payment_screenshot",
     upcomingEvents: "upcomingEvents",
     ongoingProjects: "ongoingProjects"
   },

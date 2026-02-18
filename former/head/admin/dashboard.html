@@ -114,6 +114,10 @@
           <span class="admin-nav__icon" aria-hidden="true">✉️</span>
           <span>User Contacts</span>
         </button>
+        <button type="button" class="admin-nav__link" data-panel-target="donors-section">
+          <span class="admin-nav__icon" aria-hidden="true">💝</span>
+          <span>Donors</span>
+        </button>
       </nav>
     </header>
 
@@ -449,6 +453,43 @@
               </thead>
               <tbody></tbody>
             </table>
+          </div>
+        </section>
+
+        <section class="admin-section" id="donors-section" aria-labelledby="donors-table-title" hidden>
+          <div class="admin-section__header">
+            <div>
+              <p class="petal-badge">Donations</p>
+              <h2 id="donors-table-title">UPI donation attempts</h2>
+              <p>Review donors captured from the public Donate page and update their payment status.</p>
+            </div>
+            <div class="admin-section__filters">
+              <label class="admin-filter-label" for="donors-status-filter">Filter</label>
+              <select id="donors-status-filter" class="admin-filter-select">
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <button type="button" class="ghost-btn ghost-btn--small" id="refresh-donors-btn">Refresh</button>
+            </div>
+          </div>
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="donors-table">
+              <thead>
+                <tr>
+                  <th>Donor</th>
+                  <th>Contact</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Note</th>
+                  <th>Screenshot</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <span class="admin-form__feedback" id="donors-feedback"></span>
           </div>
         </section>
       </div>

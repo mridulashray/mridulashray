@@ -53,6 +53,7 @@ let upcomingCache = [];
 let volunteersCache = [];
 let contactsCache = [];
 let ongoingCache = [];
+let donorsCache = [];
 let currentMediaEntries = [];
 let mediaOrderDirty = false;
 let dragStartIndex = null;
@@ -1015,6 +1016,12 @@ const volunteerTableBody = document.querySelector("#volunteers-table tbody");
 const contactsTableBody = document.querySelector("#contacts-table tbody");
 const refreshVolunteersBtn = document.getElementById("refresh-volunteers-btn");
 const refreshContactsBtn = document.getElementById("refresh-contacts-btn");
+const donorsTableBody = document.querySelector("#donors-table tbody");
+const refreshDonorsBtn = document.getElementById("refresh-donors-btn");
+const donorsFeedback = document.getElementById("donors-feedback");
+const donorsStatusFilter = document.getElementById("donors-status-filter");
+
+let donorsCurrentFilter = "all";
 
 const renderVolunteersTable = (documents = []) => {
   if (!volunteerTableBody) return;
@@ -1091,9 +1098,122 @@ const loadContacts = async () => {
   }
 };
 
+const getDonorStatusBadge = (status) => {
+  const normalized = (status || "").toLowerCase();
+  if (normalized === "completed") return "badge--success"; // green
+  if (normalized === "cancelled") return "badge--danger"; // red
+  return "badge--warning"; // yellow for pending or unknown
+};
+
+const renderDonorsTable = (documents = []) => {
+  if (!donorsTableBody) return;
+  donorsTableBody.innerHTML = "";
+  if (!documents.length) {
+    return;
+  }
+
+  const filtered = documents.filter((doc) => {
+    const statusValue = (doc.status || "pending").toLowerCase();
+    if (donorsCurrentFilter === "all") return true;
+    return statusValue === donorsCurrentFilter;
+  });
+
+  if (!filtered.length) {
+    return;
+  }
+
+  filtered.forEach((doc) => {
+    const tr = document.createElement("tr");
+    const statusValue = (doc.status || "pending").toLowerCase();
+    const badgeClass = getDonorStatusBadge(statusValue);
+    const amountLabel = typeof doc.amount === "number" ? `₹${doc.amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : "—";
+    const screenshotCell = doc.screenshotFileId
+      ? `<a href="${storagePreviewUrl(doc.screenshotFileId)}" target="_blank" rel="noopener">View screenshot</a>`
+      : "—";
+    tr.innerHTML = `
+      <td data-label="Donor">${doc.donorName || "—"}</td>
+      <td data-label="Contact">
+        <div class="table-contact">
+          ${doc.donorEmail ? `<a href="mailto:${doc.donorEmail}">${doc.donorEmail}</a>` : "—"}
+        </div>
+      </td>
+      <td data-label="Amount">${amountLabel}</td>
+      <td data-label="Status">
+        <div class="donor-status-cell">
+          <span class="badge ${badgeClass}" data-donor-status-badge>${statusValue}</span>
+          <select data-donor-id="${doc.$id}" class="donor-status-select">
+            <option value="pending" ${statusValue === "pending" ? "selected" : ""}>Pending</option>
+            <option value="completed" ${statusValue === "completed" ? "selected" : ""}>Completed</option>
+            <option value="cancelled" ${statusValue === "cancelled" ? "selected" : ""}>Cancelled</option>
+          </select>
+        </div>
+      </td>
+      <td data-label="Note">${doc.note || "—"}</td>
+      <td data-label="Screenshot">${screenshotCell}</td>
+      <td data-label="Created">${doc.createdAt ? new Date(doc.createdAt).toLocaleString() : doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
+    `;
+    donorsTableBody.appendChild(tr);
+  });
+
+  donorsTableBody.querySelectorAll(".donor-status-select").forEach((select) => {
+    select.addEventListener("change", async (event) => {
+      const target = event.currentTarget;
+      const docId = target.dataset.donorId;
+      const newStatus = target.value;
+      const { databases } = getClient();
+      try {
+        setFeedback(donorsFeedback, "Updating status…");
+        const updated = await databases.updateDocument(
+          APPWRITE_CONFIG.databaseId,
+          APPWRITE_CONFIG.collections.donations,
+          docId,
+          {
+            status: newStatus,
+            updatedAt: new Date().toISOString()
+          }
+        );
+        const badge = target.closest(".donor-status-cell")?.querySelector("[data-donor-status-badge]");
+        if (badge) {
+          const cls = getDonorStatusBadge(updated.status);
+          badge.className = `badge ${cls}`;
+          badge.textContent = updated.status;
+        }
+        setFeedback(donorsFeedback, "Status updated.");
+      } catch (error) {
+        console.error(error);
+        setFeedback(donorsFeedback, error?.message || "Unable to update status.", true);
+      }
+    });
+  });
+};
+
+const loadDonors = async () => {
+  const { databases } = getClient();
+  if (!donorsTableBody) return;
+  donorsTableBody.innerHTML = "";
+  try {
+    const response = await databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.donations, [
+      Appwrite.Query.orderDesc("$createdAt")
+    ]);
+    donorsCache = response.documents || [];
+    renderDonorsTable(donorsCache);
+    setFeedback(donorsFeedback, "");
+  } catch (error) {
+    console.error(error);
+    setFeedback(donorsFeedback, "Unable to load donors. Check Appwrite permissions.", true);
+    donorsTableBody.innerHTML = "";
+  }
+};
+
 refreshEventsBtn?.addEventListener("click", loadEvents);
 refreshVolunteersBtn?.addEventListener("click", loadVolunteers);
 refreshContactsBtn?.addEventListener("click", loadContacts);
+refreshDonorsBtn?.addEventListener("click", loadDonors);
+
+donorsStatusFilter?.addEventListener("change", (event) => {
+  donorsCurrentFilter = event.target.value || "all";
+  renderDonorsTable(donorsCache);
+});
 
 const showPanel = (panelId) => {
   if (!panelId) return;
@@ -1120,6 +1240,8 @@ const showPanel = (panelId) => {
     loadVolunteers();
   } else if (panelId === "contacts-section" && !contactsCache.length) {
     loadContacts();
+  } else if (panelId === "donors-section" && !donorsCache.length) {
+    loadDonors();
   }
   if (panelId !== "published-section") {
     toggleWorkspace(false);
