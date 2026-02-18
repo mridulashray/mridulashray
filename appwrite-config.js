@@ -10,7 +10,6 @@ const APPWRITE_CONFIG = {
     volunteers: "volunteers",
     contactDetails: "contactDetails",
     donations: "donations",
-    paymentScreenshots: "payment_screenshot",
     upcomingEvents: "upcomingEvents",
     ongoingProjects: "ongoingProjects"
   },

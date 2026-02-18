@@ -1126,7 +1126,9 @@ const renderDonorsTable = (documents = []) => {
     const tr = document.createElement("tr");
     const statusValue = (doc.status || "pending").toLowerCase();
     const badgeClass = getDonorStatusBadge(statusValue);
-    const amountLabel = typeof doc.amount === "number" ? `₹${doc.amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : "—";
+    const rawAmount = typeof doc.amountPaid === "number" ? doc.amountPaid : doc.amount;
+    const amountLabel = typeof rawAmount === "number" ? `₹${rawAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : "—";
+    const paymentMethodLabel = doc.paymentMethod || "—";
     const screenshotCell = doc.screenshotFileId
       ? `<a href="${storagePreviewUrl(doc.screenshotFileId)}" target="_blank" rel="noopener">View screenshot</a>`
       : "—";
@@ -1138,6 +1140,7 @@ const renderDonorsTable = (documents = []) => {
         </div>
       </td>
       <td data-label="Amount">${amountLabel}</td>
+      <td data-label="Method">${paymentMethodLabel}</td>
       <td data-label="Status">
         <div class="donor-status-cell">
           <span class="badge ${badgeClass}" data-donor-status-badge>${statusValue}</span>
