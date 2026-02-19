@@ -675,8 +675,9 @@ body.nav-open .nav-screen {
 }
 
 .payment-options-shell {
+  width: 100%;
   margin: 0 auto clamp(2rem, 4vw, 3rem);
-  max-width: 1040px;
+  max-width: 1200px;
 }
 
 .payment-options-grid {
@@ -697,6 +698,13 @@ body.nav-open .nav-screen {
   padding: clamp(1.5rem, 3vw, 2.2rem);
   box-shadow: 0 14px 40px rgba(69, 44, 44, 0.08);
   border: 1px solid rgba(69, 44, 44, 0.08);
+  width: 200%;
+}
+
+@media (max-width: 860px) {
+  .payment-option {
+    width: 90%;
+  }
 }
 
 /* Inner two-column layout inside the single payment card */
@@ -732,7 +740,7 @@ body.nav-open .nav-screen {
 
 .payment-form-shell {
   width: 100%;
-  max-width: 920px;
+  max-width: 980px;
   margin: 2.5rem auto 0;
   text-align: left;
 }
@@ -763,8 +771,20 @@ body.nav-open .nav-screen {
 
 .payment-grid-fields {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.5rem;
   row-gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .payment-grid-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Slightly reduce width of first-row inputs (Name / Email) so they don't touch in the middle */
+.payment-grid-fields .payment-field input {
+  max-width: 95%;
 }
 
 .payment-field {
@@ -808,6 +828,15 @@ body.nav-open .nav-screen {
 .payment-field input[type="file"] {
   padding: 0.5rem 0.6rem;
   background: #fff;
+}
+
+/* Make specific fields slightly narrower: Amount paid & Message textarea */
+.payment-field input[name="amountPaid"] {
+  max-width: 60%;
+}
+
+.payment-field textarea[name="note"] {
+  max-width: 90%;
 }
 
 .payment-actions {
