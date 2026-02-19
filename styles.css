@@ -839,6 +839,27 @@ body.nav-open .nav-screen {
   max-width: 90%;
 }
 
+/* Mobile: make donation form fields full-width for better layout */
+@media (max-width: 640px) {
+  .payment-grid-fields .payment-field input,
+  .payment-field input[name="amountPaid"],
+  .payment-field textarea[name="note"] {
+    /* keep a small gap between inputs instead of touching each other */
+    max-width: 95%;
+  }
+}
+
+/* Narrower Payment screenshot input */
+.payment-field input[name="paymentScreenshot"] {
+  max-width: 75%;
+}
+
+@media (max-width: 640px) {
+  .payment-field input[name="paymentScreenshot"] {
+    max-width: 85%;
+  }
+}
+
 .payment-actions {
   margin-top: 0.75rem;
   display: flex;
