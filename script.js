@@ -693,11 +693,16 @@ if (paymentForm) {
       typeof paymentForm.querySelector === "function"
         ? paymentForm.querySelector('textarea[name="note"]')
         : null;
+    const utrInput =
+      typeof paymentForm.querySelector === "function"
+        ? paymentForm.querySelector('input[name="utr"]')
+        : null;
     const donorName = donorInput && donorInput.value ? donorInput.value.trim() : "";
     const contactValue = contactInput && contactInput.value ? contactInput.value.trim() : "";
     const amountValueRaw = amountInput && amountInput.value ? amountInput.value.trim() : "";
     const paymentMethodValue = paymentMethodSelect && paymentMethodSelect.value ? paymentMethodSelect.value : "";
     const note = noteInput && noteInput.value ? noteInput.value.trim() : "Support for Mridulashray schools";
+    const utr = utrInput && utrInput.value ? utrInput.value.trim() : "";
 
     if (!donorName) {
       setStatus("Please enter your full name.", true);
@@ -756,6 +761,7 @@ if (paymentForm) {
           donorEmail: contactValue,
           amountPaid: amountNumber,
           paymentMethod: paymentMethodValue,
+          utr,
           note,
           screenshotFileId,
           status: "pending",
@@ -763,7 +769,13 @@ if (paymentForm) {
           updatedAt: nowIso
         }
       );
-      setStatus("Thank you. We have recorded your donation details and screenshot.");
+      const successMessage = "Thank you. We have recorded your donation details and screenshot.";
+      setStatus(successMessage);
+      try {
+        window.alert(successMessage);
+      } catch {
+        // ignore environments where alert is not available
+      }
       paymentForm.reset();
     } catch (error) {
       console.error("Unable to save donation in Appwrite", error);

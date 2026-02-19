@@ -1023,6 +1023,252 @@ const donorsStatusFilter = document.getElementById("donors-status-filter");
 
 let donorsCurrentFilter = "all";
 
+const numberToWords = (num) => {
+  const ones = [
+    "Zero",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen"
+  ];
+  const tens = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety"
+  ];
+
+  const toWordsBelowThousand = (n) => {
+    let result = "";
+    if (n >= 100) {
+      result += ones[Math.floor(n / 100)] + " Hundred";
+      n = n % 100;
+      if (n) result += " ";
+    }
+    if (n >= 20) {
+      result += tens[Math.floor(n / 10)];
+      n = n % 10;
+      if (n) result += " " + ones[n];
+    } else if (n > 0) {
+      result += ones[n];
+    }
+    return result;
+  };
+
+  if (!Number.isFinite(num) || num < 0) return "";
+  if (num === 0) return "Zero";
+
+  const units = ["Crore", "Lakh", "Thousand", "Hundred"];
+  const divisors = [10000000, 100000, 1000, 100];
+  let n = Math.floor(num);
+  let words = "";
+
+  divisors.forEach((divisor, index) => {
+    if (n >= divisor) {
+      const value = Math.floor(n / divisor);
+      n = n % divisor;
+      if (value) {
+        if (words) words += " ";
+        words += toWordsBelowThousand(value) + " " + units[index];
+      }
+    }
+  });
+
+  if (n > 0) {
+    if (words) words += " ";
+    words += toWordsBelowThousand(n);
+  }
+
+  return words + " Only";
+};
+
+const formatIndianDateTime = (isoString) => {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+};
+
+const generateReceiptPdfBlob = (doc) => {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    throw new Error("Receipt generator is not ready.");
+  }
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  let y = 20;
+
+  pdf.setFont("Times", "Bold");
+  pdf.setFontSize(14);
+  pdf.text("SHRI MATA DIN SITA DEVI RUSTAGI DHOKWALA TRUST, REWARI", pageWidth / 2, y, { align: "center" });
+  y += 7;
+  pdf.setFontSize(11);
+  pdf.text("PAN: ABATS0580L", pageWidth / 2, y, { align: "center" });
+  y += 6;
+  pdf.setFont("Times", "Normal");
+  pdf.text("Registered Address: Rewari, Haryana", pageWidth / 2, y, { align: "center" });
+  y += 6;
+  pdf.text("Email: mridulashrayorg@gmail.com | Phone: 098994 69717", pageWidth / 2, y, { align: "center" });
+
+  y += 12;
+  pdf.setFont("Times", "Bold");
+  pdf.setFontSize(13);
+  pdf.text("DONATION RECEIPT", pageWidth / 2, y, { align: "center" });
+
+  y += 12;
+  pdf.setFontSize(11);
+  pdf.setFont("Times", "Bold");
+
+  const leftMargin = 20;
+
+  const drawLine = (label, value) => {
+    pdf.text(label, leftMargin, y);
+    if (value) {
+      pdf.setFont("Times", "Normal");
+      const labelWidth = pdf.getTextWidth(label || "");
+      const valueX = leftMargin + Math.min(labelWidth + 6, 80);
+      pdf.text(value, valueX, y);
+      pdf.setFont("Times", "Bold");
+    }
+    y += 8;
+  };
+
+  const drawTwoLine = (label, value) => {
+    pdf.text(label, leftMargin, y);
+    y += 8;
+    if (value) {
+      pdf.setFont("Times", "Normal");
+      pdf.text(value, leftMargin + 4, y);
+      pdf.setFont("Times", "Bold");
+    }
+    y += 8;
+  };
+
+  const receiptNo = doc.$id || "";
+  const createdAt = doc.createdAt || doc.$createdAt || "";
+  const dateLabel = formatIndianDateTime(createdAt) || "";
+  const donorName = doc.donorName || "";
+  const donorContact = doc.donorEmail || "";
+  const rawAmount = typeof doc.amountPaid === "number" ? doc.amountPaid : doc.amount;
+  const amountNumber = typeof rawAmount === "number" ? rawAmount : 0;
+  const amountLabel = amountNumber
+    ? amountNumber.toLocaleString("en-IN", { maximumFractionDigits: 2 })
+    : "";
+  const amountWords = amountNumber ? numberToWords(amountNumber) : "";
+  const utrLabel = doc.utr || doc.transactionRef || "";
+
+  drawLine("Receipt No:", receiptNo);
+  drawLine("Date:", dateLabel);
+
+  y += 2;
+  drawLine("Received with thanks from:", donorName);
+  drawLine("Email:", donorContact);
+
+  y += 2;
+  drawLine("The sum of Rs.:", amountLabel);
+  drawLine("In Words:", amountWords);
+
+  y += 2;
+  drawLine("Towards:", "Shri Mata Din Sita Devi Rustagi Dhokwala Trust");
+  drawLine("By Mode of Payment:", "Online Payment (UPI)");
+  drawLine("Transaction Reference / UTR No:", utrLabel);
+
+  y += 6;
+  pdf.setFont("Times", "Normal");
+  pdf.text(
+    "This donation is eligible for deduction under Section 80G of the Income Tax Act, 1961.",
+    leftMargin,
+    y,
+    { maxWidth: pageWidth - leftMargin * 2 }
+  );
+
+  return pdf.output("blob");
+};
+
+const uploadReceiptPdf = async (doc, blob) => {
+  const { storage, databases } = getClient();
+  const fileName = `donation-receipt-${doc.$id || "unknown"}.pdf`;
+  const fileId = Appwrite.ID.unique();
+  const file = new File([blob], fileName, { type: "application/pdf" });
+  const perms = [Appwrite.Permission.read(Appwrite.Role.any())];
+  if (currentAccount?.$id) {
+    perms.push(
+      Appwrite.Permission.read(Appwrite.Role.user(currentAccount.$id)),
+      Appwrite.Permission.update(Appwrite.Role.user(currentAccount.$id)),
+      Appwrite.Permission.delete(Appwrite.Role.user(currentAccount.$id))
+    );
+  }
+  const uploaded = await storage.createFile(APPWRITE_CONFIG.bucketId, fileId, file, perms);
+  const updated = await databases.updateDocument(
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collections.donations,
+    doc.$id,
+    {
+      receiptFileId: uploaded.$id,
+      updatedAt: new Date().toISOString()
+    }
+  );
+  return updated;
+};
+
+const handleGenerateReceipt = async (docId) => {
+  const { databases } = getClient();
+  try {
+    setFeedback(donorsFeedback, "Preparing receipt…");
+    let doc = donorsCache.find((item) => item.$id === docId) || null;
+    if (!doc) {
+      const response = await databases.getDocument(
+        APPWRITE_CONFIG.databaseId,
+        APPWRITE_CONFIG.collections.donations,
+        docId
+      );
+      doc = response;
+    }
+
+    const blob = generateReceiptPdfBlob(doc);
+    const updated = await uploadReceiptPdf(doc, blob);
+    donorsCache = donorsCache.map((item) => (item.$id === updated.$id ? updated : item));
+    renderDonorsTable(donorsCache);
+    setFeedback(donorsFeedback, "Receipt generated.");
+
+    if (updated.receiptFileId) {
+      const url = storagePreviewUrl(updated.receiptFileId);
+      if (url) {
+        window.open(url, "_blank", "noopener");
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    setFeedback(donorsFeedback, error?.message || "Unable to generate receipt.", true);
+  }
+};
+
 const renderVolunteersTable = (documents = []) => {
   if (!volunteerTableBody) return;
   volunteerTableBody.innerHTML = "";
@@ -1132,6 +1378,7 @@ const renderDonorsTable = (documents = []) => {
     const screenshotCell = doc.screenshotFileId
       ? `<a href="${storagePreviewUrl(doc.screenshotFileId)}" target="_blank" rel="noopener">View screenshot</a>`
       : "—";
+    const utrLabel = doc.utr || doc.transactionRef || "—";
     tr.innerHTML = `
       <td data-label="Donor">${doc.donorName || "—"}</td>
       <td data-label="Contact">
@@ -1141,6 +1388,9 @@ const renderDonorsTable = (documents = []) => {
       </td>
       <td data-label="Amount">${amountLabel}</td>
       <td data-label="Method">${paymentMethodLabel}</td>
+      <td data-label="UTR / Ref">${utrLabel}</td>
+      <td data-label="Note">${doc.note || "—"}</td>
+      <td data-label="d_receipt">${doc.receiptFileId ? `<a href="${storagePreviewUrl(doc.receiptFileId)}" download="donation-receipt-${doc.$id}.pdf">Download PDF</a>` : `<button type="button" class="ghost-btn ghost-btn--small" data-generate-receipt="${doc.$id}">Generate</button>`}</td>
       <td data-label="Status">
         <div class="donor-status-cell">
           <span class="badge ${badgeClass}" data-donor-status-badge>${statusValue}</span>
@@ -1151,7 +1401,6 @@ const renderDonorsTable = (documents = []) => {
           </select>
         </div>
       </td>
-      <td data-label="Note">${doc.note || "—"}</td>
       <td data-label="Screenshot">${screenshotCell}</td>
       <td data-label="Created">${doc.createdAt ? new Date(doc.createdAt).toLocaleString() : doc.$createdAt ? new Date(doc.$createdAt).toLocaleString() : "—"}</td>
     `;
@@ -1187,6 +1436,9 @@ const renderDonorsTable = (documents = []) => {
         setFeedback(donorsFeedback, error?.message || "Unable to update status.", true);
       }
     });
+  });
+  donorsTableBody.querySelectorAll("[data-generate-receipt]").forEach((btn) => {
+    btn.addEventListener("click", () => handleGenerateReceipt(btn.dataset.generateReceipt));
   });
 };
 

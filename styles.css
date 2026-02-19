@@ -2051,6 +2051,17 @@ body::before {
   font-weight: 600;
 }
 
+@media (max-width: 600px) {
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Slightly reduce width of UTR field on small screens */
+  .payment-form input[name="utr"] {
+    max-width: 400px;
+  }
+}
+
 @media (max-width: 820px) {
   .payment-layout {
     grid-template-columns: 1fr;
