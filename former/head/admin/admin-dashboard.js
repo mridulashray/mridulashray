@@ -3,6 +3,12 @@ const TAB_SESSION_FLAG = "mridulashrayAdminTabFlag";
 const loginRedirect = () => (window.location.href = "./login.html");
 const sessionBadge = document.getElementById("admin-session-name");
 const logoutBtn = document.getElementById("logout-btn");
+const notificationsBell = document.getElementById("admin-notifications-bell");
+const notificationsBadge = document.getElementById("admin-notifications-badge");
+const notificationsPanel = document.getElementById("admin-notifications-panel");
+const notificationsList = document.getElementById("admin-notifications-list");
+const notificationsEmpty = document.getElementById("admin-notifications-empty");
+const notificationsCloseBtn = document.getElementById("admin-notifications-close");
 const saveEventBtn = document.getElementById("save-event-btn");
 const eventMetadataSubmitBtn = saveEventBtn;
 const refreshEventsBtn = document.getElementById("refresh-events-btn");
@@ -60,6 +66,7 @@ let dragStartIndex = null;
 let activePanel = "manage-section";
 let upcomingEditingId = null;
 let ongoingEditingId = null;
+let adminNotifications = [];
 
 const pad2 = (value) => value.toString().padStart(2, "0");
 const monthLookup = {
@@ -76,6 +83,119 @@ const monthLookup = {
   oct: 10,
   nov: 11,
   dec: 12
+};
+
+const NOTIFICATION_LAST_SEEN_KEY = "mridulashrayAdminNotificationsLastSeen";
+
+const getNotificationsLastSeen = () => {
+  try {
+    const raw = localStorage.getItem(NOTIFICATION_LAST_SEEN_KEY);
+    if (!raw) return 0;
+    const ts = Number(raw);
+    return Number.isNaN(ts) ? 0 : ts;
+  } catch {
+    return 0;
+  }
+};
+
+const setNotificationsLastSeen = (timestamp) => {
+  try {
+    localStorage.setItem(NOTIFICATION_LAST_SEEN_KEY, String(timestamp));
+  } catch {
+    // ignore
+  }
+};
+
+const buildNotificationsFromData = () => {
+  const items = [];
+
+  (volunteersCache || []).forEach((doc) => {
+    items.push({
+      type: "volunteer",
+      id: doc.$id,
+      createdAt: new Date(doc.$createdAt || doc.createdAt || 0).getTime(),
+      message: `${doc.name || "Volunteer"} registered as a volunteer`,
+      meta: doc.city || doc.location || "Volunteer form"
+    });
+  });
+
+  (contactsCache || []).forEach((doc) => {
+    items.push({
+      type: "contact",
+      id: doc.$id,
+      createdAt: new Date(doc.$createdAt || doc.createdAt || 0).getTime(),
+      message: `${doc.name || "Contact"} submitted a contact form`,
+      meta: doc.email || doc.phone || "Contact form"
+    });
+  });
+
+  (donorsCache || []).forEach((doc) => {
+    items.push({
+      type: "donation",
+      id: doc.$id,
+      createdAt: new Date(doc.$createdAt || doc.createdAt || 0).getTime(),
+      message: `${doc.donorName || "Donor"} submitted a donation`,
+      meta: doc.donorEmail || doc.paymentMethod || "Donation details"
+    });
+  });
+
+  items.sort((a, b) => b.createdAt - a.createdAt);
+  adminNotifications = items;
+  updateNotificationsUI();
+};
+
+const updateNotificationsUI = () => {
+  if (!notificationsBadge || !notificationsList || !notificationsEmpty) return;
+
+  const lastSeen = getNotificationsLastSeen();
+  const unreadCount = adminNotifications.filter((item) => item.createdAt > lastSeen).length;
+
+  if (unreadCount > 0) {
+    notificationsBadge.textContent = String(unreadCount);
+    notificationsBadge.hidden = false;
+  } else {
+    notificationsBadge.hidden = true;
+  }
+
+  notificationsList.innerHTML = "";
+
+  if (!adminNotifications.length) {
+    notificationsEmpty.hidden = false;
+    return;
+  }
+
+  notificationsEmpty.hidden = true;
+
+  adminNotifications.slice(0, 30).forEach((item) => {
+    const li = document.createElement("li");
+    li.className = "admin-notifications__item";
+    const createdLabel = item.createdAt ? new Date(item.createdAt).toLocaleString() : "";
+    li.innerHTML = `
+      <strong>${
+        item.type === "volunteer" ? "New volunteer" : item.type === "contact" ? "New contact" : "New donation"
+      }</strong>
+      <span>${item.message}</span>
+      ${item.meta ? `<small>${item.meta}</small>` : ""}
+      ${createdLabel ? `<small>${createdLabel}</small>` : ""}
+    `;
+    notificationsList.appendChild(li);
+  });
+};
+
+const openNotificationsPanel = () => {
+  if (!notificationsPanel || !notificationsBell) return;
+  notificationsPanel.hidden = false;
+  notificationsBell.setAttribute("aria-expanded", "true");
+
+  const latestCreated = adminNotifications.length ? adminNotifications[0].createdAt : Date.now();
+  setNotificationsLastSeen(latestCreated);
+  updateNotificationsUI();
+};
+
+const closeNotificationsPanel = () => {
+  if (!notificationsPanel || !notificationsBell) return;
+  notificationsPanel.hidden = true;
+  notificationsBell.setAttribute("aria-expanded", "false");
 };
 
 const normalizeDateInput = (rawValue) => {
@@ -1322,6 +1442,7 @@ const loadVolunteers = async () => {
     ]);
     volunteersCache = response.documents;
     renderVolunteersTable(volunteersCache);
+    buildNotificationsFromData();
   } catch (error) {
     console.error(error);
     volunteerTableBody.innerHTML = "";
@@ -1338,6 +1459,7 @@ const loadContacts = async () => {
     ]);
     contactsCache = response.documents;
     renderContactsTable(contactsCache);
+    buildNotificationsFromData();
   } catch (error) {
     console.error(error);
     contactsTableBody.innerHTML = "";
@@ -1453,6 +1575,7 @@ const loadDonors = async () => {
     donorsCache = response.documents || [];
     renderDonorsTable(donorsCache);
     setFeedback(donorsFeedback, "");
+    buildNotificationsFromData();
   } catch (error) {
     console.error(error);
     setFeedback(donorsFeedback, "Unable to load donors. Check Appwrite permissions.", true);
@@ -1524,6 +1647,20 @@ adminNavToggle?.addEventListener("click", () => {
   const isOpen = adminNav.classList.toggle("is-open");
   adminNavToggle.classList.toggle("is-open", isOpen);
   adminNavToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+});
+
+notificationsBell?.addEventListener("click", () => {
+  if (!notificationsPanel) return;
+  const isHidden = notificationsPanel.hidden;
+  if (isHidden) {
+    openNotificationsPanel();
+  } else {
+    closeNotificationsPanel();
+  }
+});
+
+notificationsCloseBtn?.addEventListener("click", () => {
+  closeNotificationsPanel();
 });
 
 const toggleWorkspace = (visible) => {
@@ -1951,6 +2088,10 @@ const initDashboard = async () => {
   await loadEvents();
   await loadUpcomingEvents();
   await loadOngoingProjects();
+  // Load data sources that feed notifications so the bell is ready on page load
+  await loadVolunteers();
+  await loadContacts();
+  await loadDonors();
   toggleWorkspace(false);
 };
 

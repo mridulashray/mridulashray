@@ -440,6 +440,104 @@ body.nav-open .nav-screen {
   align-items: center;
 }
 
+.admin-notifications__button {
+  position: relative;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-notifications__icon {
+  font-size: 1.4rem;
+}
+
+.admin-notifications__badge {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.2rem;
+  min-width: 1.1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background-color: var(--color-accent, #d9534f);
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 1.1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.admin-notifications {
+  position: fixed;
+  top: 4.5rem;
+  right: 1.5rem;
+  width: min(320px, 90vw);
+  max-height: 60vh;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-notifications[hidden] {
+  display: none;
+}
+
+.admin-notifications__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.admin-notifications__header h2 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.admin-notifications__body {
+  padding: 0.5rem 0.75rem 0.75rem;
+  overflow-y: auto;
+}
+
+.admin-notifications__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-notifications__item {
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background-color: #f9fafb;
+}
+
+.admin-notifications__item strong {
+  display: block;
+  font-size: 0.8rem;
+}
+
+.admin-notifications__item small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-ink-soft);
+}
+
+.admin-notifications__empty {
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  padding: 0.3rem 0.5rem;
+}
+
 .admin-nav-toggle {
   display: none;
   width: 40px;

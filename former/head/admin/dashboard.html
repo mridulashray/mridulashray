@@ -81,6 +81,17 @@
           </div>
         </div>
         <div class="admin-shell__meta">
+          <button
+            type="button"
+            class="admin-notifications__button"
+            id="admin-notifications-bell"
+            aria-label="View notifications"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <span class="admin-notifications__icon" aria-hidden="true">🔔</span>
+            <span class="admin-notifications__badge" id="admin-notifications-badge" hidden>0</span>
+          </button>
           <span class="admin-badge" id="admin-session-name">Logged in</span>
           <button class="ghost-btn ghost-btn--solid" id="logout-btn" type="button">Log out</button>
           <button class="admin-nav-toggle" type="button" aria-expanded="false" aria-controls="admin-dashboard-nav">
@@ -121,6 +132,17 @@
         </button>
       </nav>
     </header>
+
+    <aside class="admin-notifications" id="admin-notifications-panel" hidden aria-label="Admin notifications">
+      <div class="admin-notifications__header">
+        <h2>Notifications</h2>
+        <button type="button" class="ghost-btn ghost-btn--small" id="admin-notifications-close">Close</button>
+      </div>
+      <div class="admin-notifications__body">
+        <ul class="admin-notifications__list" id="admin-notifications-list"></ul>
+        <p class="admin-notifications__empty" id="admin-notifications-empty">You're all caught up. No new activity yet.</p>
+      </div>
+    </aside>
 
     <main class="admin-panel">
       <div class="container">
