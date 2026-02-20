@@ -130,6 +130,17 @@ body.nav-open .nav-screen {
   .about-next-steps__panel {
     border-radius: 22px;
   }
+
+  /* Allow long email addresses in donors contact column to wrap instead of overflowing */
+  .table-contact a {
+    word-break: break-all;
+  }
+
+  /* On very small screens, let the donors Contact cell wrap so email isn't cropped */
+  #donors-section .admin-table--donors td[data-label="Contact"] {
+    white-space: normal;
+    word-break: break-all;
+  }
 }
 
 .about-contact-strip {
@@ -4520,6 +4531,14 @@ body::before {
 
 #donors-section .admin-table-wrapper {
   overflow-x: auto;
+}
+
+/* Mobile override: allow donor contact emails to wrap instead of being cropped */
+@media (max-width: 600px) {
+  #donors-section .admin-table--donors td[data-label="Contact"] {
+    white-space: normal !important;
+    word-break: break-all;
+  }
 }
 
 .admin-table th,
