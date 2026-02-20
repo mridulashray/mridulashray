@@ -13,7 +13,12 @@ const APPWRITE_CONFIG = {
     upcomingEvents: "upcomingEvents",
     ongoingProjects: "ongoingProjects"
   },
-  bucketId: "69419d0a000e78807ded"
+  bucketId: "69419d0a000e78807ded",
+  // Appwrite Functions IDs (replace with real IDs from your Appwrite console)
+  functions: {
+    // Function that sends a donation receipt email with attached PDF
+    sendReceiptEmail: "send-receipt-email"
+  }
 };
 
 if (typeof window !== "undefined") {
@@ -27,7 +32,8 @@ if (typeof Appwrite !== "undefined") {
     client,
     account: new Appwrite.Account(client),
     databases: new Appwrite.Databases(client),
-    storage: new Appwrite.Storage(client)
+    storage: new Appwrite.Storage(client),
+    functions: new Appwrite.Functions(client)
   };
 } else {
   console.warn("Appwrite SDK not found. Make sure the CDN script is loaded before appwrite-config.js");

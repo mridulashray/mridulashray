@@ -85,6 +85,65 @@ const monthLookup = {
   dec: 12
 };
 
+const handleSendReceiptEmail = async (docId) => {
+  const { databases, functions } = getClient();
+  try {
+    if (!functions) {
+      throw new Error("Appwrite Functions client is not configured.");
+    }
+
+    setFeedback(donorsFeedback, "Sending receipt email…");
+
+    let doc = donorsCache.find((item) => item.$id === docId) || null;
+    if (!doc) {
+      const response = await databases.getDocument(
+        APPWRITE_CONFIG.databaseId,
+        APPWRITE_CONFIG.collections.donations,
+        docId
+      );
+      doc = response;
+    }
+
+    if (!doc.donorEmail) {
+      setFeedback(donorsFeedback, "No donor email found for this record.", true);
+      window.alert("No donor email found for this record.");
+      return;
+    }
+
+    if (!doc.receiptFileId) {
+      setFeedback(donorsFeedback, "Generate the receipt PDF before sending an email.", true);
+      window.alert("Generate the receipt PDF before sending an email.");
+      return;
+    }
+
+    const rawAmount = typeof doc.amountPaid === "number" ? doc.amountPaid : doc.amount;
+
+    const payload = {
+      donationId: doc.$id,
+      donorName: doc.donorName || "Friend",
+      donorEmail: doc.donorEmail,
+      receiptFileId: doc.receiptFileId,
+      amount: typeof rawAmount === "number" ? rawAmount : null,
+      utr: doc.utr || doc.transactionRef || "",
+      note: doc.note || ""
+    };
+
+    const functionId = APPWRITE_CONFIG.functions?.sendReceiptEmail;
+    if (!functionId) {
+      throw new Error("sendReceiptEmail function ID is not configured in APPWRITE_CONFIG.");
+    }
+
+    await functions.createExecution(functionId, JSON.stringify(payload), false);
+
+    setFeedback(donorsFeedback, "Receipt email has been queued to send.");
+    window.alert("Payment Receipt has been successfully sent to the Donor");
+  } catch (error) {
+    console.error(error);
+    setFeedback(donorsFeedback, error?.message || "Unable to send receipt email.", true);
+    window.alert(error?.message || "Unable to send receipt email.");
+  }
+};
+
 const NOTIFICATION_LAST_SEEN_KEY = "mridulashrayAdminNotificationsLastSeen";
 
 const getNotificationsLastSeen = () => {
@@ -337,7 +396,8 @@ const getClient = () => {
   }
   return {
     databases: window.appwrite.databases,
-    storage: window.appwrite.storage
+    storage: window.appwrite.storage,
+    functions: window.appwrite.functions
   };
 };
 
@@ -508,13 +568,13 @@ const ongoingPosterField = () => ongoingForm?.querySelector('input[name="storedO
 const parseUpcomingPayload = () => {
   if (!upcomingForm) throw new Error("Upcoming event form missing");
   const formData = new FormData(upcomingForm);
-  const slug = formData.get("upSlug")?.toString().trim();
-  const title = formData.get("upTitle")?.toString().trim();
-  const description = formData.get("upDescription")?.toString().trim();
-  const location = formData.get("upLocation")?.toString().trim();
-  const startDate = formData.get("upStartDate")?.toString().trim();
-  const endDate = formData.get("upEndDate")?.toString().trim();
-  const volunteerEnabled = formData.get("upVolunteerEnabled") === "on";
+  const slug = formData.get("slug")?.toString().trim();
+  const title = formData.get("title")?.toString().trim();
+  const description = formData.get("description")?.toString().trim();
+  const location = formData.get("location")?.toString().trim();
+  const startDate = formData.get("startDate")?.toString().trim();
+  const endDate = formData.get("endDate")?.toString().trim();
+  const volunteerEnabled = formData.get("volunteerEnabled") === "on";
 
   if (!slug || !title || !description || !location || !startDate || !endDate) {
     throw new Error("Please fill in all required upcoming event fields.");
@@ -534,14 +594,14 @@ const parseUpcomingPayload = () => {
 const parseOngoingPayload = () => {
   if (!ongoingForm) throw new Error("Ongoing project form missing");
   const formData = new FormData(ongoingForm);
-  const slug = formData.get("opSlug")?.toString().trim();
-  const title = formData.get("opTitle")?.toString().trim();
-  const description = formData.get("opDescription")?.toString().trim();
-  const agenda = formData.get("opAgenda")?.toString().trim();
-  const location = formData.get("opLocation")?.toString().trim();
-  const startDate = formData.get("opStartDate")?.toString().trim();
-  const endDate = formData.get("opEndDate")?.toString().trim();
-  const status = formData.get("opStatus")?.toString().trim() || "active";
+  const slug = formData.get("slug")?.toString().trim();
+  const title = formData.get("title")?.toString().trim();
+  const description = formData.get("description")?.toString().trim();
+  const agenda = formData.get("agenda")?.toString().trim();
+  const location = formData.get("location")?.toString().trim();
+  const startDate = formData.get("startDate")?.toString().trim();
+  const endDate = formData.get("endDate")?.toString().trim();
+  const status = formData.get("status")?.toString().trim() || "active";
 
   if (!slug || !title || !description || !agenda || !location || !startDate || !endDate) {
     throw new Error("Please fill in all required ongoing project fields.");
@@ -593,24 +653,24 @@ const resetUpcomingForm = () => {
   upcomingEditingId = null;
   const storedPoster = upcomingPosterField();
   if (storedPoster) storedPoster.value = "";
-  if (upcomingForm.elements.upVolunteerEnabled) {
-    upcomingForm.elements.upVolunteerEnabled.checked = false;
+  if (upcomingForm.elements.volunteerEnabled) {
+    upcomingForm.elements.volunteerEnabled.checked = false;
   }
   if (upcomingCancelBtn) upcomingCancelBtn.hidden = true;
 };
 
 const populateUpcomingForm = (doc) => {
   if (!upcomingForm || !doc) return;
-  upcomingForm.elements.upTitle.value = doc.title || "";
-  upcomingForm.elements.upSlug.value = doc.slug || doc.$id;
-  upcomingForm.elements.upLocation.value = doc.location || "";
-  upcomingForm.elements.upStartDate.value = doc.startDate ? doc.startDate.slice(0, 10) : "";
-  upcomingForm.elements.upEndDate.value = doc.endDate ? doc.endDate.slice(0, 10) : "";
-  upcomingForm.elements.upDescription.value = doc.description || "";
-  if (upcomingForm.elements.upVolunteerEnabled) {
+  upcomingForm.elements.title.value = doc.title || "";
+  upcomingForm.elements.slug.value = doc.slug || doc.$id;
+  upcomingForm.elements.location.value = doc.location || "";
+  upcomingForm.elements.startDate.value = doc.startDate ? doc.startDate.slice(0, 10) : "";
+  upcomingForm.elements.endDate.value = doc.endDate ? doc.endDate.slice(0, 10) : "";
+  upcomingForm.elements.description.value = doc.description || "";
+  if (upcomingForm.elements.volunteerEnabled) {
     const statusValue = (doc.status || "").toLowerCase();
     const volunteerFlag = doc.volunteerCtaEnabled || statusValue === "needs-volunteers";
-    upcomingForm.elements.upVolunteerEnabled.checked = Boolean(volunteerFlag);
+    upcomingForm.elements.volunteerEnabled.checked = Boolean(volunteerFlag);
   }
   const storedPoster = upcomingPosterField();
   if (storedPoster) storedPoster.value = doc.posterFileId || "";
@@ -843,15 +903,15 @@ const resetOngoingForm = () => {
 
 const populateOngoingForm = (doc) => {
   if (!ongoingForm || !doc) return;
-  ongoingForm.elements.opTitle.value = doc.title || "";
-  ongoingForm.elements.opSlug.value = doc.slug || doc.$id;
-  ongoingForm.elements.opLocation.value = doc.location || "";
-  ongoingForm.elements.opStartDate.value = doc.startDate ? doc.startDate.slice(0, 10) : "";
-  ongoingForm.elements.opEndDate.value = doc.endDate ? doc.endDate.slice(0, 10) : "";
-  ongoingForm.elements.opDescription.value = doc.description || "";
-  ongoingForm.elements.opAgenda.value = doc.agenda || "";
-  if (ongoingForm.elements.opStatus) {
-    ongoingForm.elements.opStatus.value = doc.status || "active";
+  ongoingForm.elements.title.value = doc.title || "";
+  ongoingForm.elements.slug.value = doc.slug || doc.$id;
+  ongoingForm.elements.location.value = doc.location || "";
+  ongoingForm.elements.startDate.value = doc.startDate ? doc.startDate.slice(0, 10) : "";
+  ongoingForm.elements.endDate.value = doc.endDate ? doc.endDate.slice(0, 10) : "";
+  ongoingForm.elements.description.value = doc.description || "";
+  ongoingForm.elements.agenda.value = doc.agenda || "";
+  if (ongoingForm.elements.status) {
+    ongoingForm.elements.status.value = doc.status || "active";
   }
   const storedPoster = ongoingPosterField();
   if (storedPoster) storedPoster.value = doc.posterFileId || "";
@@ -864,7 +924,7 @@ const upsertOngoingProject = async () => {
     setFeedback(ongoingFeedback, "Saving ongoing project…");
     const payload = parseOngoingPayload();
     const formData = new FormData(ongoingForm);
-    const posterFile = formData.get("opPosterFile");
+    const posterFile = formData.get("posterFile");
     if (posterFile instanceof File && posterFile.size) {
       if (payload.posterFileId) {
         await deletePosterFile(payload.posterFileId);
@@ -1512,7 +1572,16 @@ const renderDonorsTable = (documents = []) => {
       <td data-label="Method">${paymentMethodLabel}</td>
       <td data-label="UTR / Ref">${utrLabel}</td>
       <td data-label="Note">${doc.note || "—"}</td>
-      <td data-label="d_receipt">${doc.receiptFileId ? `<a href="${storagePreviewUrl(doc.receiptFileId)}" download="donation-receipt-${doc.$id}.pdf">Download PDF</a>` : `<button type="button" class="ghost-btn ghost-btn--small" data-generate-receipt="${doc.$id}">Generate</button>`}</td>
+      <td data-label="d_receipt">
+        ${
+          doc.receiptFileId
+            ? `<div class="table-contact">
+                <a href="${storagePreviewUrl(doc.receiptFileId)}" download="donation-receipt-${doc.$id}.pdf">Download PDF</a>
+                <button type="button" class="ghost-btn ghost-btn--small" data-send-receipt-email="${doc.$id}">Send email</button>
+              </div>`
+            : `<button type="button" class="ghost-btn ghost-btn--small" data-generate-receipt="${doc.$id}">Generate</button>`
+        }
+      </td>
       <td data-label="Status">
         <div class="donor-status-cell">
           <span class="badge ${badgeClass}" data-donor-status-badge>${statusValue}</span>
@@ -1561,6 +1630,9 @@ const renderDonorsTable = (documents = []) => {
   });
   donorsTableBody.querySelectorAll("[data-generate-receipt]").forEach((btn) => {
     btn.addEventListener("click", () => handleGenerateReceipt(btn.dataset.generateReceipt));
+  });
+  donorsTableBody.querySelectorAll("[data-send-receipt-email]").forEach((btn) => {
+    btn.addEventListener("click", () => handleSendReceiptEmail(btn.dataset.sendReceiptEmail));
   });
 };
 
