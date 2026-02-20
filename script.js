@@ -778,8 +778,21 @@ if (paymentForm) {
       }
       paymentForm.reset();
     } catch (error) {
+      // Surface a clearer error message to the user while still logging the full error for debugging.
       console.error("Unable to save donation in Appwrite", error);
-      setStatus("We could not save your details this time. Please try again in a moment.", true);
+      let message = "We could not save your details this time. Please try again in a moment.";
+      const rawMessage =
+        (error && typeof error === "object" &&
+          (error.message ||
+            (error.response && (error.response.message || error.response.code)) ||
+            error.code)) ||
+        "";
+
+      if (rawMessage) {
+        message = `${message} (Reason: ${rawMessage})`;
+      }
+
+      setStatus(message, true);
     }
   });
 }
