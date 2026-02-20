@@ -838,7 +838,7 @@ body.nav-open .nav-screen {
 
 .payment-form-shell {
   width: 100%;
-  max-width: 980px;
+  max-width: 1120px;
   margin: 2.5rem auto 0;
   text-align: left;
 }
@@ -880,9 +880,10 @@ body.nav-open .nav-screen {
   }
 }
 
-/* Slightly reduce width of first-row inputs (Name / Email) so they don't touch in the middle */
+/* First-row inputs (Name / Email) should use full width of their column */
 .payment-grid-fields .payment-field input {
-  max-width: 95%;
+  width: 100%;
+  max-width: 100%;
 }
 
 .payment-field {
@@ -2149,14 +2150,14 @@ body::before {
   font-weight: 600;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 2000px) {
   .payment-grid {
     grid-template-columns: 1fr;
   }
 
   /* Slightly reduce width of UTR field on small screens */
   .payment-form input[name="utr"] {
-    max-width: 400px;
+    max-width: 95%;
   }
 }
 
