@@ -849,7 +849,7 @@ body.nav-open .nav-screen {
 
 .payment-form-shell__text {
   text-align: center;
-  max-width: 40rem;
+  max-width: 80rem;
   margin-inline: auto;
 }
 
@@ -1059,6 +1059,11 @@ body::before {
 .container {
   width: min(1200px, 90%);
   margin: 0 auto;
+}
+
+/* Admin dashboard can use a slightly wider container to fit dense tables like donors */
+.admin-panel .container {
+  width: min(1360px, 96%);
 }
 
 .site-header {
@@ -4487,6 +4492,34 @@ body::before {
 
 .admin-table-wrapper::-webkit-scrollbar-track {
   background: rgba(69, 44, 44, 0.08);
+}
+
+/* Donors table – clearer column layout */
+.admin-table--donors {
+  table-layout: auto;
+}
+
+.admin-table--donors th,
+.admin-table--donors td {
+  font-size: 0.88rem;
+  white-space: normal;
+  padding: 0.5rem 0.35rem;
+  word-break: normal;
+}
+
+.admin-table--donors th {
+  white-space: nowrap;
+}
+
+/* Let key donors columns size to their content and avoid wrapping; table can scroll horizontally */
+.admin-table--donors td[data-label="Donor"],
+.admin-table--donors td[data-label="Contact"],
+.admin-table--donors td[data-label="d_receipt"] {
+  white-space: nowrap;
+}
+
+#donors-section .admin-table-wrapper {
+  overflow-x: auto;
 }
 
 .admin-table th,

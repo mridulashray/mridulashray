@@ -146,18 +146,17 @@
 
     <main class="admin-panel">
       <div class="container">
-        <section class="admin-panel__header">
-          <div>
-            <p class="petal-badge">Former Head Console</p>
-            <h1>Event &amp; Community Dashboard</h1>
-            <p>Upload visuals, write context, and review incoming volunteer and contact requests.</p>
-          </div>
-          <div class="admin-panel__actions">
-            <button class="ghost-btn ghost-btn--solid" id="refresh-events-btn" type="button">Refresh Albums</button>
-          </div>
-        </section>
-
         <section class="admin-section" id="manage-section" aria-labelledby="create-event-title">
+          <div class="admin-panel__header">
+            <div>
+              <p class="petal-badge">Former Head Console</p>
+              <h1>Event &amp; Community Dashboard</h1>
+              <p>Upload visuals, write context, and review incoming volunteer and contact requests.</p>
+            </div>
+            <div class="admin-panel__actions">
+              <button class="ghost-btn ghost-btn--solid" id="refresh-events-btn" type="button">Refresh Albums</button>
+            </div>
+          </div>
           <h2 id="create-event-title">Step 1 · Create or update an event album</h2>
           <form id="event-metadata-form" class="admin-form-grid">
             <label>
@@ -498,7 +497,7 @@
             </div>
           </div>
           <div class="admin-table-wrapper">
-            <table class="admin-table" id="donors-table">
+            <table class="admin-table admin-table--donors" id="donors-table">
               <thead>
                 <tr>
                   <th>Donor</th>
